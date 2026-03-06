@@ -384,6 +384,27 @@ header {
   line-height: 1.6; letter-spacing: 0.3px;
 }
 
+/* SCORE CONTACT FORM */
+.score-form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;
+}
+.score-form-group { display: flex; flex-direction: column; gap: 6px; }
+.score-form-group label {
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(247,243,236,0.4); font-weight: 500;
+}
+.score-form-group input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--cream); padding: 12px 16px;
+  font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 300;
+  outline: none; transition: border-color 0.2s; width: 100%;
+}
+.score-form-group input:focus { border-color: var(--gold); }
+@media (max-width: 640px) {
+  .score-form-row { grid-template-columns: 1fr; }
+}
+
 /* CTA FINAL */
 .result-cta {
   background: rgba(255,255,255,0.02);
@@ -434,7 +455,7 @@ header {
 <body>
 
 <header>
-  <a href="#" class="logo">Deal<span>Partners</span></a>
+  <a href="index.html" class="logo">Deal<span>Partners</span></a>
   <div class="header-badge">AI Deal Readiness Score™</div>
 </header>
 
@@ -981,11 +1002,43 @@ function showResults() {
     </div>
 
     <div class="result-cta">
-      <h3>¿Listo para dar el <em>siguiente paso?</em></h3>
-      <p>Nuestros asesores han revisado miles de empresas similares. En una llamada de 30 minutos te damos un diagnóstico más detallado y un plan concreto sin coste.</p>
-      <div class="cta-buttons">
-        <a href="#" class="btn-primary">Hablar con un asesor — gratis</a>
-        <button class="btn-secondary-white" onclick="restartAssessment()">Repetir el análisis</button>
+      <h3>Recibe tu informe <em>completo</em> por email</h3>
+      <p>Déjanos tus datos y te enviamos el análisis completo con recomendaciones personalizadas. Un asesor te contactará en menos de 24h sin ningún compromiso.</p>
+
+      <div id="scoreContactForm">
+        <div class="score-form-row">
+          <div class="score-form-group">
+            <label>Nombre *</label>
+            <input type="text" id="sc-nombre" placeholder="Tu nombre">
+          </div>
+          <div class="score-form-group">
+            <label>Email *</label>
+            <input type="email" id="sc-email" placeholder="tu@empresa.com">
+          </div>
+        </div>
+        <div class="score-form-row">
+          <div class="score-form-group">
+            <label>Empresa</label>
+            <input type="text" id="sc-empresa" placeholder="Nombre de tu empresa">
+          </div>
+          <div class="score-form-group">
+            <label>Teléfono</label>
+            <input type="tel" id="sc-telefono" placeholder="+34 600 000 000">
+          </div>
+        </div>
+        <div id="scError" style="display:none; font-size:11px; color:#e57373; margin-bottom:12px; letter-spacing:0.5px; text-align:left;"></div>
+        <div class="cta-buttons" style="margin-top:0;">
+          <button class="btn-primary" id="scSubmitBtn" onclick="submitScoreData()">Enviar mi informe →</button>
+          <button class="btn-secondary-white" onclick="restartAssessment()">Repetir el análisis</button>
+        </div>
+        <p style="font-size:10px; color:rgba(247,243,236,0.25); margin-top:16px; letter-spacing:0.5px;">Sin spam. Sin compromiso. Confidencialidad total garantizada.</p>
+      </div>
+
+      <div id="scSuccess" style="display:none; text-align:center; padding:16px 0;">
+        <div style="font-size:32px; margin-bottom:16px;">✓</div>
+        <p style="font-size:14px; color:var(--gold2); margin-bottom:8px; font-family:'Cormorant Garamond',serif; font-size:22px;">Informe enviado con éxito</p>
+        <p style="font-size:13px; color:rgba(247,243,236,0.45); line-height:1.7;">Te contactaremos en menos de 24 horas en el email indicado.</p>
+        <button class="btn-secondary-white" onclick="restartAssessment()" style="margin-top:24px;">Realizar otro análisis</button>
       </div>
     </div>
   `;
@@ -994,11 +1047,13 @@ function showResults() {
   screen.innerHTML = html;
   screen.classList.add('show');
 
+  // Store current results for form submission
+  window._lastScoreData = { scores, overall, multRange };
+
   // Animate ring and number
   setTimeout(() => {
     const offset = circumference - (overall / 100) * circumference;
     document.getElementById('ringFill').style.strokeDashoffset = offset;
-    // Count up number
     let current = 0;
     const interval = setInterval(() => {
       current = Math.min(current + 2, overall);
@@ -1006,6 +1061,79 @@ function showResults() {
       if (current >= overall) clearInterval(interval);
     }, 20);
   }, 200);
+}
+
+// ── SUBMIT SCORE + CONTACT DATA TO GOOGLE SHEETS ─────────────
+async function submitScoreData() {
+  const nombre   = document.getElementById('sc-nombre').value.trim();
+  const email    = document.getElementById('sc-email').value.trim();
+  const empresa  = document.getElementById('sc-empresa').value.trim();
+  const telefono = document.getElementById('sc-telefono').value.trim();
+  const errorEl  = document.getElementById('scError');
+  const btn      = document.getElementById('scSubmitBtn');
+
+  if (!nombre || !email) {
+    errorEl.textContent = 'Por favor introduce tu nombre y email.';
+    errorEl.style.display = 'block';
+    return;
+  }
+  errorEl.style.display = 'none';
+
+  btn.textContent  = 'Enviando…';
+  btn.disabled     = true;
+
+  // Build answer labels for readability
+  const answerLabels = {};
+  categories.forEach(cat => {
+    cat.questions.forEach((q, qi) => {
+      const key = `${cat.id}_${qi}`;
+      const score = answers[key];
+      if (score !== undefined) {
+        const opt = q.options.find(o => o.score === score);
+        answerLabels[key] = opt ? opt.label : score;
+      }
+    });
+  });
+
+  const payload = {
+    type:             'score',
+    overall:          window._lastScoreData.overall,
+    scores:           window._lastScoreData.scores,
+    valuationRange:   window._lastScoreData.multRange,
+    answers:          answerLabels,
+    contactNombre:    nombre,
+    contactEmail:     email,
+    contactEmpresa:   empresa,
+    contactTelefono:  telefono,
+  };
+
+  // ── CONFIGURACIÓN: pega aquí tu Apps Script URL ─────────────
+  const APPS_SCRIPT_URL = 'TU_APPS_SCRIPT_URL';
+  // ────────────────────────────────────────────────────────────
+
+  try {
+    if (APPS_SCRIPT_URL === 'TU_APPS_SCRIPT_URL') {
+      // Modo demo: simula éxito si no está configurado
+      console.log('📊 Score data (demo mode):', payload);
+      await new Promise(r => setTimeout(r, 800));
+    } else {
+      await fetch(APPS_SCRIPT_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+        mode:    'no-cors', // Apps Script requiere no-cors
+      });
+    }
+
+    document.getElementById('scoreContactForm').style.display = 'none';
+    document.getElementById('scSuccess').style.display        = 'block';
+
+  } catch (err) {
+    btn.textContent = 'Enviar mi informe →';
+    btn.disabled    = false;
+    errorEl.textContent = 'Error al enviar. Por favor escríbenos a dealpartners.iberia@gmail.com';
+    errorEl.style.display = 'block';
+  }
 }
 
 function getInsight(id, pct) {
