@@ -1,455 +1,131 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Insights M&A — DealPartners</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* ── ARTICLE PAGE SPECIFICS ── */
-    .article-hero {
-      background: var(--dark);
-      padding: 140px 60px 80px;
-      position: relative; overflow: hidden;
-    }
-    .article-hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(184,149,42,0.1) 0%, transparent 70%);
-    }
-    .article-hero-inner { max-width: 820px; position: relative; z-index: 1; }
-    .article-back {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-      color: var(--gold2); text-decoration: none; font-weight: 500;
-      margin-bottom: 32px; transition: gap 0.2s;
-    }
-    .article-back:hover { gap: 12px; }
-    .article-cat {
-      font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
-      color: var(--gold); font-weight: 500; margin-bottom: 20px;
-    }
-    .article-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(36px, 5vw, 64px); font-weight: 300; line-height: 1.1;
-      color: var(--white); margin-bottom: 24px;
-    }
-    .article-title em { font-style: italic; color: var(--gold2); }
-    .article-meta-row {
-      display: flex; gap: 24px; align-items: center;
-      font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.35);
-      text-transform: uppercase; flex-wrap: wrap;
-    }
-    .article-meta-sep { color: rgba(255,255,255,0.15); }
+/* ============================================================
+   DealPartners — Main JavaScript
+   ============================================================ */
 
-    .article-body {
-      max-width: 820px; margin: 0 auto;
-      padding: 80px 60px 120px;
-    }
-    .article-lead {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px; font-weight: 300; font-style: italic;
-      color: var(--dark); line-height: 1.6;
-      border-left: 3px solid var(--gold); padding-left: 24px;
-      margin-bottom: 48px;
-    }
-    .article-body h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 30px; font-weight: 500; color: var(--dark);
-      margin: 56px 0 20px; line-height: 1.2;
-    }
-    .article-body h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px; font-weight: 500; color: var(--dark);
-      margin: 36px 0 14px;
-    }
-    .article-body p {
-      font-size: 15px; color: #3a342c; line-height: 1.9;
-      margin-bottom: 20px; font-weight: 300;
-    }
-    .article-body ul, .article-body ol {
-      margin: 0 0 24px 0; padding-left: 0; list-style: none;
-    }
-    .article-body li {
-      font-size: 14px; color: #3a342c; line-height: 1.8;
-      padding: 10px 0 10px 24px; border-bottom: 1px solid var(--border);
-      position: relative; font-weight: 300;
-    }
-    .article-body li::before { content: '—'; position: absolute; left: 0; color: var(--gold); }
-    .article-callout {
-      background: var(--cream2); border-left: 4px solid var(--gold);
-      padding: 28px 32px; margin: 40px 0; font-size: 14px;
-      color: var(--dark); line-height: 1.8; font-weight: 400;
-    }
-    .article-callout strong { color: var(--gold); }
-    .data-table {
-      width: 100%; border-collapse: collapse; margin: 40px 0; font-size: 13px;
-    }
-    .data-table th {
-      background: var(--dark); color: var(--gold2);
-      padding: 12px 16px; text-align: left;
-      font-size: 9px; letter-spacing: 2px; text-transform: uppercase; font-weight: 500;
-    }
-    .data-table td {
-      padding: 12px 16px; border-bottom: 1px solid var(--border);
-      color: var(--dark); font-weight: 300;
-    }
-    .data-table tr:hover td { background: var(--cream2); }
-    .data-table td:last-child { color: var(--gold); font-weight: 500; }
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzqpEq9MxZ897RSBmpP7jTAM6x3LprSNFdr94FDmyMXtFwUzEqaqz7tj-CISIQqjOR4/exec';
 
-    .article-cta-box {
-      background: var(--dark); padding: 48px; margin: 64px 0 0;
-      text-align: center;
-    }
-    .article-cta-box h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 30px; font-weight: 300; color: var(--white);
-      margin-bottom: 12px; font-style: italic;
-    }
-    .article-cta-box p { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 28px; }
-
-    /* Related articles */
-    .related { background: var(--cream2); padding: 80px 60px; }
-    .related-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); margin-top: 40px; }
-
-    /* Index page */
-    .insights-index { padding: 120px 60px; }
-    .insights-index-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; margin-top: 48px; }
-    .index-card {
-      border: 1px solid var(--border); padding: 40px 36px;
-      text-decoration: none; color: inherit;
-      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-      display: block;
-    }
-    .index-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(26,24,20,0.08); }
-
-    @media (max-width: 768px) {
-      .article-hero { padding: 120px 24px 60px; }
-      .article-body { padding: 48px 24px 80px; }
-      .related { padding: 60px 24px; }
-      .related-grid { grid-template-columns: 1fr; }
-      .insights-index { padding: 80px 24px; }
-      .insights-index-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-
-<nav id="navbar">
-  <a href="index.html" class="nav-logo">Deal<span>Partners</span></a>
-  <ul class="nav-links">
-    <li><a href="index.html#marketplace">En venta</a></li>
-    <li><a href="index.html#vender">Vender</a></li>
-    <li><a href="index.html#comprar">Comprar</a></li>
-    <li><a href="index.html#servicios">Servicios</a></li>
-    <li><a href="index.html#insights">Insights</a></li>
-    <li><a href="index.html#nosotros">Nosotros</a></li>
-    <li><a href="deal-readiness-score.html" class="nav-cta">Valora tu empresa</a></li>
-  </ul>
-</nav>
-
-<div id="pageContent"></div>
-
-<script>
-/* ══════════════════════════════════════════════════════════
-   ARTICLE DATABASE
-════════════════════════════════════════════════════════════ */
-const articles = {
-  'multiplos-2025': {
-    cat:   'Múltiplos · Actualizado Q1 2025',
-    title: 'Múltiplos de valoración por sector en España: <em>guía completa 2025</em>',
-    meta:  '12 min lectura · Análisis de mercado · Marzo 2025',
-    lead:  'Conocer el rango de valoración de tu empresa antes de iniciar un proceso de venta no es una ventaja — es una necesidad. En esta guía recogemos los datos de transacciones reales cerradas en España durante 2024.',
-    body: `
-      <h2>Por qué importa el múltiplo EBITDA</h2>
-      <p>El múltiplo sobre EBITDA es el principal indicador de valoración en operaciones de compraventa de empresas en España para el segmento de PYMES. Su uso simplifica la comparación entre empresas de distintos tamaños y sectores, y es el lenguaje común entre compradores y asesores.</p>
-      <p>Sin embargo, el múltiplo no es un número fijo: oscila en función del sector, el tamaño, el perfil de ingresos, la dependencia del fundador y la coyuntura de mercado. La diferencia entre una empresa mal preparada y una bien preparada puede ser de 2–3 veces el EBITDA.</p>
-
-      <div class="article-callout"><strong>Ejemplo práctico:</strong> Una empresa con €1M de EBITDA puede valer €4M con un múltiplo de 4x o €7M con un múltiplo de 7x. La diferencia — €3M — depende casi completamente de cómo esté preparada la empresa para la venta.</div>
-
-      <h2>Múltiplos por sector en España (2024)</h2>
-      <p>Los rangos siguientes se basan en transacciones de empresas con EBITDA entre €300K y €5M cerradas en el mercado español durante 2024. Las cifras representan el rango habitual; casos excepcionales pueden superar el techo o caer por debajo del suelo.</p>
-
-      <table class="data-table">
-        <thead>
-          <tr><th>Sector</th><th>Rango bajo</th><th>Rango alto</th><th>Múltiplo mediano</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Software / SaaS B2B</td><td>7x</td><td>14x</td><td>9x</td></tr>
-          <tr><td>Salud (clínicas, dental)</td><td>5x</td><td>9x</td><td>7x</td></tr>
-          <tr><td>Servicios profesionales B2B</td><td>4x</td><td>8x</td><td>6x</td></tr>
-          <tr><td>Industrial / fabricación</td><td>4x</td><td>7x</td><td>5.5x</td></tr>
-          <tr><td>Distribución / logística</td><td>3x</td><td>6x</td><td>4.5x</td></tr>
-          <tr><td>Hostelería / restauración</td><td>3x</td><td>6x</td><td>4x</td></tr>
-          <tr><td>Retail</td><td>2.5x</td><td>5x</td><td>3.5x</td></tr>
-          <tr><td>Construcción</td><td>2x</td><td>4x</td><td>3x</td></tr>
-        </tbody>
-      </table>
-
-      <h2>Los 5 factores que más mueven el múltiplo</h2>
-      <ul>
-        <li><strong>Recurrencia de ingresos:</strong> Contratos recurrentes, suscripciones o clientes de largo plazo elevan el múltiplo significativamente.</li>
-        <li><strong>Independencia del fundador:</strong> Si la empresa depende de una sola persona, el múltiplo sufre. Los compradores pagan prima por equipos directivos sólidos.</li>
-        <li><strong>Crecimiento:</strong> Una empresa que crece al 15%+ anual recibe un tratamiento diferente a una estable. El crecimiento justifica pagar por el potencial futuro.</li>
-        <li><strong>Tamaño del EBITDA:</strong> El efecto escala es real. Un EBITDA de €2M recibe mejor múltiplo que uno de €300K, incluso en el mismo sector.</li>
-        <li><strong>Diversificación de clientes:</strong> Si el 40% de la facturación depende de un solo cliente, cualquier comprador lo detectará y aplicará descuento.</li>
-      </ul>
-
-      <h2>¿Cómo mejorar el múltiplo antes de vender?</h2>
-      <p>La preparación pre-venta es la palanca más poderosa para maximizar el precio. Empresas que inician el proceso de preparación 12–18 meses antes de salir al mercado obtienen sistemáticamente mejores valoraciones.</p>
-      <p>Las áreas de mejora más impactantes son: reducción de dependencia del fundador, sistematización de procesos, limpieza documental y, cuando sea posible, incremento de la recurrencia de ingresos mediante contratos o acuerdos marco.</p>
-
-      <div class="article-callout"><strong>Conclusión:</strong> El múltiplo no es un dato fijo que recibirás del mercado. Es el resultado de cómo has preparado tu empresa. Dos empresas del mismo sector con el mismo EBITDA pueden tener valoraciones radicalmente distintas.</div>
-    `
-  },
-
-  'eta-espana': {
-    cat:   'Tendencias M&A · 2025',
-    title: 'El auge del comprador <em>ETA en España</em>',
-    meta:  '6 min lectura · Tendencias · Febrero 2025',
-    lead:  'Un nuevo perfil de comprador está irrumpiendo en el mercado español de compraventa de empresas: el directivo o profesional que, en lugar de crear una empresa desde cero, adquiere una con tracción probada.',
-    body: `
-      <h2>¿Qué es el ETA?</h2>
-      <p>ETA son las siglas de Entrepreneurship Through Acquisition — emprendimiento a través de adquisición. El modelo, popularizado en Estados Unidos por las escuelas de negocio de Harvard y Stanford, está llegando con fuerza a España.</p>
-      <p>El perfil típico: un profesional con 10–15 años de experiencia en consultoría, banca o dirección general, que busca liderar una empresa propia pero que prefiere construir sobre una base existente — clientes, equipo, operativa — en lugar de empezar desde cero.</p>
-
-      <h2>Por qué este perfil está creciendo en España</h2>
-      <ul>
-        <li>El envejecimiento del tejido empresarial español: miles de PYMES sin sucesor natural buscan comprador.</li>
-        <li>El acceso a financiación bancaria para adquisiciones de empresas rentables ha mejorado notablemente.</li>
-        <li>La proliferación de comunidades y formación específica sobre ETA en español.</li>
-        <li>La caída de la estigmatización del fracaso empresarial, que anima a directivos a dar el salto.</li>
-      </ul>
-
-      <div class="article-callout"><strong>Dato de mercado:</strong> En 2024 estimamos que entre un 15% y un 20% de las operaciones de PYMES españolas con EBITDA inferior a €500K fueron compradas por compradores individuales o ETA, frente a menos del 5% en 2019.</div>
-
-      <h2>Qué significa esto para los vendedores</h2>
-      <p>El comprador ETA es, en muchos casos, el mejor comprador para una empresa pequeña. Está dispuesto a involucrarse en la gestión, valora el know-how del equipo existente y tiene un horizonte de inversión de largo plazo — no busca revender en 3 años.</p>
-      <p>Sin embargo, su capacidad de financiación es más limitada que la de un fondo o un grupo industrial. El precio ofrecido suele ser adecuado, pero el proceso de cierre puede ser más largo y depende de la financiación bancaria.</p>
-
-      <h2>Qué tipo de empresas buscan</h2>
-      <ul>
-        <li>EBITDA entre €150K y €600K — que genere suficiente para pagar la deuda y un salario digno al comprador.</li>
-        <li>Empresa con equipo operativo — que no dependa exclusivamente del fundador para funcionar.</li>
-        <li>Sectores predecibles: servicios B2B, salud, industria de nicho, servicios especializados.</li>
-        <li>Localización: preferentemente en grandes ciudades o sectores sin limitación geográfica.</li>
-      </ul>
-    `
-  },
-
-  'errores-venta': {
-    cat:   'Guía para vendedores',
-    title: '10 errores que <em>destruyen valor</em> antes de vender tu empresa',
-    meta:  '8 min lectura · Guía práctica · Enero 2025',
-    lead:  'La mayoría de los errores que cuestan dinero a los vendedores no ocurren durante la negociación — ocurren meses o años antes. Estos son los 10 más comunes y cómo evitarlos.',
-    body: `
-      <h2>Error 1: Salir al mercado sin preparación</h2>
-      <p>El error más costoso es también el más común: iniciar conversaciones con compradores sin haber ordenado la documentación, normalizado el EBITDA o analizado los riesgos que un comprador va a identificar en due diligence. Un comprador bien asesorado utiliza cada problema que encuentra para reducir el precio.</p>
-
-      <h2>Error 2: Confundir facturación con valor</h2>
-      <p>La facturación es un indicador de tamaño, no de valor. El mercado paga por EBITDA, por recurrencia, por el equipo directivo y por la posición competitiva. Una empresa con €10M de facturación y €200K de EBITDA vale menos que otra con €3M de facturación y €800K de EBITDA.</p>
-
-      <h2>Error 3: Alta dependencia del fundador</h2>
-      <p>Si eres imprescindible en ventas, en operaciones o en la relación con clientes clave, eres también el principal riesgo que un comprador tiene que gestionar. El descuento puede ser enorme. La solución: empezar a delegar y documentar dos o tres años antes de la venta.</p>
-
-      <div class="article-callout"><strong>Regla práctica:</strong> Pregúntate: ¿podría la empresa funcionar sin mí durante 3 meses? Si la respuesta es no, un comprador lo sabe — y pagará menos.</div>
-
-      <h2>Error 4: Concentración en pocos clientes</h2>
-      <p>Si un solo cliente representa más del 20–25% de la facturación, cualquier comprador lo detectará y aplicará un descuento significativo. La diversificación de la base de clientes es una de las mejores inversiones que puedes hacer antes de vender.</p>
-
-      <h2>Error 5: Mezclar gastos personales con los de la empresa</h2>
-      <p>Coches, viajes, seguros y otros gastos que pasan por la empresa reducen el EBITDA reportado — pero si no se normalizan adecuadamente, el comprador no lo reconocerá. La normalización del EBITDA es un trabajo técnico que debe hacerse antes de entrar en negociación.</p>
-
-      <h2>Error 6: No tener contratos formalizados</h2>
-      <p>Relaciones comerciales basadas en la confianza y la palabra, sin contrato escrito, son un riesgo para cualquier comprador. En due diligence, la falta de contratos genera ajustes de precio o cláusulas de garantía que terminan costando dinero.</p>
-
-      <h2>Error 7: Hablar con un solo comprador a la vez</h2>
-      <p>La competencia entre compradores es el mecanismo más eficaz para maximizar el precio. Si hablas con un solo comprador de forma exclusiva, pierdes el principal mecanismo de presión en la negociación. Un proceso bien estructurado genera tensión competitiva.</p>
-
-      <h2>Error 8: Revelar que "tienes prisa" por vender</h2>
-      <p>La urgencia del vendedor es una información que los compradores utilizan sistemáticamente para mejorar sus condiciones. La posición negociadora ideal es la de alguien que no necesita vender — que lo hace porque es el momento óptimo.</p>
-
-      <h2>Error 9: Subestimar el tiempo que tarda el proceso</h2>
-      <p>Una operación de venta bien hecha dura entre 6 y 18 meses. Muchos vendedores entran al proceso pensando que durará 3 meses y acaban tomando malas decisiones bajo la presión del tiempo. Planifica con margen.</p>
-
-      <h2>Error 10: No contar con asesoramiento especializado</h2>
-      <p>La venta de una empresa es, probablemente, la transacción financiera más importante de tu vida. Intentar hacerla solo, o con asesores generalistas, suele costar más en valor perdido que lo que se ahorra en honorarios.</p>
-    `
-  },
-
-  'dd-financiero': {
-    cat:   'Due Diligence',
-    title: 'Qué mirará el comprador en tu <em>DD financiero</em>',
-    meta:  '5 min lectura · Guía técnica · Diciembre 2024',
-    lead:  'La due diligence financiera es el momento en que el comprador pone a prueba todo lo que te ha prometido pagar. Conocer de antemano lo que van a buscar es la mejor preparación posible.',
-    body: `
-      <h2>Qué es la due diligence financiera</h2>
-      <p>La due diligence financiera (DD financiera) es el proceso de revisión exhaustiva de los estados financieros de una empresa antes de cerrar una adquisición. Su objetivo es validar que los números presentados son reales, identificar riesgos ocultos y confirmar la calidad del EBITDA que justifica el precio.</p>
-      <p>En empresas de hasta €50M de facturación, la DD suele durar entre 3 y 6 semanas y es llevada a cabo por el equipo financiero del comprador, a veces asistido por una firma externa.</p>
-
-      <h2>Las 5 áreas que siempre revisan</h2>
-
-      <h3>1. Calidad del EBITDA</h3>
-      <p>El primer análisis es siempre la normalización del EBITDA: separar los ingresos y gastos recurrentes de los extraordinarios, identificar gastos personales del dueño que pasan por la empresa y ajustar por elementos no recurrentes.</p>
-
-      <div class="article-callout"><strong>Lo que buscan:</strong> ¿El EBITDA que presenta el vendedor es sostenible? ¿Hay partidas que inflan el EBITDA artificialmente? ¿Hay gastos recurrentes que el vendedor ha excluido?</div>
-
-      <h3>2. Evolución histórica de ingresos</h3>
-      <p>Analizarán al menos 3 años de evolución de ingresos, idealmente 5. Buscan tendencias, estacionalidad, concentración por cliente y producto, y explicación de variaciones significativas.</p>
-
-      <h3>3. Calidad de la deuda y el balance</h3>
-      <p>Deuda financiera, deudas con la Administración, contingencias laborales, avales, garantías prestadas, litigios en curso. Cualquier pasivo oculto puede traducirse en un ajuste de precio o en cláusulas de garantía en el contrato de compraventa.</p>
-
-      <h3>4. Capital circulante y generación de caja</h3>
-      <p>La diferencia entre EBITDA y caja generada es clave. Una empresa que tiene buen EBITDA pero consume mucho capital circulante (por plazos de cobro largos, stock elevado, etc.) vale menos de lo que sugiere el múltiplo sobre EBITDA.</p>
-
-      <h3>5. Estructura fiscal y societaria</h3>
-      <p>Inspecciones fiscales en curso, criterios contables cuestionables, estructura societaria con activos o pasivos en empresas vinculadas. Cualquier complejidad fiscal añade incertidumbre y se traduce en ajuste de precio.</p>
-
-      <h2>Checklist de documentación que debes tener preparada</h2>
-      <ul>
-        <li>Cuentas anuales depositadas de los últimos 3–5 ejercicios</li>
-        <li>Contabilidad analítica y de gestión del ejercicio en curso</li>
-        <li>Declaraciones del Impuesto de Sociedades (últimos 5 años)</li>
-        <li>Declaraciones de IVA (últimos 4 años)</li>
-        <li>Liquidaciones de nóminas y cotizaciones (últimos 3 años)</li>
-        <li>Pólizas de crédito, préstamos y avales vigentes</li>
-        <li>Contratos con clientes principales</li>
-        <li>Contratos de alquiler, leasing y arrendamientos</li>
-        <li>Documentación de activos fijos relevantes</li>
-        <li>Certificado de estar al corriente con Hacienda y Seguridad Social</li>
-      </ul>
-
-      <div class="article-callout"><strong>Consejo:</strong> La mejor estrategia no es ocultar problemas — es identificarlos antes que el comprador y preparar una explicación razonada. Los problemas descubiertos por el comprador durante DD generan desconfianza y se penalizan más de lo que valen.</div>
-    `
-  }
-};
-
-/* ── ALL ARTICLES INDEX ──────────────────────────────────── */
-function renderIndex() {
-  const cards = Object.entries(articles).map(([id, a]) => `
-    <a href="insight-article.html?id=${id}" class="index-card">
-      <div class="insight-cat">${a.cat}</div>
-      <div class="insight-title" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;line-height:1.3;margin-bottom:12px;">${a.title.replace(/<em>|<\/em>/g,'')}</div>
-      <div class="insight-meta">${a.meta}</div>
-      <div class="insight-arrow">→</div>
-    </a>
-  `).join('');
-
-  return `
-    <section class="insights-index" style="padding-top:140px;">
-      <div class="section-label">Conocimiento M&A</div>
-      <h1 class="section-title">Todos los <em>Insights</em></h1>
-      <p class="section-sub">Análisis, guías y datos de mercado para empresarios y compradores en España.</p>
-      <div class="insights-index-grid">${cards}</div>
-    </section>
-    ${renderFooterCTA()}
-  `;
-}
-
-/* ── SINGLE ARTICLE ──────────────────────────────────────── */
-function renderArticle(id) {
-  const a = articles[id];
-  if (!a) return renderIndex();
-
-  const otherId  = Object.keys(articles).filter(k => k !== id);
-  const relCards = otherId.slice(0,3).map(k => {
-    const r = articles[k];
-    return `
-      <a href="insight-article.html?id=${k}" class="insight-card" style="text-decoration:none;color:inherit;">
-        <div class="insight-cat">${r.cat}</div>
-        <div class="insight-title">${r.title.replace(/<em>|<\/em>/g,'')}</div>
-        <div class="insight-meta">${r.meta}</div>
-        <div class="insight-arrow">→</div>
-      </a>`;
-  }).join('');
-
-  return `
-    <div class="article-hero">
-      <div class="article-hero-inner">
-        <a href="insight-article.html" class="article-back">← Todos los insights</a>
-        <div class="article-cat">${a.cat}</div>
-        <h1 class="article-title">${a.title}</h1>
-        <div class="article-meta-row">
-          <span>${a.meta}</span>
-          <span class="article-meta-sep">·</span>
-          <span>DealPartners</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="article-body">
-      <p class="article-lead">${a.lead}</p>
-      ${a.body}
-      <div class="article-cta-box">
-        <h3>¿Quieres aplicarlo a tu empresa?</h3>
-        <p>Habla con uno de nuestros asesores sin coste. Primera consulta gratuita.</p>
-        <a href="index.html#contacto" class="btn-gold">Solicitar consulta gratuita →</a>
-      </div>
-    </div>
-
-    <section class="related">
-      <div class="section-label" style="padding:0 0 0 0;">Seguir leyendo</div>
-      <h2 class="section-title" style="margin-bottom:0;">Más <em>insights</em></h2>
-      <div class="related-grid">${relCards}</div>
-    </section>
-    ${renderFooterCTA()}
-  `;
-}
-
-function renderFooterCTA() {
-  return `
-    <footer>
-      <div class="footer-brand">
-        <a href="index.html" class="footer-logo">Deal<span>Partners</span></a>
-        <p class="footer-tagline">La plataforma de referencia para compraventa de empresas en España.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Plataforma</h4>
-        <ul>
-          <li><a href="index.html#marketplace">Empresas en venta</a></li>
-          <li><a href="registro.html?tipo=vendedor">Vender mi empresa</a></li>
-          <li><a href="registro.html?tipo=comprador">Para compradores</a></li>
-          <li><a href="deal-readiness-score.html">Valora tu empresa</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Insights</h4>
-        <ul>
-          <li><a href="insight-article.html?id=multiplos-2025">Múltiplos 2025</a></li>
-          <li><a href="insight-article.html?id=eta-espana">Comprador ETA</a></li>
-          <li><a href="insight-article.html?id=errores-venta">10 errores al vender</a></li>
-          <li><a href="insight-article.html?id=dd-financiero">DD financiero</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Contacto</h4>
-        <ul>
-          <li><a href="index.html#contacto">Enviar consulta</a></li>
-          <li><a href="index.html#nosotros">Quiénes somos</a></li>
-          <li><a href="index.html#servicios">Servicios</a></li>
-        </ul>
-      </div>
-    </footer>
-    <div class="footer-bottom">
-      <p>© 2025 DealPartners · Todos los derechos reservados · Madrid, España</p>
-      <p>Aviso legal · Política de privacidad · Política de cookies</p>
-    </div>
-  `;
-}
-
-/* ── INIT ────────────────────────────────────────────────── */
-const id = new URLSearchParams(window.location.search).get('id');
-document.getElementById('pageContent').innerHTML = id ? renderArticle(id) : renderIndex();
-if (id && articles[id]) {
-  document.title = articles[id].title.replace(/<[^>]+>/g,'') + ' — DealPartners';
-}
-
-/* Navbar scroll */
+/* ── NAVBAR ─────────────────────────────────────────────── */
 window.addEventListener('scroll', () => {
-  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
+  const nav = document.getElementById('navbar');
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
 });
-</script>
-</body>
-</html>
+
+/* ── SCROLL REVEAL ──────────────────────────────────────── */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* ── MARKETPLACE FILTERS ─────────────────────────────────── */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function () {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    const filter = this.dataset.filter;
+    const cards  = document.querySelectorAll('.listing-card');
+    const grid   = document.getElementById('listingsGrid');
+    const empty  = document.getElementById('listingEmpty');
+    let visible  = 0;
+    cards.forEach(card => {
+      const show = filter === 'all' || card.dataset.sector === filter;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (empty) empty.style.display = visible === 0 ? '' : 'none';
+    if (grid)  grid.style.gridTemplateColumns = visible === 1 ? '1fr' : 'repeat(3, 1fr)';
+  });
+});
+
+/* ── CONTACT FORM ────────────────────────────────────────── */
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+  contactForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const btn     = document.getElementById('formSubmitBtn');
+    const success = document.getElementById('formSuccess');
+    const error   = document.getElementById('formError');
+
+    const nombre = contactForm.querySelector('[name="nombre"]').value.trim();
+    const email  = contactForm.querySelector('[name="email"]').value.trim();
+
+    if (!nombre || !email) {
+      error.textContent   = 'Por favor completa nombre y email antes de enviar.';
+      error.style.display = 'block';
+      return;
+    }
+    error.style.display = 'none';
+    btn.textContent     = 'Enviando…';
+    btn.disabled        = true;
+    btn.style.opacity   = '0.7';
+
+    const formData = new FormData(contactForm);
+
+    // 1. Formspree — email inmediato a dealpartners.iberia@gmail.com
+    let ok = false;
+    try {
+      const res = await fetch(contactForm.action, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData,
+      });
+      ok = res.ok;
+    } catch (err) {
+      console.warn('Formspree error:', err.message);
+    }
+
+    // 2. Google Sheets — base de datos
+    try {
+      const payload = JSON.stringify({
+        type:    'contacto',
+        nombre:  formData.get('nombre'),
+        empresa: formData.get('empresa') || '',
+        email:   formData.get('email'),
+        perfil:  formData.get('perfil') || '',
+        mensaje: formData.get('mensaje') || '',
+      });
+      // Enviamos como text/plain para evitar preflight CORS con Apps Script
+      await fetch(SHEETS_URL, {
+        method: 'POST',
+        body:   payload,
+        mode:   'no-cors',
+      });
+    } catch (err) {
+      console.warn('Sheets error:', err.message);
+    }
+
+    if (ok) {
+      contactForm.reset();
+      btn.style.display     = 'none';
+      success.style.display = 'block';
+    } else {
+      btn.textContent     = 'Enviar consulta →';
+      btn.disabled        = false;
+      btn.style.opacity   = '1';
+      error.textContent   = 'No se pudo enviar. Por favor inténtalo de nuevo en unos segundos.';
+      error.style.display = 'block';
+    }
+  });
+}
+
+/* ── AI SCORE WIDGET: animate bars on scroll ────────────── */
+const scoreObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.score-meter-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        setTimeout(() => { bar.style.width = w; }, 300);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.score-widget').forEach(el => scoreObserver.observe(el));
+
+/* ── REGISTRO PAGE: pre-select tab from URL param ───────── */
+const urlParams = new URLSearchParams(window.location.search);
+const tipoParam = urlParams.get('tipo');
+if (tipoParam) {
+  const tab = document.querySelector('[data-tab="' + tipoParam + '"]');
+  if (tab) tab.click();
+}
