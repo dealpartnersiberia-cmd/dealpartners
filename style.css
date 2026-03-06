@@ -135,7 +135,7 @@ nav.scrolled { box-shadow: 0 4px 40px rgba(26,24,20,0.08); }
 
 .hero-right {
   background: var(--dark); position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: stretch; justify-content: center;
 }
 .hero-right::before {
   content: ''; position: absolute; inset: 0;
@@ -143,10 +143,11 @@ nav.scrolled { box-shadow: 0 4px 40px rgba(26,24,20,0.08); }
     radial-gradient(ellipse 60% 60% at 30% 40%, rgba(184,149,42,0.15) 0%, transparent 70%),
     radial-gradient(ellipse 40% 40% at 80% 80%, rgba(184,149,42,0.08) 0%, transparent 60%);
 }
-.hero-stats { position: relative; z-index: 1; padding: 60px; width: 100%; }
+.hero-stats { position: relative; z-index: 1; padding: 60px; width: 100%; display: flex; flex-direction: column; justify-content: center; height: 100%; }
 .hero-stats-title {
-  font-family: 'Cormorant Garamond', serif; font-size: 13px;
-  letter-spacing: 4px; color: var(--gold2); text-transform: uppercase;
+  font-size: 10px; font-family: 'Montserrat', sans-serif;
+  letter-spacing: 5px; color: var(--gold2); text-transform: uppercase;
+  font-weight: 500;
   margin-bottom: 48px; opacity: 0; animation: fadeIn 1s 1s forwards;
 }
 .stat-row {
@@ -164,6 +165,19 @@ nav.scrolled { box-shadow: 0 4px 40px rgba(26,24,20,0.08); }
 }
 .stat-num sup  { font-size: 20px; color: var(--gold2); }
 .stat-label    { font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.4); text-align: right; max-width: 160px; line-height: 1.6; }
+
+.hero-claim {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(184,149,42,0.25);
+  font-size: 13px; line-height: 1.8; font-weight: 300;
+  color: rgba(247,243,236,0.55);
+  opacity: 0; animation: fadeIn 0.8s 1.6s forwards;
+}
+.hero-claim-mark {
+  display: block; color: var(--gold); font-size: 18px;
+  margin-bottom: 10px; letter-spacing: 2px;
+}
 
 /* ── DIVIDER ──────────────────────────────────────────────── */
 .divider-gold {
