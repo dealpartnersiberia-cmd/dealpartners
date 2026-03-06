@@ -2,52 +2,41 @@
    DealPartners — Main JavaScript
    ============================================================ */
 
-/* ── NAVBAR: scroll shadow ──────────────────────────────── */
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzqpEq9MxZ897RSBmpP7jTAM6x3LprSNFdr94FDmyMXtFwUzEqaqz7tj-CISIQqjOR4/exec';
+
+/* ── NAVBAR ─────────────────────────────────────────────── */
 window.addEventListener('scroll', () => {
-  document.getElementById('navbar')
-    .classList.toggle('scrolled', window.scrollY > 40);
+  const nav = document.getElementById('navbar');
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
 });
 
 /* ── SCROLL REVEAL ──────────────────────────────────────── */
 const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) e.target.classList.add('visible');
-  });
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-/* ── MARKETPLACE FILTERS (working) ──────────────────────── */
+/* ── MARKETPLACE FILTERS ─────────────────────────────────── */
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', function () {
-    // Update active button
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
-
     const filter = this.dataset.filter;
     const cards  = document.querySelectorAll('.listing-card');
     const grid   = document.getElementById('listingsGrid');
     const empty  = document.getElementById('listingEmpty');
     let visible  = 0;
-
     cards.forEach(card => {
       const show = filter === 'all' || card.dataset.sector === filter;
       card.style.display = show ? '' : 'none';
       if (show) visible++;
     });
-
-    // Show/hide empty state
     if (empty) empty.style.display = visible === 0 ? '' : 'none';
-
-    // Re-layout grid: 3 cols when 3+ visible, 1 col for single result
-    if (grid) {
-      grid.style.gridTemplateColumns = visible === 1
-        ? '1fr'
-        : 'repeat(3, 1fr)';
-    }
+    if (grid)  grid.style.gridTemplateColumns = visible === 1 ? '1fr' : 'repeat(3, 1fr)';
   });
 });
 
-/* ── CONTACT FORM — Formspree async submit ──────────────── */
+/* ── CONTACT FORM ────────────────────────────────────────── */
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', async function (e) {
@@ -59,56 +48,61 @@ if (contactForm) {
 
     const nombre = contactForm.querySelector('[name="nombre"]').value.trim();
     const email  = contactForm.querySelector('[name="email"]').value.trim();
+
     if (!nombre || !email) {
-      error.textContent = 'Por favor completa nombre y email antes de enviar.';
+      error.textContent   = 'Por favor completa nombre y email antes de enviar.';
       error.style.display = 'block';
       return;
     }
     error.style.display = 'none';
-
-    btn.textContent   = 'Enviando…';
-    btn.disabled      = true;
-    btn.style.opacity = '0.7';
+    btn.textContent     = 'Enviando…';
+    btn.disabled        = true;
+    btn.style.opacity   = '0.7';
 
     const formData = new FormData(contactForm);
 
-    // 1. Formspree
-    let formspreeOk = false;
+    // 1. Formspree — email inmediato a dealpartners.iberia@gmail.com
+    let ok = false;
     try {
       const res = await fetch(contactForm.action, {
-        method: 'POST', headers: { 'Accept': 'application/json' }, body: formData,
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData,
       });
-      formspreeOk = res.ok;
-    } catch (err) { console.warn('Formspree:', err.message); }
-
-    // 2. Google Sheets (configure URL in SETUP.md)
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec';
-    if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec') {
-      try {
-        await fetch(APPS_SCRIPT_URL, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'contacto',
-            nombre:      formData.get('nombre'),
-            empresa:     formData.get('empresa'),
-            email:       formData.get('email'),
-            perfil:      formData.get('perfil'),
-            mensaje:     formData.get('mensaje'),
-          }),
-          mode: 'no-cors',
-        });
-      } catch (err) { console.warn('Sheets:', err.message); }
+      ok = res.ok;
+    } catch (err) {
+      console.warn('Formspree error:', err.message);
     }
 
-    if (formspreeOk || APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec') {
+    // 2. Google Sheets — base de datos
+    try {
+      const payload = JSON.stringify({
+        type:    'contacto',
+        nombre:  formData.get('nombre'),
+        empresa: formData.get('empresa') || '',
+        email:   formData.get('email'),
+        perfil:  formData.get('perfil') || '',
+        mensaje: formData.get('mensaje') || '',
+      });
+      // Enviamos como text/plain para evitar preflight CORS con Apps Script
+      await fetch(SHEETS_URL, {
+        method: 'POST',
+        body:   payload,
+        mode:   'no-cors',
+      });
+    } catch (err) {
+      console.warn('Sheets error:', err.message);
+    }
+
+    if (ok) {
       contactForm.reset();
       btn.style.display     = 'none';
       success.style.display = 'block';
     } else {
-      btn.textContent   = 'Enviar consulta →';
-      btn.disabled      = false;
-      btn.style.opacity = '1';
-      error.textContent = 'No se pudo enviar. Por favor inténtalo de nuevo o usa el formulario de registro.';
+      btn.textContent     = 'Enviar consulta →';
+      btn.disabled        = false;
+      btn.style.opacity   = '1';
+      error.textContent   = 'No se pudo enviar. Por favor inténtalo de nuevo en unos segundos.';
       error.style.display = 'block';
     }
   });
@@ -128,12 +122,10 @@ const scoreObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.3 });
 document.querySelectorAll('.score-widget').forEach(el => scoreObserver.observe(el));
 
-/* ── REGISTRO PAGE: pre-select type from URL param ──────── */
+/* ── REGISTRO PAGE: pre-select tab from URL param ───────── */
 const urlParams = new URLSearchParams(window.location.search);
 const tipoParam = urlParams.get('tipo');
 if (tipoParam) {
-  const selector = document.getElementById('reg-tipo');
-  if (selector) selector.value = tipoParam;
-  const tab = document.querySelector(`[data-tab="${tipoParam}"]`);
+  const tab = document.querySelector('[data-tab="' + tipoParam + '"]');
   if (tab) tab.click();
 }

@@ -1108,7 +1108,7 @@ async function submitScoreData() {
   };
 
   // ── CONFIGURACIÓN ────────────────────────────────────────────
-  const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec';
+  const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbzqpEq9MxZ897RSBmpP7jTAM6x3LprSNFdr94FDmyMXtFwUzEqaqz7tj-CISIQqjOR4/exec';
   const FORMSPREE_SCORE   = 'https://formspree.io/f/mvzwoopr'; // mismo endpoint que contacto
   // ─────────────────────────────────────────────────────────────
 
@@ -1135,15 +1135,14 @@ async function submitScoreData() {
       body:    fd,
     });
 
-    // 2. Google Sheets (cuando esté configurado)
-    if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec') {
+    // 2. Google Sheets
+    try {
       await fetch(APPS_SCRIPT_URL, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(payload),
-        mode:    'no-cors',
+        method: 'POST',
+        body:   JSON.stringify(payload),
+        mode:   'no-cors',
       });
-    }
+    } catch(_) {}
 
     document.getElementById('scoreContactForm').style.display = 'none';
     document.getElementById('scSuccess').style.display        = 'block';

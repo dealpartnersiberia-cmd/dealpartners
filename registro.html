@@ -882,7 +882,7 @@
 // FORMSPREE ENDPOINT — reemplaza con tu Form ID de Formspree
 const FORMSPREE_URL = 'https://formspree.io/f/xzdjbbbp';
 // APPS SCRIPT URL — reemplaza con tu URL de Google Apps Script
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqpEq9MxZ897RSBmpP7jTAM6x3LprSNFdr94FDmyMXtFwUzEqaqz7tj-CISIQqjOR4/exec';
 
 /* ── TAB SWITCH ─────────────────────────────────────────── */
 function setTab(tipo, btn) {
@@ -1047,17 +1047,15 @@ async function submitForm(tipo) {
   } catch (e) { console.warn('Formspree:', e); }
 
   // 2. Google Sheets
-  if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec') {
-    try {
-      await fetch(APPS_SCRIPT_URL, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data), mode: 'no-cors',
-      });
-      ok = true;
-    } catch (e) { console.warn('Sheets:', e); }
-  }
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body:   JSON.stringify(data),
+      mode:   'no-cors',
+    });
+  } catch (e) { console.warn('Sheets:', e); }
 
-  if (ok || APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec') {
+  if (ok) {
     // Hide form, show success
     document.getElementById(prefix + '4').style.display = 'none';
     document.querySelector('#steps-' + prefix).style.display = 'none';

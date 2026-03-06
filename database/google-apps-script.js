@@ -51,17 +51,26 @@ const HEADERS_SCORE = [
 // ── ENTRADA PRINCIPAL (recibe todas las peticiones) ─────────
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    // no-cors desde el navegador envía text/plain — intentamos parsear igual
+    const raw  = e.postData.contents;
+    const data = JSON.parse(raw);
     const type = data.type || 'contacto';
 
-    if (type === 'contacto') {
+    if (type === 'contacto' || type === 'registro-vendedor' || type === 'registro-comprador') {
       return saveContacto(data);
     } else if (type === 'score') {
       return saveScore(data);
     }
 
-    return jsonResponse({ ok: false, error: 'Tipo desconocido' });
+    return jsonResponse({ ok: false, error: 'Tipo desconocido: ' + type });
   } catch (err) {
+    // Guardar el error en una hoja de debug para diagnóstico
+    try {
+      const ss    = SpreadsheetApp.getActiveSpreadsheet();
+      let dbg     = ss.getSheetByName('_debug');
+      if (!dbg) dbg = ss.insertSheet('_debug');
+      dbg.appendRow([new Date(), err.message, e.postData ? e.postData.contents : 'sin contenido']);
+    } catch(_) {}
     return jsonResponse({ ok: false, error: err.message });
   }
 }
