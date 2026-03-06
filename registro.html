@@ -3,1081 +3,574 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro — DealPartners</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <title>DealPartners — Plataforma M&A para empresas españolas</title>
+  <meta name="description" content="La plataforma que conecta compradores y vendedores de empresas con asesoramiento estratégico. Deal Strategy, Valoración, Due Diligence y más.">
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* ── REGISTRO PAGE ───────────────────────────────────────── */
-    body { background: var(--dark); }
-
-    .reg-hero {
-      background: var(--dark);
-      padding: 120px 60px 0;
-      text-align: center;
-      position: relative; overflow: hidden;
-    }
-    .reg-hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(184,149,42,0.12) 0%, transparent 70%);
-    }
-    .reg-hero-inner { max-width: 640px; margin: 0 auto; position: relative; z-index: 1; }
-    .reg-eyebrow {
-      font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
-      color: var(--gold); font-weight: 500; margin-bottom: 20px;
-    }
-    .reg-hero h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(36px, 5vw, 56px); font-weight: 300;
-      color: var(--white); line-height: 1.1; margin-bottom: 16px;
-    }
-    .reg-hero h1 em { font-style: italic; color: var(--gold2); }
-    .reg-hero p {
-      font-size: 14px; color: rgba(247,243,236,0.45); line-height: 1.8; margin-bottom: 48px;
-    }
-
-    /* ── TAB SWITCHER ────────────────────────────────────────── */
-    .reg-tabs {
-      display: inline-flex; gap: 1px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 0; position: relative; z-index: 1;
-    }
-    .reg-tab {
-      padding: 14px 40px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-      font-weight: 500; cursor: pointer; border: none;
-      background: transparent; color: rgba(247,243,236,0.35);
-      transition: all 0.25s;
-    }
-    .reg-tab.active {
-      background: var(--gold); color: var(--white);
-    }
-    .reg-tab:not(.active):hover { color: var(--cream); }
-
-    /* ── MAIN FORM AREA ─────────────────────────────────────── */
-    .reg-main {
-      max-width: 900px; margin: 0 auto;
-      padding: 0 60px 120px;
-    }
-
-    .reg-form-panel { display: none; }
-    .reg-form-panel.active { display: block; }
-
-    /* ── STEP SYSTEM ─────────────────────────────────────────── */
-    .reg-steps {
-      display: flex; gap: 0; margin: 48px 0 40px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .reg-step {
-      flex: 1; padding: 16px 0; text-align: center;
-      font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-      color: rgba(255,255,255,0.2); font-weight: 500;
-      position: relative; cursor: default;
-      transition: color 0.3s;
-    }
-    .reg-step::after {
-      content: '';
-      position: absolute; bottom: -1px; left: 0; right: 0; height: 2px;
-      background: var(--gold); transform: scaleX(0); transition: transform 0.3s;
-    }
-    .reg-step.active { color: var(--gold2); }
-    .reg-step.active::after { transform: scaleX(1); }
-    .reg-step.done { color: rgba(255,255,255,0.4); }
-    .reg-step-num {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px; border-radius: 50%;
-      background: rgba(255,255,255,0.06); font-size: 11px;
-      margin-bottom: 6px; font-family: 'Cormorant Garamond', serif;
-      font-weight: 500; color: inherit;
-    }
-    .reg-step.active .reg-step-num { background: var(--gold); color: var(--white); }
-    .reg-step.done .reg-step-num { background: rgba(74,124,89,0.4); color: #81c784; }
-
-    /* ── FORM FIELDS ─────────────────────────────────────────── */
-    .reg-section { display: none; }
-    .reg-section.active { display: block; animation: fadeUp 0.4s ease forwards; }
-
-    .reg-section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 28px; font-weight: 300; color: var(--white);
-      margin-bottom: 8px;
-    }
-    .reg-section-title em { font-style: italic; color: var(--gold2); }
-    .reg-section-desc { font-size: 13px; color: rgba(247,243,236,0.35); margin-bottom: 36px; line-height: 1.7; }
-
-    .reg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .reg-grid.full { grid-template-columns: 1fr; }
-    .reg-field { margin-bottom: 20px; }
-    .reg-field.col-2 { grid-column: span 2; }
-
-    .reg-field label {
-      display: block; font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-      color: rgba(247,243,236,0.4); margin-bottom: 8px; font-weight: 500;
-    }
-    .reg-field label .req { color: var(--gold); margin-left: 2px; }
-    .reg-field input,
-    .reg-field select,
-    .reg-field textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--cream); padding: 13px 16px;
-      font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 300;
-      outline: none; transition: border-color 0.2s;
-      appearance: none;
-    }
-    .reg-field input:focus,
-    .reg-field select:focus,
-    .reg-field textarea:focus { border-color: var(--gold); }
-    .reg-field select option { background: var(--dark2); }
-    .reg-field textarea { resize: vertical; min-height: 100px; }
-
-    /* Checkbox group */
-    .check-group { display: flex; flex-direction: column; gap: 10px; }
-    .check-item {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 14px 16px;
-      border: 1px solid rgba(255,255,255,0.06);
-      cursor: pointer; transition: border-color 0.2s, background 0.2s;
-    }
-    .check-item:hover { border-color: rgba(184,149,42,0.3); background: rgba(184,149,42,0.04); }
-    .check-item input[type="checkbox"] {
-      width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px;
-      accent-color: var(--gold); padding: 0; border: none; background: none;
-    }
-    .check-item-label { font-size: 13px; color: rgba(247,243,236,0.7); line-height: 1.5; }
-    .check-item-sub { font-size: 11px; color: rgba(247,243,236,0.3); margin-top: 2px; }
-
-    /* Radio group */
-    .radio-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .radio-item {
-      padding: 16px; border: 1px solid rgba(255,255,255,0.08);
-      cursor: pointer; text-align: center; transition: all 0.2s;
-      position: relative;
-    }
-    .radio-item input[type="radio"] { position: absolute; opacity: 0; }
-    .radio-item:has(input:checked) { border-color: var(--gold); background: rgba(184,149,42,0.08); }
-    .radio-label { font-size: 12px; letter-spacing: 1px; color: rgba(247,243,236,0.6); }
-    .radio-item:has(input:checked) .radio-label { color: var(--gold2); }
-
-    /* Progress indicator for range */
-    .reg-range-group { position: relative; }
-    .reg-range-labels {
-      display: flex; justify-content: space-between;
-      font-size: 9px; color: rgba(247,243,236,0.3);
-      letter-spacing: 1px; margin-top: 6px;
-    }
-
-    /* ── NAVIGATION BUTTONS ──────────────────────────────────── */
-    .reg-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-top: 40px; padding-top: 32px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    .reg-btn-back {
-      background: transparent; border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(247,243,236,0.45); padding: 14px 32px;
-      font-family: 'Montserrat', sans-serif; font-size: 10px;
-      letter-spacing: 2px; text-transform: uppercase;
-      cursor: pointer; transition: all 0.2s; font-weight: 500;
-    }
-    .reg-btn-back:hover { border-color: rgba(255,255,255,0.3); color: var(--cream); }
-    .reg-btn-next {
-      background: var(--gold); color: var(--white);
-      border: none; padding: 14px 40px;
-      font-family: 'Montserrat', sans-serif; font-size: 10px;
-      letter-spacing: 3px; text-transform: uppercase;
-      cursor: pointer; transition: background 0.2s, transform 0.2s;
-      font-weight: 500;
-    }
-    .reg-btn-next:hover { background: var(--gold2); transform: translateY(-2px); }
-    .reg-btn-submit {
-      background: var(--gold2); color: var(--dark);
-      border: none; padding: 14px 40px;
-      font-family: 'Montserrat', sans-serif; font-size: 10px;
-      letter-spacing: 3px; text-transform: uppercase;
-      cursor: pointer; transition: background 0.2s, transform 0.2s;
-      font-weight: 600;
-    }
-    .reg-btn-submit:hover { background: var(--gold); color: var(--white); transform: translateY(-2px); }
-
-    .reg-error {
-      font-size: 11px; color: #e57373; letter-spacing: 0.5px;
-      margin-bottom: 12px; display: none;
-    }
-
-    /* ── SUCCESS SCREEN ──────────────────────────────────────── */
-    .reg-success {
-      display: none; text-align: center;
-      padding: 80px 40px;
-      animation: fadeUp 0.6s ease forwards;
-    }
-    .reg-success-icon {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: rgba(74,124,89,0.2); border: 2px solid rgba(74,124,89,0.4);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 32px; margin: 0 auto 32px;
-    }
-    .reg-success h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 36px; font-weight: 300; color: var(--white);
-      margin-bottom: 16px;
-    }
-    .reg-success h2 em { font-style: italic; color: var(--gold2); }
-    .reg-success p { font-size: 14px; color: rgba(247,243,236,0.45); line-height: 1.8; max-width: 480px; margin: 0 auto 12px; }
-    .reg-success-steps {
-      display: flex; gap: 24px; justify-content: center; margin: 48px 0;
-      flex-wrap: wrap;
-    }
-    .reg-success-step {
-      text-align: center; flex: 1; min-width: 140px; max-width: 180px;
-    }
-    .reg-success-step-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 40px; font-weight: 300; color: var(--gold2);
-      line-height: 1; margin-bottom: 8px;
-    }
-    .reg-success-step p {
-      font-size: 12px; color: rgba(247,243,236,0.35); margin: 0;
-    }
-
-    /* ── TRUST BADGES ────────────────────────────────────────── */
-    .reg-trust {
-      display: flex; gap: 32px; justify-content: center;
-      margin: 48px 0 0; flex-wrap: wrap;
-    }
-    .reg-trust-item {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 11px; color: rgba(247,243,236,0.25);
-      letter-spacing: 0.5px;
-    }
-    .reg-trust-item span:first-child { font-size: 16px; }
-
-    @media (max-width: 768px) {
-      .reg-hero { padding: 100px 24px 0; }
-      .reg-main { padding: 0 24px 80px; }
-      .reg-grid { grid-template-columns: 1fr; }
-      .reg-field.col-2 { grid-column: span 1; }
-      .radio-group { grid-template-columns: 1fr; }
-      .reg-success-steps { flex-direction: column; align-items: center; }
-    }
-  </style>
 </head>
 <body>
 
-<nav id="navbar" style="background:rgba(26,24,20,0.96); border-bottom-color:rgba(255,255,255,0.06);">
-  <a href="index.html" class="nav-logo" style="color:var(--cream);">Deal<span>Partners</span></a>
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">Deal<span>Partners</span></a>
   <ul class="nav-links">
-    <li><a href="index.html#marketplace">En venta</a></li>
-    <li><a href="index.html#vender">Vender</a></li>
-    <li><a href="index.html#comprar">Comprar</a></li>
-    <li><a href="index.html#servicios">Servicios</a></li>
-    <li><a href="index.html#insights">Insights</a></li>
-    <li><a href="index.html#nosotros">Nosotros</a></li>
+    <li><a href="#marketplace">En venta</a></li>
+    <li><a href="#vender">Vender</a></li>
+    <li><a href="#comprar">Comprar</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#insights">Insights</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
     <li><a href="deal-readiness-score.html" class="nav-cta">Valora tu empresa</a></li>
   </ul>
 </nav>
 
-<!-- HERO -->
-<div class="reg-hero">
-  <div class="reg-hero-inner">
-    <div class="reg-eyebrow">Acceso a la plataforma</div>
-    <h1>Únete a <em>DealPartners</em></h1>
-    <p>El registro es gratuito. Cuéntanos tu perfil para que podamos ofrecerte operaciones y asesoramiento relevante desde el primer día.</p>
-    <div class="reg-tabs">
-      <button class="reg-tab" data-tab="vendedor" onclick="setTab('vendedor', this)">Quiero vender mi empresa</button>
-      <button class="reg-tab" data-tab="comprador" onclick="setTab('comprador', this)">Quiero comprar una empresa</button>
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Plataforma M&A · España</div>
+    <h1>La plataforma que <em>une</em> compradores y vendedores de empresas</h1>
+    <p class="hero-sub">Asesoramiento estratégico, tecnología y red de inversores para que tu operación sea un éxito. Especializados en PYMES españolas — desde la valoración hasta el cierre.</p>
+    <div class="hero-actions">
+      <a href="registro.html" class="btn-gold">Quiero vender mi empresa</a>
+      <a href="#marketplace" class="btn-outline">Ver empresas en venta</a>
     </div>
   </div>
+  <div class="hero-right">
+    <div class="hero-stats">
+      <div class="hero-stats-title">Actividad de la plataforma</div>
+      <div class="stat-row">
+        <div class="stat-num">47<sup>+</sup></div>
+        <div class="stat-label">Operaciones activas en plataforma</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-num">€2.3<sup>B</sup></div>
+        <div class="stat-label">Valor total de activos listados</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-num">94<sup>%</sup></div>
+        <div class="stat-label">Tasa de éxito en operaciones asesoradas</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-num">6.2<sup>x</sup></div>
+        <div class="stat-label">Múltiplo medio EBITDA cerrado en 2024</div>
+      </div>
+      <div class="hero-claim">
+        <span class="hero-claim-mark">—</span>
+        La plataforma M&A de referencia para PYMES españolas. Alineación total de intereses, criterio independiente y acceso a los compradores que realmente pagan el precio justo.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-gold"></div>
+
+<!-- MARKETPLACE -->
+<section class="marketplace" id="marketplace">
+  <div class="reveal">
+    <div class="section-label">Oportunidades activas</div>
+    <h2 class="section-title">Empresas <em>en venta</em></h2>
+    <p class="section-sub">Operaciones verificadas y bajo NDA. Accede al detalle completo tras registro gratuito como comprador cualificado.</p>
+  </div>
+
+  <div class="filters reveal">
+    <button class="filter-btn active" data-filter="all">Todos los sectores</button>
+    <button class="filter-btn" data-filter="industrial">Industrial</button>
+    <button class="filter-btn" data-filter="tecnologia">Tecnología</button>
+    <button class="filter-btn" data-filter="salud">Salud &amp; Clínicas</button>
+    <button class="filter-btn" data-filter="hosteleria">Hostelería</button>
+    <button class="filter-btn" data-filter="servicios-b2b">Servicios B2B</button>
+    <button class="filter-btn" data-filter="retail">Retail</button>
+  </div>
+
+  <div class="listings-grid" id="listingsGrid">
+    <div class="listing-card" data-sector="industrial">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Industrial · Madrid</div>
+      <div class="listing-name">Fabricante de componentes metálicos para automoción</div>
+      <p class="listing-desc">28 años de historia, contratos recurrentes con Tier-1 automoción. Mínima dependencia del fundador y equipo directivo consolidado.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€8.4M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€1.9M</div></div>
+        <div><div class="metric-label">Empleados</div><div class="metric-val">62</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Madrid</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="salud">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Salud · Cataluña</div>
+      <div class="listing-name">Red de 3 clínicas dentales con marca propia</div>
+      <p class="listing-desc">Grupo dental con posicionamiento premium, fuerte captación digital y equipo médico estable. Potencial de roll-up inmediato.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€3.1M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€720K</div></div>
+        <div><div class="metric-label">Centros</div><div class="metric-val">3</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Cataluña</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="tecnologia">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Software · Remoto</div>
+      <div class="listing-name">SaaS B2B para gestión de flotas logísticas</div>
+      <p class="listing-desc">Plataforma con 140 clientes recurrentes, churn inferior al 4% anual y ARR creciendo al 35% interanual. Fundadores dispuestos a permanencia.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">ARR</div><div class="metric-val">€1.2M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€380K</div></div>
+        <div><div class="metric-label">Clientes</div><div class="metric-val">140</div></div>
+        <div><div class="metric-label">Modelo</div><div class="metric-val">SaaS</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="hosteleria">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Hostelería · Valencia</div>
+      <div class="listing-name">Grupo de 5 restaurantes con marca consolidada</div>
+      <p class="listing-desc">Cadena de restauración con operativa centralizada, carta propia y fuerte reconocimiento de marca en el mercado valenciano.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€4.8M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€560K</div></div>
+        <div><div class="metric-label">Locales</div><div class="metric-val">5</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Valencia</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="servicios-b2b">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Servicios B2B · País Vasco</div>
+      <div class="listing-name">Consultoría de ingeniería con contratos públicos</div>
+      <p class="listing-desc">Consultora técnica especializada en proyectos de ingeniería para administraciones públicas y empresas del sector energético.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€2.3M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€490K</div></div>
+        <div><div class="metric-label">Empleados</div><div class="metric-val">18</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">País Vasco</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="retail">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Retail · Andalucía</div>
+      <div class="listing-name">Cadena de moda infantil multimarca</div>
+      <p class="listing-desc">8 puntos de venta en Andalucía con omnicanalidad activa, base de clientes fidelizada y acuerdos exclusivos con proveedores europeos.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€5.6M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€610K</div></div>
+        <div><div class="metric-label">Tiendas</div><div class="metric-val">8</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Andalucía</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-empty" id="listingEmpty" style="display:none;">
+      <div class="listing-empty-icon">🔍</div>
+      <div class="listing-empty-title">Sin operaciones activas en este sector</div>
+      <p>Estamos incorporando nuevas oportunidades continuamente. Déjanos tu perfil y te avisamos.</p>
+      <a href="#contacto" class="btn-outline" style="margin-top:20px;display:inline-block;">Recibir alertas</a>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="registro.html" class="btn-outline">Acceder a todas las operaciones — Registro gratuito</a>
+  </div>
+</section>
+
+<!-- VENDER -->
+<section class="sell" id="vender">
+  <div class="reveal">
+    <div class="section-label">Para vendedores</div>
+    <h2 class="section-title" style="color:var(--white)">El proceso de <em>vender</em> tu empresa</h2>
+    <p class="section-sub">Te acompañamos en cada fase para maximizar el valor de tu empresa y garantizar una transacción exitosa.</p>
+  </div>
+  <div class="process-steps reveal">
+    <div class="process-line"></div>
+    <div class="process-step">
+      <div class="step-number">01</div>
+      <div class="step-title">Valoración</div>
+      <p class="step-desc">Análisis financiero profundo, benchmarking sectorial y valoración por múltiplos. Conoce el valor real de tu empresa antes de salir al mercado.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-number">02</div>
+      <div class="step-title">Preparación</div>
+      <p class="step-desc">Reestructuración pre-venta, normalización de EBITDA, ordenación documental y elaboración del Cuaderno de Venta (CIM) profesional.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-number">03</div>
+      <div class="step-title">Búsqueda</div>
+      <p class="step-desc">Acceso a nuestra red de compradores cualificados — family offices, PE, industriales — con proceso discreto y bajo NDA desde el primer contacto.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-number">04</div>
+      <div class="step-title">Cierre</div>
+      <p class="step-desc">Gestión de due diligence, negociación de SPA, coordinación legal y fiscal hasta el cierre definitivo. Sin sorpresas de última hora.</p>
+    </div>
+  </div>
+  <div style="margin-top:72px;text-align:center;" class="reveal">
+    <a href="registro.html?tipo=vendedor" class="btn-gold">Registrarme como vendedor</a>
+  </div>
+</section>
+
+<!-- COMPRAR -->
+<section class="buy" id="comprar">
+  <div class="reveal">
+    <div class="section-label">Para compradores</div>
+    <h2 class="section-title">¿Quién <em>compra</em> en DealPartners?</h2>
+    <p class="section-sub">Accede a operaciones exclusivas verificadas. Filtra por sector, tamaño y geografía. Muévete rápido con información de calidad.</p>
+  </div>
+  <div class="buyer-types reveal">
+    <div class="buyer-card">
+      <span class="buyer-icon">🏛️</span>
+      <div class="buyer-type-label">Inversor institucional</div>
+      <div class="buyer-name">Family Offices &amp; Private Equity</div>
+      <p class="buyer-desc">Acceso prioritario a deal flow exclusivo con información financiera verificada y proceso estructurado.</p>
+      <ul class="buyer-features">
+        <li>Deal flow curado y verificado</li>
+        <li>Información financiera prevalidada</li>
+        <li>Acceso a operaciones pre-mercado</li>
+        <li>Soporte en DD y negociación</li>
+      </ul>
+    </div>
+    <div class="buyer-card">
+      <span class="buyer-icon">🏭</span>
+      <div class="buyer-type-label">Comprador estratégico</div>
+      <div class="buyer-name">Empresarios &amp; Grupos Industriales</div>
+      <p class="buyer-desc">Encuentra la empresa complementaria para crecer inorgánicamente o diversificar en nuevos mercados.</p>
+      <ul class="buyer-features">
+        <li>Búsqueda por criterios específicos</li>
+        <li>Análisis de sinergias estratégicas</li>
+        <li>Integración post-adquisición</li>
+        <li>Financiación corporativa</li>
+      </ul>
+    </div>
+    <div class="buyer-card">
+      <span class="buyer-icon">👔</span>
+      <div class="buyer-type-label">Comprador individual</div>
+      <div class="buyer-name">Directivos &amp; Emprendedores</div>
+      <p class="buyer-desc">Adquiere una empresa con tracción probada en lugar de construir desde cero. ETA (Entrepreneurship Through Acquisition).</p>
+      <ul class="buyer-features">
+        <li>Empresas con equipo y clientes</li>
+        <li>Asesoramiento en financiación</li>
+        <li>Mentoría post-adquisición</li>
+        <li>Comunidad de compradores ETA</li>
+      </ul>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="registro.html?tipo=comprador" class="btn-gold">Registrarme como comprador — Gratis</a>
+  </div>
+</section>
+
+<!-- SERVICIOS — sin precios, solo tiempos orientativos -->
+<section class="services-section" id="servicios">
+  <div class="reveal">
+    <div class="section-label">Asesoramiento</div>
+    <h2 class="section-title">Servicios <em>especializados</em></h2>
+    <p class="section-sub">Más allá del marketplace, nuestro equipo de asesores acompaña cada operación con servicios de alto valor.</p>
+  </div>
+  <div class="services-grid reveal">
+    <div class="service-item">
+      <div class="service-num-big">01</div>
+      <div class="service-content">
+        <div class="service-badge">Valoración</div>
+        <div class="service-title">Valoración de empresa</div>
+        <p class="service-desc">Informe de valoración profesional por múltiplos sectoriales, DCF y transacciones comparables. Defendible ante cualquier comprador.</p>
+        <div class="service-price-tag">Entrega orientativa en 10 días hábiles</div>
+      </div>
+    </div>
+    <div class="service-item">
+      <div class="service-num-big">02</div>
+      <div class="service-content">
+        <div class="service-badge">Due Diligence</div>
+        <div class="service-title">Due Diligence financiera</div>
+        <p class="service-desc">Revisión completa de estados financieros, calidad del EBITDA, estructura de deuda y riesgos ocultos. Vendor DD o Buy-side DD.</p>
+        <div class="service-price-tag">Plazo orientativo: 3–6 semanas</div>
+      </div>
+    </div>
+    <div class="service-item">
+      <div class="service-num-big">03</div>
+      <div class="service-content">
+        <div class="service-badge">Estrategia</div>
+        <div class="service-title">Deal Strategy</div>
+        <p class="service-desc">Diseño de la estrategia óptima de salida, estructuración del deal, earnout, deferred consideration y planificación fiscal de la transacción.</p>
+        <div class="service-price-tag">Alineado con el éxito de la operación</div>
+      </div>
+    </div>
+    <div class="service-item">
+      <div class="service-num-big">04</div>
+      <div class="service-content">
+        <div class="service-badge">Reestructuración</div>
+        <div class="service-title">Preparación pre-venta</div>
+        <p class="service-desc">Normalización contable, reestructuración organizativa, limpieza de balance y mejora de métricas para maximizar la valoración antes de salir al mercado.</p>
+        <div class="service-price-tag">Proceso orientativo: 3–6 meses</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI SCORE -->
+<section class="ai-score">
+  <div class="ai-score-inner">
+    <div class="reveal">
+      <div class="section-label">Tecnología</div>
+      <h2 class="section-title">AI Deal <em>Readiness</em> Score</h2>
+      <p class="section-sub">Nuestra herramienta evalúa en minutos el estado real de tu empresa para una venta exitosa: valor estimado, riesgos, potencial de mejora y probabilidad de cierre.</p>
+      <p style="font-size:13px;color:rgba(247,243,236,0.35);line-height:1.8;margin-bottom:40px;">Completamente gratuita. Sin compromiso. Sin registro previo.</p>
+      <a href="deal-readiness-score.html" class="btn-gold">Calcular mi Deal Readiness Score →</a>
+    </div>
+    <div class="score-widget reveal reveal-delay-2">
+      <div class="score-widget-title">Deal Readiness Report</div>
+      <div class="score-row">
+        <div class="score-row-header"><span class="score-row-label">Salud financiera</span><span class="score-row-val">82/100</span></div>
+        <div class="score-meter"><div class="score-meter-fill" style="width:82%"></div></div>
+      </div>
+      <div class="score-row">
+        <div class="score-row-header"><span class="score-row-label">Independencia del fundador</span><span class="score-row-val">61/100</span></div>
+        <div class="score-meter"><div class="score-meter-fill" style="width:61%"></div></div>
+      </div>
+      <div class="score-row">
+        <div class="score-row-header"><span class="score-row-label">Recurrencia de ingresos</span><span class="score-row-val">75/100</span></div>
+        <div class="score-meter"><div class="score-meter-fill" style="width:75%"></div></div>
+      </div>
+      <div class="score-row">
+        <div class="score-row-header"><span class="score-row-label">Documentación y compliance</span><span class="score-row-val">48/100</span></div>
+        <div class="score-meter"><div class="score-meter-fill" style="width:48%"></div></div>
+      </div>
+      <div class="score-total">
+        <div class="score-total-num">71</div>
+        <div class="score-total-label">Score global · Listo para el mercado</div>
+      </div>
+      <a href="deal-readiness-score.html" class="score-cta" style="display:block;text-align:center;text-decoration:none;">Calcular el mío gratis →</a>
+    </div>
+  </div>
+</section>
+
+<!-- INSIGHTS — con links reales a insight-article.html -->
+<section class="insights" id="insights">
+  <div class="reveal">
+    <div class="section-label">Conocimiento</div>
+    <h2 class="section-title">Insights <em>M&A</em></h2>
+    <p class="section-sub">Datos reales de mercado, múltiplos por sector y guías para vendedores. El conocimiento que antes solo tenían los bancos de inversión.</p>
+  </div>
+  <div class="insights-grid reveal">
+    <a href="insight-article.html?id=multiplos-2025" class="insight-card featured">
+      <div class="insight-cat">Múltiplos · Actualizado Q1 2025</div>
+      <div class="insight-title">Múltiplos de valoración por sector en España: guía completa 2025</div>
+      <p class="insight-excerpt">Análisis de transacciones cerradas en España durante 2024. Conoce los rangos reales de valoración en tu sector antes de hablar con ningún comprador.</p>
+      <div class="insight-meta">12 min lectura · Muy descargado</div>
+      <div class="insight-arrow">→</div>
+    </a>
+    <a href="insight-article.html?id=eta-espana" class="insight-card">
+      <div class="insight-cat">Tendencias M&A</div>
+      <div class="insight-title">El auge del comprador ETA en España</div>
+      <p class="insight-excerpt">Los directivos que compran empresas están cambiando el mercado.</p>
+      <div class="insight-meta">6 min · Tendencias 2025</div>
+      <div class="insight-arrow">→</div>
+    </a>
+    <a href="insight-article.html?id=errores-venta" class="insight-card">
+      <div class="insight-cat">Guía para vendedores</div>
+      <div class="insight-title">10 errores que destruyen valor antes de vender</div>
+      <p class="insight-excerpt">Los errores más comunes en los 12 meses previos a la venta.</p>
+      <div class="insight-meta">8 min · Muy leído</div>
+      <div class="insight-arrow">→</div>
+    </a>
+    <a href="insight-article.html?id=dd-financiero" class="insight-card">
+      <div class="insight-cat">Due Diligence</div>
+      <div class="insight-title">Qué mirará el comprador en tu DD financiero</div>
+      <p class="insight-excerpt">Lista definitiva de lo que revisan los compradores y cómo prepararte.</p>
+      <div class="insight-meta">5 min · Checklist incluido</div>
+      <div class="insight-arrow">→</div>
+    </a>
+  </div>
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="insight-article.html" class="btn-outline">Ver todos los insights →</a>
+  </div>
+</section>
+
+<!-- NOSOTROS — pillars con layout corregido -->
+<section class="nosotros" id="nosotros">
+  <div class="nosotros-inner">
+    <div class="nosotros-left reveal">
+      <div class="section-label">Quiénes somos</div>
+      <h2 class="section-title">Asesores que han<br>estado <em>al otro lado</em><br>de la mesa</h2>
+      <p class="nosotros-text">DealPartners nació de una convicción: que los empresarios españoles merecen acceso al mismo nivel de asesoramiento estratégico que hasta ahora solo estaba al alcance de las grandes corporaciones.</p>
+      <p class="nosotros-text">Somos un equipo de profesionales con experiencia directa en banca de inversión, private equity y dirección general de empresa. Hemos participado como asesores, como compradores y como vendedores. Esa perspectiva nos permite entender lo que realmente está en juego en cada operación.</p>
+      <p class="nosotros-text">Trabajamos exclusivamente en el segmento de empresas medianas y pequeñas — el mercado donde la calidad del asesoramiento tiene el mayor impacto en el resultado final.</p>
+      <div class="nosotros-values">
+        <div class="value-item">
+          <div class="value-icon">◆</div>
+          <div>
+            <div class="value-name">Confidencialidad total</div>
+            <div class="value-desc">Cada operación se gestiona bajo estricta discreción. Ninguna información sale sin tu consentimiento expreso.</div>
+          </div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">◆</div>
+          <div>
+            <div class="value-name">Alineación de intereses</div>
+            <div class="value-desc">Nuestros honorarios están diseñados para que nuestros objetivos y los tuyos vayan siempre en la misma dirección.</div>
+          </div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">◆</div>
+          <div>
+            <div class="value-name">Criterio independiente</div>
+            <div class="value-desc">No representamos a fondos ni a compradores recurrentes. Nuestra única lealtad es hacia el cliente que nos contrata.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nosotros-right reveal reveal-delay-2">
+      <div class="nosotros-quote-block">
+        <div class="quote-mark">"</div>
+        <blockquote>Vender una empresa es, con frecuencia, la decisión financiera más importante de la vida de un empresario. Merece el mismo rigor y preparación que cualquier otra gran inversión.</blockquote>
+        <div class="quote-author">
+          <div class="quote-author-name">Equipo DealPartners</div>
+          <div class="quote-author-role">Asesores M&A · España</div>
+        </div>
+      </div>
+      <div class="nosotros-pillars">
+        <div class="pillar">
+          <div class="pillar-num">01</div>
+          <div class="pillar-body">
+            <div class="pillar-label">Foco en PYMES</div>
+            <div class="pillar-desc">Especialistas en empresas con facturación entre 1M€ y 50M€ — donde la diferencia entre un buen y un mal asesor se mide en millones.</div>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-num">02</div>
+          <div class="pillar-body">
+            <div class="pillar-label">Tecnología + criterio humano</div>
+            <div class="pillar-desc">Combinamos herramientas de análisis avanzado con el juicio de profesionales que han visto cientos de operaciones.</div>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-num">03</div>
+          <div class="pillar-body">
+            <div class="pillar-label">Red de compradores activa</div>
+            <div class="pillar-desc">Acceso directo a family offices, fondos de private equity y empresarios en proceso de adquisición activa en España.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO — sin email ni teléfono, solo formulario -->
+<section class="final-cta" id="contacto">
+  <div class="cta-left reveal">
+    <div class="section-label" style="color:var(--gold2)">Hablemos</div>
+    <h2>Empieza tu <em>operación</em> hoy</h2>
+    <p>Primera consulta sin coste. Cuéntanos tu situación y un asesor especializado en tu sector te responde en menos de 24 horas.</p>
+    <div class="contact-options">
+      <div class="contact-option contact-option--info">
+        <span class="contact-option-icon">✉️</span>
+        <div>
+          <div class="contact-option-label">Respuesta garantizada</div>
+          <div class="contact-option-val">En menos de 24 horas hábiles</div>
+        </div>
+      </div>
+      <div class="contact-option contact-option--info">
+        <span class="contact-option-icon">📅</span>
+        <div>
+          <div class="contact-option-label">¿Prefieres una videollamada?</div>
+          <div class="contact-option-val">Indícalo en el mensaje y te enviamos enlace</div>
+        </div>
+      </div>
+      <div class="contact-option contact-option--info">
+        <span class="contact-option-icon">🔒</span>
+        <div>
+          <div class="contact-option-label">Confidencialidad total</div>
+          <div class="contact-option-val">Tus datos nunca se comparten sin consentimiento</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-form reveal reveal-delay-2">
+    <form id="contactForm" action="https://formspree.io/f/mvzwoopr" method="POST" novalidate>
+      <input type="hidden" name="_subject" value="Nueva consulta — DealPartners">
+      <input type="hidden" name="_language" value="es">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cf-nombre">Nombre *</label>
+          <input id="cf-nombre" type="text" name="nombre" placeholder="Tu nombre" required>
+        </div>
+        <div class="form-group">
+          <label for="cf-empresa">Empresa</label>
+          <input id="cf-empresa" type="text" name="empresa" placeholder="Nombre de la empresa">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="cf-email">Email *</label>
+        <input id="cf-email" type="email" name="email" placeholder="tu@empresa.com" required>
+      </div>
+      <div class="form-group">
+        <label for="cf-perfil">Soy…</label>
+        <select id="cf-perfil" name="perfil">
+          <option value="">Selecciona tu perfil</option>
+          <option>Empresario que quiere vender</option>
+          <option>Inversor o comprador</option>
+          <option>Broker o asesor M&A</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="cf-mensaje">Cuéntanos tu situación</label>
+        <textarea id="cf-mensaje" name="mensaje" rows="4" placeholder="¿Qué buscas? Cuanto más nos cuentes, mejor podremos ayudarte."></textarea>
+      </div>
+      <div id="formError" style="display:none;font-size:11px;color:#e57373;margin-bottom:12px;letter-spacing:0.5px;"></div>
+      <button type="submit" class="form-submit" id="formSubmitBtn">Enviar consulta →</button>
+      <div id="formSuccess" style="display:none;background:rgba(74,124,89,0.15);border:1px solid rgba(74,124,89,0.3);padding:20px;margin-top:16px;text-align:center;">
+        <p style="font-size:13px;color:#81c784;letter-spacing:0.5px;">✓ Mensaje recibido — Te contactamos en menos de 24h</p>
+      </div>
+      <p style="font-size:10px;color:rgba(247,243,236,0.25);margin-top:16px;line-height:1.6;letter-spacing:0.5px;">Confidencialidad total garantizada. Tus datos no se comparten con terceros sin tu consentimiento expreso.</p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">
+    <a href="index.html" class="footer-logo">Deal<span>Partners</span></a>
+    <p class="footer-tagline">La plataforma de referencia para compraventa de empresas en España. Tecnología, red y asesoramiento experto.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Plataforma</h4>
+    <ul>
+      <li><a href="#marketplace">Empresas en venta</a></li>
+      <li><a href="registro.html?tipo=vendedor">Vender mi empresa</a></li>
+      <li><a href="registro.html?tipo=comprador">Para compradores</a></li>
+      <li><a href="deal-readiness-score.html">Valora tu empresa</a></li>
+      <li><a href="#nosotros">Quiénes somos</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Servicios</h4>
+    <ul>
+      <li><a href="#servicios">Valoración</a></li>
+      <li><a href="#servicios">Due Diligence</a></li>
+      <li><a href="#servicios">Deal Strategy</a></li>
+      <li><a href="#servicios">Preparación pre-venta</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Recursos</h4>
+    <ul>
+      <li><a href="#insights">Insights M&A</a></li>
+      <li><a href="insight-article.html?id=multiplos-2025">Múltiplos por sector</a></li>
+      <li><a href="insight-article.html?id=errores-venta">Guías para vendedores</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </div>
+</footer>
+
+<div class="footer-bottom">
+  <p>© 2025 DealPartners · Todos los derechos reservados · Madrid, España</p>
+  <p>Aviso legal · Política de privacidad · Política de cookies</p>
 </div>
 
-<!-- MAIN FORM AREA -->
-<div class="reg-main">
-
-  <!-- ══════════════════════════════════════════════════════
-       VENDEDOR FORM
-  ══════════════════════════════════════════════════════ -->
-  <div class="reg-form-panel" id="panel-vendedor">
-    <!-- Steps indicator -->
-    <div class="reg-steps" id="steps-vendedor">
-      <div class="reg-step active" data-step="v1">
-        <div><div class="reg-step-num">1</div></div>
-        <div>Tu empresa</div>
-      </div>
-      <div class="reg-step" data-step="v2">
-        <div><div class="reg-step-num">2</div></div>
-        <div>Financiero</div>
-      </div>
-      <div class="reg-step" data-step="v3">
-        <div><div class="reg-step-num">3</div></div>
-        <div>Proceso</div>
-      </div>
-      <div class="reg-step" data-step="v4">
-        <div><div class="reg-step-num">4</div></div>
-        <div>Tus datos</div>
-      </div>
-    </div>
-
-    <div id="reg-error-v" class="reg-error"></div>
-
-    <!-- Section 1: Empresa -->
-    <div class="reg-section active" id="v1">
-      <div class="reg-section-title">Tu <em>empresa</em></div>
-      <div class="reg-section-desc">Información básica sobre el negocio. Todo bajo estricta confidencialidad.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Nombre de la empresa (o descripción)<span class="req">*</span></label>
-          <input type="text" id="v-empresa" placeholder="Puedes usar una descripción genérica">
-        </div>
-        <div class="reg-field">
-          <label>Sector principal<span class="req">*</span></label>
-          <select id="v-sector">
-            <option value="">Selecciona el sector</option>
-            <option>Industrial / Fabricación</option>
-            <option>Tecnología / Software</option>
-            <option>Salud / Clínicas</option>
-            <option>Hostelería / Restauración</option>
-            <option>Servicios B2B</option>
-            <option>Retail / Comercio</option>
-            <option>Distribución / Logística</option>
-            <option>Construcción / Inmobiliario</option>
-            <option>Educación / Formación</option>
-            <option>Otro</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Año de fundación</label>
-          <input type="number" id="v-fundacion" placeholder="Ej: 2005" min="1900" max="2024">
-        </div>
-        <div class="reg-field">
-          <label>Número de empleados</label>
-          <select id="v-empleados">
-            <option value="">Selecciona rango</option>
-            <option>Menos de 5</option>
-            <option>5 – 15</option>
-            <option>16 – 50</option>
-            <option>51 – 150</option>
-            <option>Más de 150</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Región donde opera<span class="req">*</span></label>
-          <select id="v-region">
-            <option value="">Selecciona comunidad autónoma</option>
-            <option>Madrid</option><option>Cataluña</option><option>Andalucía</option>
-            <option>Comunidad Valenciana</option><option>País Vasco</option>
-            <option>Galicia</option><option>Castilla y León</option>
-            <option>Aragón</option><option>Navarra</option>
-            <option>Canarias</option><option>Baleares</option>
-            <option>Murcia</option><option>Asturias</option>
-            <option>Extremadura</option><option>La Rioja</option>
-            <option>Cantabria</option><option>Ceuta / Melilla</option>
-            <option>Operación nacional / Sin sede fija</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Modelo de negocio principal</label>
-          <select id="v-modelo">
-            <option value="">Selecciona modelo</option>
-            <option>Producto / Fabricación</option>
-            <option>Servicios recurrentes / SaaS</option>
-            <option>Proyectos / Consultoría</option>
-            <option>Distribución / Comercial</option>
-            <option>Franquicia</option>
-            <option>Mixto</option>
-          </select>
-        </div>
-        <div class="reg-field col-2">
-          <label>Descripción breve de la empresa</label>
-          <textarea id="v-descripcion" placeholder="¿A qué se dedica? ¿Cuál es su diferencial? (máx. 300 caracteres)" maxlength="300"></textarea>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <div></div>
-        <button class="reg-btn-next" onclick="goNext('v', 1)">Siguiente → Información financiera</button>
-      </div>
-    </div>
-
-    <!-- Section 2: Financiero -->
-    <div class="reg-section" id="v2">
-      <div class="reg-section-title">Información <em>financiera</em></div>
-      <div class="reg-section-desc">Datos orientativos del último ejercicio cerrado. No es necesario ser exacto en esta fase.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Facturación anual (último ejercicio)<span class="req">*</span></label>
-          <select id="v-facturacion">
-            <option value="">Selecciona rango</option>
-            <option>Menos de 500K€</option>
-            <option>500K€ – 1M€</option>
-            <option>1M€ – 3M€</option>
-            <option>3M€ – 7M€</option>
-            <option>7M€ – 15M€</option>
-            <option>15M€ – 30M€</option>
-            <option>Más de 30M€</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>EBITDA estimado (último ejercicio)<span class="req">*</span></label>
-          <select id="v-ebitda">
-            <option value="">Selecciona rango</option>
-            <option>Negativo / Break-even</option>
-            <option>Menos de 150K€</option>
-            <option>150K€ – 400K€</option>
-            <option>400K€ – 800K€</option>
-            <option>800K€ – 2M€</option>
-            <option>Más de 2M€</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Tendencia de facturación (últimos 3 años)</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="v-tendencia" value="creciendo"> <span class="radio-label">📈 Creciendo</span></label>
-            <label class="radio-item"><input type="radio" name="v-tendencia" value="estable"> <span class="radio-label">➡️ Estable</span></label>
-            <label class="radio-item"><input type="radio" name="v-tendencia" value="decreciendo"> <span class="radio-label">📉 Decreciendo</span></label>
-            <label class="radio-item"><input type="radio" name="v-tendencia" value="variable"> <span class="radio-label">〰️ Variable</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Nivel de deuda financiera</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="v-deuda" value="sin"> <span class="radio-label">Sin deuda</span></label>
-            <label class="radio-item"><input type="radio" name="v-deuda" value="baja"> <span class="radio-label">Baja (&lt;1x EBITDA)</span></label>
-            <label class="radio-item"><input type="radio" name="v-deuda" value="media"> <span class="radio-label">Media (1–3x EBITDA)</span></label>
-            <label class="radio-item"><input type="radio" name="v-deuda" value="alta"> <span class="radio-label">Alta (&gt;3x EBITDA)</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>% de ingresos recurrentes (contratos, suscripciones...)</label>
-          <select id="v-recurrencia">
-            <option value="">Selecciona rango</option>
-            <option>Menos del 20%</option>
-            <option>20% – 50%</option>
-            <option>50% – 80%</option>
-            <option>Más del 80%</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Concentración de clientes</label>
-          <select id="v-clientes">
-            <option value="">Selecciona</option>
-            <option>Top 3 clientes &lt; 20% de facturación</option>
-            <option>Top 3 clientes entre 20%–40%</option>
-            <option>Top 3 clientes entre 40%–60%</option>
-            <option>Top 3 clientes &gt; 60% de facturación</option>
-          </select>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('v', 2)">← Volver</button>
-        <button class="reg-btn-next" onclick="goNext('v', 2)">Siguiente → Proceso de venta</button>
-      </div>
-    </div>
-
-    <!-- Section 3: Proceso -->
-    <div class="reg-section" id="v3">
-      <div class="reg-section-title">Proceso de <em>venta</em></div>
-      <div class="reg-section-desc">Cuéntanos en qué punto estás y qué tipo de proceso buscas.</div>
-      <div class="reg-grid full">
-        <div class="reg-field">
-          <label>¿Cuándo te planteas iniciar el proceso de venta?<span class="req">*</span></label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="v-plazo" value="inmediato"> <span class="radio-label">En los próximos 6 meses</span></label>
-            <label class="radio-item"><input type="radio" name="v-plazo" value="medio"> <span class="radio-label">6–18 meses</span></label>
-            <label class="radio-item"><input type="radio" name="v-plazo" value="largo"> <span class="radio-label">Más de 18 meses</span></label>
-            <label class="radio-item"><input type="radio" name="v-plazo" value="explorando"> <span class="radio-label">Solo estoy explorando</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿Qué tipo de operación buscas?</label>
-          <div class="check-group">
-            <label class="check-item">
-              <input type="checkbox" name="v-operacion" value="venta-total">
-              <div><div class="check-item-label">Venta total del 100% de la empresa</div></div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" name="v-operacion" value="venta-parcial">
-              <div><div class="check-item-label">Venta parcial / entrada de socio</div><div class="check-item-sub">Mantener participación minoritaria</div></div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" name="v-operacion" value="management-buyout">
-              <div><div class="check-item-label">Management buyout (venta al equipo directivo)</div></div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" name="v-operacion" value="no-se">
-              <div><div class="check-item-label">No lo tengo claro todavía</div><div class="check-item-sub">Quiero asesoramiento sobre las opciones</div></div>
-            </label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿Ya has hablado con otros asesores o compradores?</label>
-          <select id="v-previo">
-            <option value="">Selecciona</option>
-            <option>No, es mi primer contacto</option>
-            <option>He hablado con asesores informalmente</option>
-            <option>Tengo un proceso en curso con otro asesor</option>
-            <option>He tenido contactos con posibles compradores</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Rango de valoración que esperas obtener</label>
-          <select id="v-expectativa">
-            <option value="">Selecciona expectativa (opcional)</option>
-            <option>Menos de 1M€</option>
-            <option>1M€ – 3M€</option>
-            <option>3M€ – 8M€</option>
-            <option>8M€ – 20M€</option>
-            <option>Más de 20M€</option>
-            <option>No lo sé / necesito ayuda para estimarlo</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>¿Qué información adicional quieres compartir?</label>
-          <textarea id="v-notas" placeholder="Motivación para vender, situación especial, preferencias sobre el tipo de comprador..."></textarea>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('v', 3)">← Volver</button>
-        <button class="reg-btn-next" onclick="goNext('v', 3)">Siguiente → Tus datos de contacto</button>
-      </div>
-    </div>
-
-    <!-- Section 4: Contacto -->
-    <div class="reg-section" id="v4">
-      <div class="reg-section-title">Tus datos de <em>contacto</em></div>
-      <div class="reg-section-desc">Solo nos pondremos en contacto contigo. Nunca compartiremos tus datos sin tu consentimiento.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Nombre<span class="req">*</span></label>
-          <input type="text" id="v-nombre" placeholder="Tu nombre">
-        </div>
-        <div class="reg-field">
-          <label>Apellidos<span class="req">*</span></label>
-          <input type="text" id="v-apellidos" placeholder="Tus apellidos">
-        </div>
-        <div class="reg-field">
-          <label>Email<span class="req">*</span></label>
-          <input type="email" id="v-email" placeholder="tu@empresa.com">
-        </div>
-        <div class="reg-field">
-          <label>Cargo en la empresa</label>
-          <select id="v-cargo">
-            <option value="">Selecciona</option>
-            <option>Fundador / Propietario</option>
-            <option>CEO / Director General</option>
-            <option>Socio</option>
-            <option>Director Financiero</option>
-            <option>Otro</option>
-          </select>
-        </div>
-        <div class="reg-field col-2">
-          <label>¿Cómo prefieres que te contactemos?</label>
-          <div class="radio-group" style="grid-template-columns:1fr 1fr 1fr;">
-            <label class="radio-item"><input type="radio" name="v-contacto-pref" value="email"> <span class="radio-label">✉️ Email</span></label>
-            <label class="radio-item"><input type="radio" name="v-contacto-pref" value="videollamada"> <span class="radio-label">💻 Videollamada</span></label>
-            <label class="radio-item"><input type="radio" name="v-contacto-pref" value="indiferente"> <span class="radio-label">Indiferente</span></label>
-          </div>
-        </div>
-        <div class="reg-field col-2">
-          <label class="check-item" style="border:1px solid rgba(255,255,255,0.08);padding:14px 16px;cursor:pointer;">
-            <input type="checkbox" id="v-ndacheck">
-            <div><div class="check-item-label">Acepto que DealPartners gestione mis datos para ponerme en contacto con asesores y compradores relevantes, siempre bajo confidencialidad y con mi consentimiento previo.</div></div>
-          </label>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('v', 4)">← Volver</button>
-        <button class="reg-btn-submit" id="v-submit-btn" onclick="submitForm('vendedor')">Enviar solicitud de registro →</button>
-      </div>
-    </div>
-
-    <!-- Success -->
-    <div class="reg-success" id="success-vendedor">
-      <div class="reg-success-icon">✓</div>
-      <h2>Registro recibido. <em>Te contactamos pronto.</em></h2>
-      <p>Un asesor especializado en tu sector revisará tu solicitud y te contactará en las próximas 24 horas hábiles.</p>
-      <p>Mientras tanto, puedes hacer el <strong>AI Deal Readiness Score</strong> gratuito para tener una primera estimación del valor de tu empresa.</p>
-      <div class="reg-success-steps">
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">24h</div>
-          <p>Tiempo de respuesta de un asesor</p>
-        </div>
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">NDA</div>
-          <p>Firmamos acuerdo de confidencialidad antes de compartir nada</p>
-        </div>
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">0€</div>
-          <p>Primera consulta y valoración orientativa sin coste</p>
-        </div>
-      </div>
-      <a href="deal-readiness-score.html" class="btn-gold" style="margin-right:16px;">Calcular mi Deal Score →</a>
-      <a href="index.html" class="btn-outline" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);">Volver al inicio</a>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════
-       COMPRADOR FORM
-  ══════════════════════════════════════════════════════ -->
-  <div class="reg-form-panel" id="panel-comprador">
-    <div class="reg-steps" id="steps-comprador">
-      <div class="reg-step active" data-step="c1">
-        <div><div class="reg-step-num">1</div></div>
-        <div>Tu perfil</div>
-      </div>
-      <div class="reg-step" data-step="c2">
-        <div><div class="reg-step-num">2</div></div>
-        <div>Qué buscas</div>
-      </div>
-      <div class="reg-step" data-step="c3">
-        <div><div class="reg-step-num">3</div></div>
-        <div>Capacidad</div>
-      </div>
-      <div class="reg-step" data-step="c4">
-        <div><div class="reg-step-num">4</div></div>
-        <div>Tus datos</div>
-      </div>
-    </div>
-
-    <div id="reg-error-c" class="reg-error"></div>
-
-    <!-- Section 1: Perfil comprador -->
-    <div class="reg-section active" id="c1">
-      <div class="reg-section-title">Tu perfil como <em>comprador</em></div>
-      <div class="reg-section-desc">¿Cómo describirías tu perfil? Esto nos permite presentarte las operaciones más relevantes.</div>
-      <div class="reg-grid full">
-        <div class="reg-field">
-          <label>Tipo de comprador<span class="req">*</span></label>
-          <div class="check-group">
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="family-office">
-              <div><div class="check-item-label">Family Office</div><div class="check-item-sub">Gestión de patrimonio familiar con vocación inversora</div></div>
-            </label>
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="private-equity">
-              <div><div class="check-item-label">Fondo de Private Equity / Venture Capital</div></div>
-            </label>
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="empresario-industrial">
-              <div><div class="check-item-label">Empresario / Grupo Industrial</div><div class="check-item-sub">Busco adquisiciones complementarias a mi actividad actual</div></div>
-            </label>
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="eta-directivo">
-              <div><div class="check-item-label">Directivo / ETA (Entrepreneurship Through Acquisition)</div><div class="check-item-sub">Quiero dirigir y hacer crecer una empresa adquiriéndola</div></div>
-            </label>
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="inversor-privado">
-              <div><div class="check-item-label">Inversor privado / Ángel inversor</div></div>
-            </label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿Cuántas adquisiciones has completado anteriormente?</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-experiencia" value="ninguna"> <span class="radio-label">Ninguna (primera operación)</span></label>
-            <label class="radio-item"><input type="radio" name="c-experiencia" value="1-2"> <span class="radio-label">1–2 operaciones</span></label>
-            <label class="radio-item"><input type="radio" name="c-experiencia" value="3-plus"> <span class="radio-label">3 o más operaciones</span></label>
-            <label class="radio-item"><input type="radio" name="c-experiencia" value="muchas"> <span class="radio-label">Soy inversor activo habitual</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Describe brevemente tu perfil o empresa</label>
-          <textarea id="c-perfil-desc" placeholder="¿A qué te dedicas actualmente? ¿Qué tipo de empresa buscas y con qué objetivo?"></textarea>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <div></div>
-        <button class="reg-btn-next" onclick="goNext('c', 1)">Siguiente → Qué empresa buscas</button>
-      </div>
-    </div>
-
-    <!-- Section 2: Criterios de búsqueda -->
-    <div class="reg-section" id="c2">
-      <div class="reg-section-title">¿Qué empresa <em>buscas?</em></div>
-      <div class="reg-section-desc">Define tus criterios de inversión para que podamos identificar las operaciones más adecuadas para ti.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Sectores de interés<span class="req">*</span></label>
-          <div class="check-group">
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="industrial"> <div class="check-item-label">Industrial / Fabricación</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="tecnologia"> <div class="check-item-label">Tecnología / Software / SaaS</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="salud"> <div class="check-item-label">Salud / Clínicas / Bienestar</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="hosteleria"> <div class="check-item-label">Hostelería / Restauración</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="b2b"> <div class="check-item-label">Servicios B2B</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="retail"> <div class="check-item-label">Retail / Comercio</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="cualquiera"> <div class="check-item-label">Agnóstico de sector — priorizo rentabilidad</div></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Geografía de interés</label>
-          <div class="check-group">
-            <label class="check-item"><input type="checkbox" name="c-geo" value="madrid"> <div class="check-item-label">Madrid</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="cataluna"> <div class="check-item-label">Cataluña</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="andalucia"> <div class="check-item-label">Andalucía</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="pais-vasco"> <div class="check-item-label">País Vasco</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="nacional"> <div class="check-item-label">España completa</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="remoto"> <div class="check-item-label">Empresas sin limitación geográfica / digitales</div></label>
-          </div>
-        </div>
-        <div class="reg-field col-2">
-          <label>Tamaño de empresa buscado (facturación)</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-tamano" value="micro"> <span class="radio-label">Hasta 1M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-tamano" value="pequena"> <span class="radio-label">1M€ – 5M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-tamano" value="mediana"> <span class="radio-label">5M€ – 20M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-tamano" value="grande"> <span class="radio-label">Más de 20M€</span></label>
-          </div>
-        </div>
-        <div class="reg-field col-2">
-          <label>¿Qué características son imprescindibles en la empresa?</label>
-          <div class="check-group">
-            <label class="check-item"><input type="checkbox" name="c-must" value="rentable"> <div class="check-item-label">EBITDA positivo desde el primer año</div></label>
-            <label class="check-item"><input type="checkbox" name="c-must" value="recurrente"> <div class="check-item-label">Ingresos recurrentes / contratos</div></label>
-            <label class="check-item"><input type="checkbox" name="c-must" value="equipo"> <div class="check-item-label">Equipo directivo sólido (no depende del dueño)</div></label>
-            <label class="check-item"><input type="checkbox" name="c-must" value="digital"> <div class="check-item-label">Presencia digital relevante</div></label>
-            <label class="check-item"><input type="checkbox" name="c-must" value="scalable"> <div class="check-item-label">Alto potencial de escalado</div></label>
-          </div>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('c', 2)">← Volver</button>
-        <button class="reg-btn-next" onclick="goNext('c', 2)">Siguiente → Capacidad de inversión</button>
-      </div>
-    </div>
-
-    <!-- Section 3: Capacidad -->
-    <div class="reg-section" id="c3">
-      <div class="reg-section-title">Capacidad de <em>inversión</em></div>
-      <div class="reg-section-desc">Esta información es confidencial y nos ayuda a filtrar las oportunidades más adecuadas para tu perfil.</div>
-      <div class="reg-grid full">
-        <div class="reg-field">
-          <label>Rango de precio de adquisición buscado<span class="req">*</span></label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-precio" value="hasta-1m"> <span class="radio-label">Hasta 1M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-precio" value="1-3m"> <span class="radio-label">1M€ – 3M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-precio" value="3-10m"> <span class="radio-label">3M€ – 10M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-precio" value="10m-plus"> <span class="radio-label">Más de 10M€</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Fuente de financiación prevista</label>
-          <div class="check-group">
-            <label class="check-item"><input type="checkbox" name="c-financiacion" value="propia"> <div class="check-item-label">Fondos propios (equity)</div></label>
-            <label class="check-item"><input type="checkbox" name="c-financiacion" value="bancaria"> <div class="check-item-label">Financiación bancaria / deuda</div></label>
-            <label class="check-item"><input type="checkbox" name="c-financiacion" value="cofund"> <div class="check-item-label">Co-inversores / socios</div></label>
-            <label class="check-item"><input type="checkbox" name="c-financiacion" value="por-definir"> <div class="check-item-label">Aún por definir / necesito asesoramiento</div></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿En qué plazo buscas cerrar una operación?</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-plazo" value="3m"> <span class="radio-label">Menos de 3 meses</span></label>
-            <label class="radio-item"><input type="radio" name="c-plazo" value="6m"> <span class="radio-label">3–6 meses</span></label>
-            <label class="radio-item"><input type="radio" name="c-plazo" value="12m"> <span class="radio-label">6–12 meses</span></label>
-            <label class="radio-item"><input type="radio" name="c-plazo" value="explorando"> <span class="radio-label">Solo estoy explorando</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿Tienes mandato de inversión ya definido o criterios pre-aprobados?</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-mandato" value="si"> <span class="radio-label">Sí, mandato definido</span></label>
-            <label class="radio-item"><input type="radio" name="c-mandato" value="no"> <span class="radio-label">No, es flexible</span></label>
-            <label class="radio-item"><input type="radio" name="c-mandato" value="en-proceso"> <span class="radio-label">En proceso de definición</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Información adicional relevante</label>
-          <textarea id="c-notas" placeholder="¿Tienes alguna operación en mente? ¿Sector o empresa específica que te interesa? ¿Alguna restricción?"></textarea>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('c', 3)">← Volver</button>
-        <button class="reg-btn-next" onclick="goNext('c', 3)">Siguiente → Tus datos de contacto</button>
-      </div>
-    </div>
-
-    <!-- Section 4: Contacto comprador -->
-    <div class="reg-section" id="c4">
-      <div class="reg-section-title">Tus datos de <em>contacto</em></div>
-      <div class="reg-section-desc">Confidencialidad total. Solo nos pondremos en contacto contigo con oportunidades que encajen con tu perfil.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Nombre<span class="req">*</span></label>
-          <input type="text" id="c-nombre" placeholder="Tu nombre">
-        </div>
-        <div class="reg-field">
-          <label>Apellidos<span class="req">*</span></label>
-          <input type="text" id="c-apellidos" placeholder="Tus apellidos">
-        </div>
-        <div class="reg-field">
-          <label>Email<span class="req">*</span></label>
-          <input type="email" id="c-email" placeholder="tu@empresa.com">
-        </div>
-        <div class="reg-field">
-          <label>Empresa / Fondo (si aplica)</label>
-          <input type="text" id="c-empresa" placeholder="Nombre de tu empresa o fondo">
-        </div>
-        <div class="reg-field">
-          <label>LinkedIn (opcional)</label>
-          <input type="url" id="c-linkedin" placeholder="https://linkedin.com/in/tu-perfil">
-        </div>
-        <div class="reg-field">
-          <label>Cómo prefieres que te contactemos</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-contacto-pref" value="email"> <span class="radio-label">✉️ Email</span></label>
-            <label class="radio-item"><input type="radio" name="c-contacto-pref" value="videollamada"> <span class="radio-label">💻 Videollamada</span></label>
-            <label class="radio-item"><input type="radio" name="c-contacto-pref" value="indiferente"> <span class="radio-label">Indiferente</span></label>
-          </div>
-        </div>
-        <div class="reg-field col-2">
-          <label class="check-item" style="border:1px solid rgba(255,255,255,0.08);padding:14px 16px;cursor:pointer;">
-            <input type="checkbox" id="c-ndacheck">
-            <div><div class="check-item-label">Acepto que DealPartners gestione mis datos para presentarme operaciones relevantes. Entiendo que las operaciones están bajo NDA y que la información se comparte solo entre partes cualificadas.</div></div>
-          </label>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('c', 4)">← Volver</button>
-        <button class="reg-btn-submit" id="c-submit-btn" onclick="submitForm('comprador')">Enviar solicitud de registro →</button>
-      </div>
-    </div>
-
-    <!-- Success comprador -->
-    <div class="reg-success" id="success-comprador">
-      <div class="reg-success-icon">✓</div>
-      <h2>Registro recibido. <em>Bienvenido a DealPartners.</em></h2>
-      <p>Revisaremos tu perfil y te enviaremos las primeras operaciones relevantes en las próximas 48 horas.</p>
-      <p>Las operaciones se envían bajo NDA. Te pediremos que firmes un acuerdo de confidencialidad antes de compartir información detallada.</p>
-      <div class="reg-success-steps">
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">48h</div>
-          <p>Primeras operaciones relevantes en tu email</p>
-        </div>
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">NDA</div>
-          <p>Todo bajo acuerdo de confidencialidad</p>
-        </div>
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">0€</div>
-          <p>Acceso al deal flow sin coste para compradores</p>
-        </div>
-      </div>
-      <a href="index.html" class="btn-outline" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);">Volver al inicio</a>
-    </div>
-  </div>
-
-  <div class="reg-trust">
-    <div class="reg-trust-item"><span>🔒</span><span>Confidencialidad garantizada</span></div>
-    <div class="reg-trust-item"><span>✓</span><span>Sin spam ni llamadas no solicitadas</span></div>
-    <div class="reg-trust-item"><span>0€</span><span>Registro completamente gratuito</span></div>
-  </div>
-</div>
-
-<script>
-/* ══════════════════════════════════════════════════════════
-   REGISTRO PAGE LOGIC
-════════════════════════════════════════════════════════════ */
-
-// FORMSPREE ENDPOINT — reemplaza con tu Form ID de Formspree
-const FORMSPREE_URL = 'https://formspree.io/f/xzdjbbbp';
-// APPS SCRIPT URL — reemplaza con tu URL de Google Apps Script
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqpEq9MxZ897RSBmpP7jTAM6x3LprSNFdr94FDmyMXtFwUzEqaqz7tj-CISIQqjOR4/exec';
-
-/* ── TAB SWITCH ─────────────────────────────────────────── */
-function setTab(tipo, btn) {
-  document.querySelectorAll('.reg-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.reg-form-panel').forEach(p => p.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  document.getElementById('panel-' + tipo).classList.add('active');
-}
-
-/* ── STEP NAVIGATION ─────────────────────────────────────── */
-function goNext(prefix, currentStep) {
-  if (!validateSection(prefix, currentStep)) return;
-  const nextStep = currentStep + 1;
-  showSection(prefix, currentStep, nextStep);
-}
-function goBack(prefix, currentStep) {
-  const prevStep = currentStep - 1;
-  showSection(prefix, currentStep, prevStep);
-}
-function showSection(prefix, from, to) {
-  const err = document.getElementById('reg-error-' + prefix);
-  if (err) { err.style.display = 'none'; err.textContent = ''; }
-
-  document.getElementById(prefix + from).classList.remove('active');
-  document.getElementById(prefix + to).classList.add('active');
-
-  // Update step indicators
-  const steps = document.querySelectorAll('#steps-' + prefix + ' .reg-step');
-  steps.forEach((s, i) => {
-    s.classList.remove('active','done');
-    if (i < to - 1) s.classList.add('done');
-    if (i === to - 1) s.classList.add('active');
-  });
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-/* ── VALIDATION ──────────────────────────────────────────── */
-function showError(prefix, msg) {
-  const el = document.getElementById('reg-error-' + prefix);
-  if (el) { el.textContent = msg; el.style.display = 'block'; }
-}
-function validateSection(prefix, step) {
-  if (prefix === 'v') {
-    if (step === 1) {
-      if (!document.getElementById('v-empresa').value.trim()) { showError('v', 'Por favor indica el nombre o descripción de tu empresa.'); return false; }
-      if (!document.getElementById('v-sector').value)         { showError('v', 'Por favor selecciona el sector de tu empresa.'); return false; }
-      if (!document.getElementById('v-region').value)         { showError('v', 'Por favor selecciona la región.'); return false; }
-    }
-    if (step === 2) {
-      if (!document.getElementById('v-facturacion').value) { showError('v', 'Por favor selecciona el rango de facturación.'); return false; }
-      if (!document.getElementById('v-ebitda').value)      { showError('v', 'Por favor selecciona el rango de EBITDA.'); return false; }
-    }
-    if (step === 3) {
-      if (!document.querySelector('input[name="v-plazo"]:checked')) { showError('v', 'Por favor indica cuándo te planteas iniciar el proceso.'); return false; }
-    }
-    if (step === 4) {
-      if (!document.getElementById('v-nombre').value.trim())    { showError('v', 'Por favor introduce tu nombre.'); return false; }
-      if (!document.getElementById('v-apellidos').value.trim()) { showError('v', 'Por favor introduce tus apellidos.'); return false; }
-      if (!document.getElementById('v-email').value.trim())     { showError('v', 'Por favor introduce tu email.'); return false; }
-      if (!document.getElementById('v-ndacheck').checked)       { showError('v', 'Por favor acepta las condiciones para continuar.'); return false; }
-    }
-  }
-  if (prefix === 'c') {
-    if (step === 1) {
-      if (!document.querySelector('input[name="c-tipo"]:checked')) { showError('c', 'Por favor selecciona tu tipo de perfil.'); return false; }
-    }
-    if (step === 2) {
-      const sectores = document.querySelectorAll('input[name="c-sectores"]:checked');
-      if (sectores.length === 0) { showError('c', 'Por favor selecciona al menos un sector de interés.'); return false; }
-    }
-    if (step === 3) {
-      if (!document.querySelector('input[name="c-precio"]:checked')) { showError('c', 'Por favor indica el rango de precio buscado.'); return false; }
-    }
-    if (step === 4) {
-      if (!document.getElementById('c-nombre').value.trim())    { showError('c', 'Por favor introduce tu nombre.'); return false; }
-      if (!document.getElementById('c-apellidos').value.trim()) { showError('c', 'Por favor introduce tus apellidos.'); return false; }
-      if (!document.getElementById('c-email').value.trim())     { showError('c', 'Por favor introduce tu email.'); return false; }
-      if (!document.getElementById('c-ndacheck').checked)       { showError('c', 'Por favor acepta las condiciones para continuar.'); return false; }
-    }
-  }
-  return true;
-}
-
-/* ── COLLECT DATA ────────────────────────────────────────── */
-function collectVendedor() {
-  return {
-    type: 'registro-vendedor',
-    empresa:      document.getElementById('v-empresa').value,
-    sector:       document.getElementById('v-sector').value,
-    fundacion:    document.getElementById('v-fundacion').value,
-    empleados:    document.getElementById('v-empleados').value,
-    region:       document.getElementById('v-region').value,
-    modelo:       document.getElementById('v-modelo').value,
-    descripcion:  document.getElementById('v-descripcion').value,
-    facturacion:  document.getElementById('v-facturacion').value,
-    ebitda:       document.getElementById('v-ebitda').value,
-    tendencia:    document.querySelector('input[name="v-tendencia"]:checked')?.value || '',
-    deuda:        document.querySelector('input[name="v-deuda"]:checked')?.value || '',
-    recurrencia:  document.getElementById('v-recurrencia').value,
-    clientes:     document.getElementById('v-clientes').value,
-    plazo:        document.querySelector('input[name="v-plazo"]:checked')?.value || '',
-    operaciones:  [...document.querySelectorAll('input[name="v-operacion"]:checked')].map(i => i.value).join(', '),
-    previo:       document.getElementById('v-previo').value,
-    expectativa:  document.getElementById('v-expectativa').value,
-    notas:        document.getElementById('v-notas').value,
-    nombre:       document.getElementById('v-nombre').value,
-    apellidos:    document.getElementById('v-apellidos').value,
-    email:        document.getElementById('v-email').value,
-    cargo:        document.getElementById('v-cargo').value,
-    contactoPref: document.querySelector('input[name="v-contacto-pref"]:checked')?.value || '',
-  };
-}
-
-function collectComprador() {
-  return {
-    type: 'registro-comprador',
-    tipoPerfil:   document.querySelector('input[name="c-tipo"]:checked')?.value || '',
-    experiencia:  document.querySelector('input[name="c-experiencia"]:checked')?.value || '',
-    perfilDesc:   document.getElementById('c-perfil-desc').value,
-    sectores:     [...document.querySelectorAll('input[name="c-sectores"]:checked')].map(i => i.value).join(', '),
-    geo:          [...document.querySelectorAll('input[name="c-geo"]:checked')].map(i => i.value).join(', '),
-    tamano:       document.querySelector('input[name="c-tamano"]:checked')?.value || '',
-    must:         [...document.querySelectorAll('input[name="c-must"]:checked')].map(i => i.value).join(', '),
-    precio:       document.querySelector('input[name="c-precio"]:checked')?.value || '',
-    financiacion: [...document.querySelectorAll('input[name="c-financiacion"]:checked')].map(i => i.value).join(', '),
-    plazo:        document.querySelector('input[name="c-plazo"]:checked')?.value || '',
-    mandato:      document.querySelector('input[name="c-mandato"]:checked')?.value || '',
-    notas:        document.getElementById('c-notas').value,
-    nombre:       document.getElementById('c-nombre').value,
-    apellidos:    document.getElementById('c-apellidos').value,
-    email:        document.getElementById('c-email').value,
-    empresa:      document.getElementById('c-empresa').value,
-    linkedin:     document.getElementById('c-linkedin').value,
-    contactoPref: document.querySelector('input[name="c-contacto-pref"]:checked')?.value || '',
-  };
-}
-
-/* ── SUBMIT ──────────────────────────────────────────────── */
-async function submitForm(tipo) {
-  const prefix = tipo === 'vendedor' ? 'v' : 'c';
-  if (!validateSection(prefix, 4)) return;
-
-  const btn = document.getElementById(prefix + '-submit-btn');
-  btn.textContent = 'Enviando…';
-  btn.disabled = true;
-
-  const data = tipo === 'vendedor' ? collectVendedor() : collectComprador();
-
-  // Build FormData for Formspree
-  const fd = new FormData();
-  fd.append('_subject', `Nuevo registro ${tipo} — ${data.nombre} ${data.apellidos || ''}`);
-  Object.entries(data).forEach(([k, v]) => fd.append(k, v));
-
-  let ok = false;
-
-  // 1. Formspree
-  try {
-    const res = await fetch(FORMSPREE_URL, {
-      method: 'POST', headers: { 'Accept': 'application/json' }, body: fd,
-    });
-    ok = res.ok;
-  } catch (e) { console.warn('Formspree:', e); }
-
-  // 2. Google Sheets
-  try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body:   JSON.stringify(data),
-      mode:   'no-cors',
-    });
-  } catch (e) { console.warn('Sheets:', e); }
-
-  if (ok) {
-    // Hide form, show success
-    document.getElementById(prefix + '4').style.display = 'none';
-    document.querySelector('#steps-' + prefix).style.display = 'none';
-    document.getElementById('success-' + tipo).style.display = 'block';
-  } else {
-    btn.textContent = 'Enviar solicitud de registro →';
-    btn.disabled = false;
-    showError(prefix, 'No se pudo enviar el registro. Por favor escríbenos a dealpartners.iberia@gmail.com');
-  }
-}
-
-/* ── INIT: read URL param ────────────────────────────────── */
-window.addEventListener('scroll', () => {
-  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
-});
-
-const tipo = new URLSearchParams(window.location.search).get('tipo');
-const activeTab = (tipo === 'comprador') ? 'comprador' : 'vendedor';
-const btn = document.querySelector(`[data-tab="${activeTab}"]`);
-setTab(activeTab, btn);
-if (btn) btn.classList.add('active');
-else document.querySelector('.reg-tab').classList.add('active');
-</script>
+<script src="script.js"></script>
 </body>
 </html>
