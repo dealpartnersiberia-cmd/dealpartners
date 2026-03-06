@@ -9,35 +9,29 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════
-     NAVIGATION
-════════════════════════════════════════════════════════════ -->
 <nav id="navbar">
   <a href="index.html" class="nav-logo">Deal<span>Partners</span></a>
   <ul class="nav-links">
-    <li><a href="#marketplace">Empresas en venta</a></li>
-    <li><a href="#vender">Vender mi empresa</a></li>
+    <li><a href="#marketplace">En venta</a></li>
+    <li><a href="#vender">Vender</a></li>
     <li><a href="#comprar">Comprar</a></li>
     <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#insights">Insights</a></li>
     <li><a href="#nosotros">Nosotros</a></li>
-    <li><a href="#contacto" class="nav-cta">Hablar con un asesor</a></li>
+    <li><a href="deal-readiness-score.html" class="nav-cta">Valora tu empresa</a></li>
   </ul>
 </nav>
 
-<!-- ══════════════════════════════════════════════════════════
-     HERO
-════════════════════════════════════════════════════════════ -->
 <section class="hero">
   <div class="hero-left">
     <div class="hero-eyebrow">Plataforma M&A · España</div>
     <h1>La plataforma que <em>une</em> compradores y vendedores de empresas</h1>
     <p class="hero-sub">Asesoramiento estratégico, tecnología y red de inversores para que tu operación sea un éxito. Desde la valoración hasta el cierre.</p>
     <div class="hero-actions">
-      <a href="#vender" class="btn-gold">Quiero vender mi empresa</a>
+      <a href="registro.html" class="btn-gold">Quiero vender mi empresa</a>
       <a href="#marketplace" class="btn-outline">Ver empresas en venta</a>
     </div>
   </div>
-
   <div class="hero-right">
     <div class="hero-stats">
       <div class="hero-stats-title">Actividad de la plataforma</div>
@@ -63,9 +57,7 @@
 
 <div class="divider-gold"></div>
 
-<!-- ══════════════════════════════════════════════════════════
-     MARKETPLACE
-════════════════════════════════════════════════════════════ -->
+<!-- MARKETPLACE -->
 <section class="marketplace" id="marketplace">
   <div class="reveal">
     <div class="section-label">Oportunidades activas</div>
@@ -74,34 +66,31 @@
   </div>
 
   <div class="filters reveal">
-    <button class="filter-btn active">Todos los sectores</button>
-    <button class="filter-btn">Industrial</button>
-    <button class="filter-btn">Tecnología</button>
-    <button class="filter-btn">Salud &amp; Clínicas</button>
-    <button class="filter-btn">Hostelería</button>
-    <button class="filter-btn">Servicios B2B</button>
-    <button class="filter-btn">Retail</button>
-    <button class="filter-btn" style="margin-left:auto; border-color:var(--gold); color:var(--gold)">+ Filtros avanzados</button>
+    <button class="filter-btn active" data-filter="all">Todos los sectores</button>
+    <button class="filter-btn" data-filter="industrial">Industrial</button>
+    <button class="filter-btn" data-filter="tecnologia">Tecnología</button>
+    <button class="filter-btn" data-filter="salud">Salud &amp; Clínicas</button>
+    <button class="filter-btn" data-filter="hosteleria">Hostelería</button>
+    <button class="filter-btn" data-filter="servicios-b2b">Servicios B2B</button>
+    <button class="filter-btn" data-filter="retail">Retail</button>
   </div>
 
-  <div class="listings-grid reveal">
-    <!-- Listing 1 -->
-    <div class="listing-card">
+  <div class="listings-grid" id="listingsGrid">
+    <div class="listing-card" data-sector="industrial">
       <div class="listing-confidential">Confidencial</div>
       <div class="listing-tag">Industrial · Madrid</div>
-      <div class="listing-name">Empresa de fabricación de componentes metálicos</div>
-      <p class="listing-desc">Fabricante especializado con 28 años de historia, contratos recurrentes con Tier-1 automoción. Mínima dependencia del fundador.</p>
+      <div class="listing-name">Fabricante de componentes metálicos para automoción</div>
+      <p class="listing-desc">28 años de historia, contratos recurrentes con Tier-1 automoción. Mínima dependencia del fundador y equipo directivo consolidado.</p>
       <div class="listing-metrics">
         <div><div class="metric-label">Facturación</div><div class="metric-val">€8.4M</div></div>
         <div><div class="metric-label">EBITDA</div><div class="metric-val">€1.9M</div></div>
-        <div><div class="metric-label">Múltiplo</div><div class="metric-val">5–7x</div></div>
+        <div><div class="metric-label">Empleados</div><div class="metric-val">62</div></div>
         <div><div class="metric-label">Región</div><div class="metric-val">Madrid</div></div>
       </div>
       <a href="#contacto" class="listing-link">Solicitar información →</a>
     </div>
 
-    <!-- Listing 2 -->
-    <div class="listing-card">
+    <div class="listing-card" data-sector="salud">
       <div class="listing-confidential">Confidencial</div>
       <div class="listing-tag">Salud · Cataluña</div>
       <div class="listing-name">Red de 3 clínicas dentales con marca propia</div>
@@ -109,14 +98,13 @@
       <div class="listing-metrics">
         <div><div class="metric-label">Facturación</div><div class="metric-val">€3.1M</div></div>
         <div><div class="metric-label">EBITDA</div><div class="metric-val">€720K</div></div>
-        <div><div class="metric-label">Múltiplo</div><div class="metric-val">6–8x</div></div>
+        <div><div class="metric-label">Centros</div><div class="metric-val">3</div></div>
         <div><div class="metric-label">Región</div><div class="metric-val">Cataluña</div></div>
       </div>
       <a href="#contacto" class="listing-link">Solicitar información →</a>
     </div>
 
-    <!-- Listing 3 -->
-    <div class="listing-card">
+    <div class="listing-card" data-sector="tecnologia">
       <div class="listing-confidential">Confidencial</div>
       <div class="listing-tag">Software · Remoto</div>
       <div class="listing-name">SaaS B2B para gestión de flotas logísticas</div>
@@ -124,28 +112,74 @@
       <div class="listing-metrics">
         <div><div class="metric-label">ARR</div><div class="metric-val">€1.2M</div></div>
         <div><div class="metric-label">EBITDA</div><div class="metric-val">€380K</div></div>
-        <div><div class="metric-label">Múltiplo</div><div class="metric-val">8–12x</div></div>
+        <div><div class="metric-label">Clientes</div><div class="metric-val">140</div></div>
         <div><div class="metric-label">Modelo</div><div class="metric-val">SaaS</div></div>
       </div>
       <a href="#contacto" class="listing-link">Solicitar información →</a>
     </div>
+
+    <div class="listing-card" data-sector="hosteleria">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Hostelería · Valencia</div>
+      <div class="listing-name">Grupo de 5 restaurantes con marca consolidada</div>
+      <p class="listing-desc">Cadena de restauración con operativa centralizada, carta propia y fuerte reconocimiento de marca en el mercado valenciano.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€4.8M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€560K</div></div>
+        <div><div class="metric-label">Locales</div><div class="metric-val">5</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Valencia</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="servicios-b2b">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Servicios B2B · País Vasco</div>
+      <div class="listing-name">Consultoría de ingeniería con contratos públicos</div>
+      <p class="listing-desc">Consultora técnica especializada en proyectos de ingeniería para administraciones públicas y empresas del sector energético.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€2.3M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€490K</div></div>
+        <div><div class="metric-label">Empleados</div><div class="metric-val">18</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">País Vasco</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="retail">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Retail · Andalucía</div>
+      <div class="listing-name">Cadena de moda infantil multimarca</div>
+      <p class="listing-desc">8 puntos de venta en Andalucía con omnicanalidad activa, base de clientes fidelizada y acuerdos exclusivos con proveedores europeos.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€5.6M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€610K</div></div>
+        <div><div class="metric-label">Tiendas</div><div class="metric-val">8</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Andalucía</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-empty" id="listingEmpty" style="display:none;">
+      <div class="listing-empty-icon">🔍</div>
+      <div class="listing-empty-title">Sin operaciones activas en este sector</div>
+      <p>Estamos incorporando nuevas oportunidades continuamente. Déjanos tu perfil y te avisamos.</p>
+      <a href="#contacto" class="btn-outline" style="margin-top:20px;display:inline-block;">Recibir alertas</a>
+    </div>
   </div>
 
-  <div style="text-align:center; margin-top:48px;" class="reveal">
-    <a href="#contacto" class="btn-outline">Ver todas las operaciones — Registro gratuito</a>
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="registro.html" class="btn-outline">Acceder a todas las operaciones — Registro gratuito</a>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     SELL PROCESS
-════════════════════════════════════════════════════════════ -->
+<!-- VENDER -->
 <section class="sell" id="vender">
   <div class="reveal">
     <div class="section-label">Para vendedores</div>
     <h2 class="section-title" style="color:var(--white)">El proceso de <em>vender</em> tu empresa</h2>
     <p class="section-sub">Te acompañamos en cada fase para maximizar el valor de tu empresa y garantizar una transacción exitosa.</p>
   </div>
-
   <div class="process-steps reveal">
     <div class="process-line"></div>
     <div class="process-step">
@@ -169,22 +203,18 @@
       <p class="step-desc">Gestión de due diligence, negociación de SPA, coordinación legal y fiscal hasta el cierre definitivo. Sin sorpresas de última hora.</p>
     </div>
   </div>
-
-  <div style="margin-top:72px; text-align:center;" class="reveal">
-    <a href="#contacto" class="btn-gold">Hablar con un asesor — sin coste</a>
+  <div style="margin-top:72px;text-align:center;" class="reveal">
+    <a href="registro.html?tipo=vendedor" class="btn-gold">Registrarme como vendedor</a>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     BUY / COMPRADORES
-════════════════════════════════════════════════════════════ -->
+<!-- COMPRAR -->
 <section class="buy" id="comprar">
   <div class="reveal">
     <div class="section-label">Para compradores</div>
     <h2 class="section-title">¿Quién <em>compra</em> en DealPartners?</h2>
     <p class="section-sub">Accede a operaciones exclusivas verificadas. Filtra por sector, tamaño y geografía. Muévete rápido con información de calidad.</p>
   </div>
-
   <div class="buyer-types reveal">
     <div class="buyer-card">
       <span class="buyer-icon">🏛️</span>
@@ -223,22 +253,18 @@
       </ul>
     </div>
   </div>
-
-  <div style="text-align:center; margin-top:48px;" class="reveal">
-    <a href="#contacto" class="btn-gold">Registrarme como comprador — Gratis</a>
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="registro.html?tipo=comprador" class="btn-gold">Registrarme como comprador — Gratis</a>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     SERVICES
-════════════════════════════════════════════════════════════ -->
+<!-- SERVICIOS — sin precios, solo tiempos orientativos -->
 <section class="services-section" id="servicios">
   <div class="reveal">
     <div class="section-label">Asesoramiento</div>
     <h2 class="section-title">Servicios <em>especializados</em></h2>
     <p class="section-sub">Más allá del marketplace, nuestro equipo de asesores acompaña cada operación con servicios de alto valor.</p>
   </div>
-
   <div class="services-grid reveal">
     <div class="service-item">
       <div class="service-num-big">01</div>
@@ -246,7 +272,7 @@
         <div class="service-badge">Valoración</div>
         <div class="service-title">Valoración de empresa</div>
         <p class="service-desc">Informe de valoración profesional por múltiplos sectoriales, DCF y transacciones comparables. Defendible ante cualquier comprador.</p>
-        <div class="service-price-tag">Desde 5.000€ — Entrega en 10 días</div>
+        <div class="service-price-tag">Entrega orientativa en 10 días hábiles</div>
       </div>
     </div>
     <div class="service-item">
@@ -255,7 +281,7 @@
         <div class="service-badge">Due Diligence</div>
         <div class="service-title">Due Diligence financiera</div>
         <p class="service-desc">Revisión completa de estados financieros, calidad del EBITDA, estructura de deuda y riesgos ocultos. Vendor DD o Buy-side DD.</p>
-        <div class="service-price-tag">Desde 10.000€ — Según complejidad</div>
+        <div class="service-price-tag">Plazo orientativo: 3–6 semanas</div>
       </div>
     </div>
     <div class="service-item">
@@ -264,7 +290,7 @@
         <div class="service-badge">Estrategia</div>
         <div class="service-title">Deal Strategy</div>
         <p class="service-desc">Diseño de la estrategia óptima de salida, estructuración del deal, earnout, deferred consideration y planificación fiscal de la transacción.</p>
-        <div class="service-price-tag">Success fee 2–5% · Mínimo 25.000€</div>
+        <div class="service-price-tag">Alineado con el éxito de la operación</div>
       </div>
     </div>
     <div class="service-item">
@@ -273,112 +299,94 @@
         <div class="service-badge">Reestructuración</div>
         <div class="service-title">Preparación pre-venta</div>
         <p class="service-desc">Normalización contable, reestructuración organizativa, limpieza de balance y mejora de métricas para maximizar la valoración antes de salir al mercado.</p>
-        <div class="service-price-tag">Desde 15.000€ · Proceso 3–6 meses</div>
+        <div class="service-price-tag">Proceso orientativo: 3–6 meses</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     AI DEAL READINESS SCORE
-════════════════════════════════════════════════════════════ -->
+<!-- AI SCORE -->
 <section class="ai-score">
   <div class="ai-score-inner">
     <div class="reveal">
       <div class="section-label">Tecnología</div>
       <h2 class="section-title">AI Deal <em>Readiness</em> Score</h2>
-      <p class="section-sub">Nuestra herramienta de IA evalúa en minutos el estado real de tu empresa para una venta exitosa: valor estimado, riesgos, potencial de mejora y probabilidad de cierre.</p>
-      <p style="font-size:13px; color:rgba(247,243,236,0.35); line-height:1.8; margin-bottom:40px;">Utilizada por más de 300 empresarios españoles. Completamente gratuita. Sin compromiso.</p>
+      <p class="section-sub">Nuestra herramienta evalúa en minutos el estado real de tu empresa para una venta exitosa: valor estimado, riesgos, potencial de mejora y probabilidad de cierre.</p>
+      <p style="font-size:13px;color:rgba(247,243,236,0.35);line-height:1.8;margin-bottom:40px;">Completamente gratuita. Sin compromiso. Sin registro previo.</p>
       <a href="deal-readiness-score.html" class="btn-gold">Calcular mi Deal Readiness Score →</a>
     </div>
-
     <div class="score-widget reveal reveal-delay-2">
       <div class="score-widget-title">Deal Readiness Report</div>
       <div class="score-row">
-        <div class="score-row-header">
-          <span class="score-row-label">Salud financiera</span>
-          <span class="score-row-val">82/100</span>
-        </div>
+        <div class="score-row-header"><span class="score-row-label">Salud financiera</span><span class="score-row-val">82/100</span></div>
         <div class="score-meter"><div class="score-meter-fill" style="width:82%"></div></div>
       </div>
       <div class="score-row">
-        <div class="score-row-header">
-          <span class="score-row-label">Independencia del fundador</span>
-          <span class="score-row-val">61/100</span>
-        </div>
+        <div class="score-row-header"><span class="score-row-label">Independencia del fundador</span><span class="score-row-val">61/100</span></div>
         <div class="score-meter"><div class="score-meter-fill" style="width:61%"></div></div>
       </div>
       <div class="score-row">
-        <div class="score-row-header">
-          <span class="score-row-label">Recurrencia de ingresos</span>
-          <span class="score-row-val">75/100</span>
-        </div>
+        <div class="score-row-header"><span class="score-row-label">Recurrencia de ingresos</span><span class="score-row-val">75/100</span></div>
         <div class="score-meter"><div class="score-meter-fill" style="width:75%"></div></div>
       </div>
       <div class="score-row">
-        <div class="score-row-header">
-          <span class="score-row-label">Documentación y compliance</span>
-          <span class="score-row-val">48/100</span>
-        </div>
+        <div class="score-row-header"><span class="score-row-label">Documentación y compliance</span><span class="score-row-val">48/100</span></div>
         <div class="score-meter"><div class="score-meter-fill" style="width:48%"></div></div>
       </div>
       <div class="score-total">
         <div class="score-total-num">71</div>
         <div class="score-total-label">Score global · Listo para el mercado</div>
       </div>
-      <a href="deal-readiness-score.html" class="score-cta" style="display:block; text-align:center; text-decoration:none;">Calcular el mío gratis →</a>
+      <a href="deal-readiness-score.html" class="score-cta" style="display:block;text-align:center;text-decoration:none;">Calcular el mío gratis →</a>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     INSIGHTS
-════════════════════════════════════════════════════════════ -->
+<!-- INSIGHTS — con links reales a insight-article.html -->
 <section class="insights" id="insights">
   <div class="reveal">
     <div class="section-label">Conocimiento</div>
     <h2 class="section-title">Insights <em>M&A</em></h2>
     <p class="section-sub">Datos reales de mercado, múltiplos por sector y guías para vendedores. El conocimiento que antes solo tenían los bancos de inversión.</p>
   </div>
-
   <div class="insights-grid reveal">
-    <div class="insight-card featured">
+    <a href="insight-article.html?id=multiplos-2025" class="insight-card featured">
       <div class="insight-cat">Múltiplos · Actualizado Q1 2025</div>
       <div class="insight-title">Múltiplos de valoración por sector en España: guía completa 2025</div>
-      <p class="insight-excerpt">Análisis de más de 180 transacciones cerradas en España durante 2024. Conoce los rangos reales de valoración en tu sector antes de hablar con ningún comprador.</p>
-      <div class="insight-meta">12 min lectura · 4.200 descargas</div>
-    </div>
-    <div class="insight-card">
+      <p class="insight-excerpt">Análisis de transacciones cerradas en España durante 2024. Conoce los rangos reales de valoración en tu sector antes de hablar con ningún comprador.</p>
+      <div class="insight-meta">12 min lectura · Muy descargado</div>
+      <div class="insight-arrow">→</div>
+    </a>
+    <a href="insight-article.html?id=eta-espana" class="insight-card">
       <div class="insight-cat">Tendencias M&A</div>
       <div class="insight-title">El auge del comprador ETA en España</div>
       <p class="insight-excerpt">Los directivos que compran empresas están cambiando el mercado.</p>
       <div class="insight-meta">6 min · Tendencias 2025</div>
-    </div>
-    <div class="insight-card">
+      <div class="insight-arrow">→</div>
+    </a>
+    <a href="insight-article.html?id=errores-venta" class="insight-card">
       <div class="insight-cat">Guía para vendedores</div>
-      <div class="insight-title">10 errores que destruyen valor antes de vender tu empresa</div>
-      <p class="insight-excerpt">Los errores más comunes que cometen los empresarios en los 12 meses previos a la venta.</p>
+      <div class="insight-title">10 errores que destruyen valor antes de vender</div>
+      <p class="insight-excerpt">Los errores más comunes en los 12 meses previos a la venta.</p>
       <div class="insight-meta">8 min · Muy leído</div>
-    </div>
-    <div class="insight-card">
+      <div class="insight-arrow">→</div>
+    </a>
+    <a href="insight-article.html?id=dd-financiero" class="insight-card">
       <div class="insight-cat">Due Diligence</div>
       <div class="insight-title">Qué mirará el comprador en tu DD financiero</div>
       <p class="insight-excerpt">Lista definitiva de lo que revisan los compradores y cómo prepararte.</p>
       <div class="insight-meta">5 min · Checklist incluido</div>
-    </div>
+      <div class="insight-arrow">→</div>
+    </a>
   </div>
-
-  <div style="text-align:center; margin-top:48px;" class="reveal">
-    <a href="#" class="btn-outline">Ver todos los insights →</a>
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="insight-article.html" class="btn-outline">Ver todos los insights →</a>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     NOSOTROS
-════════════════════════════════════════════════════════════ -->
+<!-- NOSOTROS — pillars con layout corregido -->
 <section class="nosotros" id="nosotros">
   <div class="nosotros-inner">
-
     <div class="nosotros-left reveal">
       <div class="section-label">Quiénes somos</div>
       <h2 class="section-title">Asesores que han<br>estado <em>al otro lado</em><br>de la mesa</h2>
@@ -397,7 +405,7 @@
           <div class="value-icon">◆</div>
           <div>
             <div class="value-name">Alineación de intereses</div>
-            <div class="value-desc">Nuestro modelo de success fee garantiza que solo ganamos cuando tú ganas. Sin cobros por adelantado en el proceso de venta.</div>
+            <div class="value-desc">Nuestros honorarios están diseñados para que nuestros objetivos y los tuyos vayan siempre en la misma dirección.</div>
           </div>
         </div>
         <div class="value-item">
@@ -419,77 +427,72 @@
           <div class="quote-author-role">Asesores M&A · España</div>
         </div>
       </div>
-
       <div class="nosotros-pillars">
         <div class="pillar">
           <div class="pillar-num">01</div>
-          <div class="pillar-label">Foco en PYMES</div>
-          <div class="pillar-desc">Especialistas en empresas con facturación entre 1M€ y 50M€ — donde la diferencia entre un buen y un mal asesor se mide en millones.</div>
+          <div class="pillar-body">
+            <div class="pillar-label">Foco en PYMES</div>
+            <div class="pillar-desc">Especialistas en empresas con facturación entre 1M€ y 50M€ — donde la diferencia entre un buen y un mal asesor se mide en millones.</div>
+          </div>
         </div>
         <div class="pillar">
           <div class="pillar-num">02</div>
-          <div class="pillar-label">Tecnología + criterio humano</div>
-          <div class="pillar-desc">Combinamos herramientas de análisis avanzado con el juicio de profesionales que han visto cientos de operaciones.</div>
+          <div class="pillar-body">
+            <div class="pillar-label">Tecnología + criterio humano</div>
+            <div class="pillar-desc">Combinamos herramientas de análisis avanzado con el juicio de profesionales que han visto cientos de operaciones.</div>
+          </div>
         </div>
         <div class="pillar">
           <div class="pillar-num">03</div>
-          <div class="pillar-label">Red de compradores activa</div>
-          <div class="pillar-desc">Acceso directo a family offices, fondos de private equity y empresarios en proceso de adquisición activa en España.</div>
+          <div class="pillar-body">
+            <div class="pillar-label">Red de compradores activa</div>
+            <div class="pillar-desc">Acceso directo a family offices, fondos de private equity y empresarios en proceso de adquisición activa en España.</div>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     CONTACT / FINAL CTA
-════════════════════════════════════════════════════════════ -->
+<!-- CONTACTO — sin email ni teléfono, solo formulario -->
 <section class="final-cta" id="contacto">
   <div class="cta-left reveal">
     <div class="section-label" style="color:var(--gold2)">Hablemos</div>
     <h2>Empieza tu <em>operación</em> hoy</h2>
-    <p>Primera consulta sin coste. Te asignamos un asesor especializado en tu sector en menos de 24 horas.</p>
+    <p>Primera consulta sin coste. Cuéntanos tu situación y un asesor especializado en tu sector te responde en menos de 24 horas.</p>
     <div class="contact-options">
-      <a href="mailto:dealpartners.iberia@gmail.com" class="contact-option">
+      <div class="contact-option contact-option--info">
         <span class="contact-option-icon">✉️</span>
         <div>
-          <div class="contact-option-label">Email</div>
-          <div class="contact-option-val">dealpartners.iberia@gmail.com</div>
+          <div class="contact-option-label">Respuesta garantizada</div>
+          <div class="contact-option-val">En menos de 24 horas hábiles</div>
         </div>
-      </a>
-      <a href="tel:+34910000000" class="contact-option">
-        <span class="contact-option-icon">📞</span>
-        <div>
-          <div class="contact-option-label">Teléfono</div>
-          <div class="contact-option-val">+34 910 000 000</div>
-        </div>
-      </a>
-      <a href="#" class="contact-option">
+      </div>
+      <div class="contact-option contact-option--info">
         <span class="contact-option-icon">📅</span>
         <div>
-          <div class="contact-option-label">Videollamada</div>
-          <div class="contact-option-val">Reservar 30 min con un asesor</div>
+          <div class="contact-option-label">¿Prefieres una videollamada?</div>
+          <div class="contact-option-val">Indícalo en el mensaje y te enviamos enlace</div>
         </div>
-      </a>
+      </div>
+      <div class="contact-option contact-option--info">
+        <span class="contact-option-icon">🔒</span>
+        <div>
+          <div class="contact-option-label">Confidencialidad total</div>
+          <div class="contact-option-val">Tus datos nunca se comparten sin consentimiento</div>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="contact-form reveal reveal-delay-2">
-    <!-- 
-      FORMSPREE SETUP (2 minutos):
-      1. Ve a https://formspree.io y crea cuenta gratuita con dealpartners.iberia@gmail.com
-      2. Crea un nuevo form → copia tu Form ID (formato: xyzabcde)
-      3. Reemplaza "TU_FORM_ID" en el action de abajo por tu ID real
-      Ejemplo: action="https://formspree.io/f/xyzabcde"
-    -->
+    <!-- SETUP: reemplaza TU_FORM_ID por tu ID de Formspree -->
     <form id="contactForm" action="https://formspree.io/f/TU_FORM_ID" method="POST" novalidate>
       <input type="hidden" name="_subject" value="Nueva consulta — DealPartners">
       <input type="hidden" name="_language" value="es">
-
       <div class="form-row">
         <div class="form-group">
-          <label for="cf-nombre">Nombre</label>
+          <label for="cf-nombre">Nombre *</label>
           <input id="cf-nombre" type="text" name="nombre" placeholder="Tu nombre" required>
         </div>
         <div class="form-group">
@@ -498,7 +501,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="cf-email">Email</label>
+        <label for="cf-email">Email *</label>
         <input id="cf-email" type="email" name="email" placeholder="tu@empresa.com" required>
       </div>
       <div class="form-group">
@@ -512,73 +515,50 @@
         </select>
       </div>
       <div class="form-group">
-        <label for="cf-facturacion">Facturación aproximada</label>
-        <select id="cf-facturacion" name="facturacion">
-          <option value="">Tamaño de la empresa</option>
-          <option>Menos de 1M€</option>
-          <option>1M€ – 5M€</option>
-          <option>5M€ – 20M€</option>
-          <option>20M€ – 100M€</option>
-          <option>Más de 100M€</option>
-        </select>
-      </div>
-      <div class="form-group">
         <label for="cf-mensaje">Cuéntanos tu situación</label>
         <textarea id="cf-mensaje" name="mensaje" rows="4" placeholder="¿Qué buscas? Cuanto más nos cuentes, mejor podremos ayudarte."></textarea>
       </div>
-
-      <div id="formError" style="display:none; font-size:11px; color:#e57373; margin-bottom:12px; letter-spacing:0.5px;"></div>
-
-      <button type="submit" class="form-submit" id="formSubmitBtn">Solicitar consulta gratuita →</button>
-
-      <div id="formSuccess" style="display:none; background:rgba(74,124,89,0.15); border:1px solid rgba(74,124,89,0.3); padding:20px; margin-top:16px; text-align:center;">
-        <p style="font-size:13px; color:#81c784; letter-spacing:0.5px;">✓ Mensaje recibido — Te contactamos en menos de 24h</p>
+      <div id="formError" style="display:none;font-size:11px;color:#e57373;margin-bottom:12px;letter-spacing:0.5px;"></div>
+      <button type="submit" class="form-submit" id="formSubmitBtn">Enviar consulta →</button>
+      <div id="formSuccess" style="display:none;background:rgba(74,124,89,0.15);border:1px solid rgba(74,124,89,0.3);padding:20px;margin-top:16px;text-align:center;">
+        <p style="font-size:13px;color:#81c784;letter-spacing:0.5px;">✓ Mensaje recibido — Te contactamos en menos de 24h</p>
       </div>
-
-      <p style="font-size:10px; color:rgba(247,243,236,0.25); margin-top:16px; line-height:1.6; letter-spacing:0.5px;">
-        Confidencialidad total garantizada. Tus datos no se comparten con terceros sin tu consentimiento expreso.
-      </p>
+      <p style="font-size:10px;color:rgba(247,243,236,0.25);margin-top:16px;line-height:1.6;letter-spacing:0.5px;">Confidencialidad total garantizada. Tus datos no se comparten con terceros sin tu consentimiento expreso.</p>
     </form>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════════════
-     FOOTER
-════════════════════════════════════════════════════════════ -->
 <footer>
   <div class="footer-brand">
-    <span class="footer-logo">Deal<span>Partners</span></span>
+    <a href="index.html" class="footer-logo">Deal<span>Partners</span></a>
     <p class="footer-tagline">La plataforma de referencia para compraventa de empresas en España. Tecnología, red y asesoramiento experto.</p>
   </div>
   <div class="footer-col">
     <h4>Plataforma</h4>
     <ul>
-      <li><a href="#">Empresas en venta</a></li>
-      <li><a href="#">Vender mi empresa</a></li>
-      <li><a href="#">Para compradores</a></li>
-      <li><a href="deal-readiness-score.html">Deal Readiness Score</a></li>
-      <li><a href="#">Para brokers</a></li>
+      <li><a href="#marketplace">Empresas en venta</a></li>
+      <li><a href="registro.html?tipo=vendedor">Vender mi empresa</a></li>
+      <li><a href="registro.html?tipo=comprador">Para compradores</a></li>
+      <li><a href="deal-readiness-score.html">Valora tu empresa</a></li>
       <li><a href="#nosotros">Quiénes somos</a></li>
     </ul>
   </div>
   <div class="footer-col">
     <h4>Servicios</h4>
     <ul>
-      <li><a href="#">Valoración</a></li>
-      <li><a href="#">Due Diligence</a></li>
-      <li><a href="#">Deal Strategy</a></li>
-      <li><a href="#">Reestructuración</a></li>
-      <li><a href="#">Financiación</a></li>
+      <li><a href="#servicios">Valoración</a></li>
+      <li><a href="#servicios">Due Diligence</a></li>
+      <li><a href="#servicios">Deal Strategy</a></li>
+      <li><a href="#servicios">Preparación pre-venta</a></li>
     </ul>
   </div>
   <div class="footer-col">
     <h4>Recursos</h4>
     <ul>
-      <li><a href="#">Insights M&A</a></li>
-      <li><a href="#">Múltiplos por sector</a></li>
-      <li><a href="#">Guías para vendedores</a></li>
-      <li><a href="#">Casos de éxito</a></li>
-      <li><a href="#">Newsletter</a></li>
+      <li><a href="#insights">Insights M&A</a></li>
+      <li><a href="insight-article.html?id=multiplos-2025">Múltiplos por sector</a></li>
+      <li><a href="insight-article.html?id=errores-venta">Guías para vendedores</a></li>
+      <li><a href="#contacto">Contacto</a></li>
     </ul>
   </div>
 </footer>

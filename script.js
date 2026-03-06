@@ -14,18 +14,40 @@ const revealObserver = new IntersectionObserver((entries) => {
     if (e.isIntersecting) e.target.classList.add('visible');
   });
 }, { threshold: 0.08 });
-
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-/* ── FILTER BUTTONS ─────────────────────────────────────── */
+/* ── MARKETPLACE FILTERS (working) ──────────────────────── */
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', function () {
+    // Update active button
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
+
+    const filter = this.dataset.filter;
+    const cards  = document.querySelectorAll('.listing-card');
+    const grid   = document.getElementById('listingsGrid');
+    const empty  = document.getElementById('listingEmpty');
+    let visible  = 0;
+
+    cards.forEach(card => {
+      const show = filter === 'all' || card.dataset.sector === filter;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    // Show/hide empty state
+    if (empty) empty.style.display = visible === 0 ? '' : 'none';
+
+    // Re-layout grid: 3 cols when 3+ visible, 1 col for single result
+    if (grid) {
+      grid.style.gridTemplateColumns = visible === 1
+        ? '1fr'
+        : 'repeat(3, 1fr)';
+    }
   });
 });
 
-/* ── CONTACT FORM — Formspree async submit ──────────────────── */
+/* ── CONTACT FORM — Formspree async submit ──────────────── */
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', async function (e) {
@@ -35,7 +57,6 @@ if (contactForm) {
     const success = document.getElementById('formSuccess');
     const error   = document.getElementById('formError');
 
-    // Basic validation
     const nombre = contactForm.querySelector('[name="nombre"]').value.trim();
     const email  = contactForm.querySelector('[name="email"]').value.trim();
     if (!nombre || !email) {
@@ -49,62 +70,45 @@ if (contactForm) {
     btn.disabled      = true;
     btn.style.opacity = '0.7';
 
-    // ── Collect form data ─────────────────────────────────────
     const formData = new FormData(contactForm);
 
-    // ── 1. Formspree (email notification) ────────────────────
+    // 1. Formspree
     let formspreeOk = false;
     try {
       const res = await fetch(contactForm.action, {
-        method:  'POST',
-        headers: { 'Accept': 'application/json' },
-        body:    formData,
+        method: 'POST', headers: { 'Accept': 'application/json' }, body: formData,
       });
       formspreeOk = res.ok;
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data?.errors?.map(e => e.message).join(', ') || 'Formspree error');
-      }
-    } catch (err) {
-      console.warn('Formspree error (non-fatal):', err.message);
-      // Continue — we still try Google Sheets
-    }
+    } catch (err) { console.warn('Formspree:', err.message); }
 
-    // ── 2. Google Apps Script (database) ─────────────────────
-    // Pega aquí tu Apps Script URL cuando lo configures
+    // 2. Google Sheets (configure URL in SETUP.md)
     const APPS_SCRIPT_URL = 'TU_APPS_SCRIPT_URL';
-
     if (APPS_SCRIPT_URL !== 'TU_APPS_SCRIPT_URL') {
       try {
         await fetch(APPS_SCRIPT_URL, {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({
-            type:        'contacto',
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'contacto',
             nombre:      formData.get('nombre'),
             empresa:     formData.get('empresa'),
             email:       formData.get('email'),
             perfil:      formData.get('perfil'),
-            facturacion: formData.get('facturacion'),
             mensaje:     formData.get('mensaje'),
           }),
           mode: 'no-cors',
         });
-      } catch (err) {
-        console.warn('Sheets error (non-fatal):', err.message);
-      }
+      } catch (err) { console.warn('Sheets:', err.message); }
     }
 
-    // ── Show result ───────────────────────────────────────────
     if (formspreeOk || APPS_SCRIPT_URL !== 'TU_APPS_SCRIPT_URL') {
       contactForm.reset();
       btn.style.display     = 'none';
       success.style.display = 'block';
     } else {
-      btn.textContent   = 'Solicitar consulta gratuita →';
+      btn.textContent   = 'Enviar consulta →';
       btn.disabled      = false;
       btn.style.opacity = '1';
-      error.textContent = 'No se pudo enviar. Por favor escríbenos a dealpartners.iberia@gmail.com';
+      error.textContent = 'No se pudo enviar. Por favor inténtalo de nuevo o usa el formulario de registro.';
       error.style.display = 'block';
     }
   });
@@ -115,12 +119,21 @@ const scoreObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) {
       e.target.querySelectorAll('.score-meter-fill').forEach(bar => {
-        const targetWidth = bar.style.width;
+        const w = bar.style.width;
         bar.style.width = '0%';
-        setTimeout(() => { bar.style.width = targetWidth; }, 300);
+        setTimeout(() => { bar.style.width = w; }, 300);
       });
     }
   });
 }, { threshold: 0.3 });
-
 document.querySelectorAll('.score-widget').forEach(el => scoreObserver.observe(el));
+
+/* ── REGISTRO PAGE: pre-select type from URL param ──────── */
+const urlParams = new URLSearchParams(window.location.search);
+const tipoParam = urlParams.get('tipo');
+if (tipoParam) {
+  const selector = document.getElementById('reg-tipo');
+  if (selector) selector.value = tipoParam;
+  const tab = document.querySelector(`[data-tab="${tipoParam}"]`);
+  if (tab) tab.click();
+}
