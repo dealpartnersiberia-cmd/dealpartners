@@ -1107,21 +1107,41 @@ async function submitScoreData() {
     contactTelefono:  telefono,
   };
 
-  // ── CONFIGURACIÓN: pega aquí tu Apps Script URL ─────────────
-  const APPS_SCRIPT_URL = 'TU_APPS_SCRIPT_URL';
-  // ────────────────────────────────────────────────────────────
+  // ── CONFIGURACIÓN ────────────────────────────────────────────
+  const APPS_SCRIPT_URL   = 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec';
+  const FORMSPREE_SCORE   = 'https://formspree.io/f/mvzwoopr'; // mismo endpoint que contacto
+  // ─────────────────────────────────────────────────────────────
 
   try {
-    if (APPS_SCRIPT_URL === 'TU_APPS_SCRIPT_URL') {
-      // Modo demo: simula éxito si no está configurado
-      console.log('📊 Score data (demo mode):', payload);
-      await new Promise(r => setTimeout(r, 800));
-    } else {
+    // 1. Formspree — notificación por email inmediata
+    const scoreLabel = getScoreLevelText(window._lastScoreData.overall);
+    const fd = new FormData();
+    fd.append('_subject',        `📊 Nuevo Deal Score ${window._lastScoreData.overall}/100 — ${nombre}`);
+    fd.append('nombre',          nombre);
+    fd.append('email',           email);
+    fd.append('empresa',         empresa || '—');
+    fd.append('telefono',        telefono || '—');
+    fd.append('score_global',    `${window._lastScoreData.overall}/100`);
+    fd.append('nivel',           scoreLabel);
+    fd.append('valoracion',      `EBITDA × ${window._lastScoreData.multRange}`);
+    Object.entries(window._lastScoreData.scores || {}).forEach(([cat, val]) => {
+      fd.append(`score_${cat}`, `${val.pct}/100`);
+    });
+    fd.append('reply_to', email);
+
+    await fetch(FORMSPREE_SCORE, {
+      method:  'POST',
+      headers: { 'Accept': 'application/json' },
+      body:    fd,
+    });
+
+    // 2. Google Sheets (cuando esté configurado)
+    if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec') {
       await fetch(APPS_SCRIPT_URL, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),
-        mode:    'no-cors', // Apps Script requiere no-cors
+        mode:    'no-cors',
       });
     }
 
@@ -1134,6 +1154,13 @@ async function submitScoreData() {
     errorEl.textContent = 'Error al enviar. Por favor escríbenos a dealpartners.iberia@gmail.com';
     errorEl.style.display = 'block';
   }
+}
+
+function getScoreLevelText(score) {
+  if (score >= 80) return 'Excelente — Lista para el mercado';
+  if (score >= 65) return 'Buena posición — Con ajustes menores';
+  if (score >= 45) return 'En desarrollo — Necesita preparación';
+  return 'Fase temprana — Preparación necesaria';
 }
 
 function getInsight(id, pct) {

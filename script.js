@@ -82,8 +82,8 @@ if (contactForm) {
     } catch (err) { console.warn('Formspree:', err.message); }
 
     // 2. Google Sheets (configure URL in SETUP.md)
-    const APPS_SCRIPT_URL = 'TU_APPS_SCRIPT_URL';
-    if (APPS_SCRIPT_URL !== 'TU_APPS_SCRIPT_URL') {
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec';
+    if (APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec') {
       try {
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -100,7 +100,7 @@ if (contactForm) {
       } catch (err) { console.warn('Sheets:', err.message); }
     }
 
-    if (formspreeOk || APPS_SCRIPT_URL !== 'TU_APPS_SCRIPT_URL') {
+    if (formspreeOk || APPS_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyNV_ZqgjyUlGNDPcljOqSgXdQ56_2886aq8J9eAnPK4JLxENWpJ0IbOC3QTrmqYQhshg/exec') {
       contactForm.reset();
       btn.style.display     = 'none';
       success.style.display = 'block';
