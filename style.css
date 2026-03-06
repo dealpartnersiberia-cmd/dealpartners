@@ -412,6 +412,62 @@ section { padding: 120px 60px; }
 }
 .form-submit:hover { background: var(--gold2); transform: translateY(-2px); }
 
+/* ── NOSOTROS ─────────────────────────────────────────────── */
+.nosotros { background: var(--white); }
+.nosotros-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: start;
+}
+
+.nosotros-text {
+  font-size: 14px; color: var(--muted); line-height: 1.9;
+  margin-bottom: 20px; font-weight: 300;
+}
+.nosotros-values { margin-top: 40px; display: flex; flex-direction: column; gap: 24px; }
+.value-item {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding-bottom: 24px; border-bottom: 1px solid var(--border);
+}
+.value-item:last-child { border-bottom: none; padding-bottom: 0; }
+.value-icon { color: var(--gold); font-size: 10px; margin-top: 4px; flex-shrink: 0; }
+.value-name { font-size: 13px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; color: var(--dark); }
+.value-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+.nosotros-quote-block {
+  background: var(--dark);
+  padding: 48px; margin-bottom: 1px; position: relative;
+}
+.quote-mark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 120px; line-height: 0.6; color: var(--gold);
+  opacity: 0.25; position: absolute; top: 32px; left: 36px;
+  pointer-events: none;
+}
+blockquote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 300; font-style: italic;
+  color: var(--cream); line-height: 1.6; margin-bottom: 28px;
+  position: relative; z-index: 1;
+}
+.quote-author        { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; }
+.quote-author-name   { font-size: 12px; letter-spacing: 2px; font-weight: 500; color: var(--gold2); margin-bottom: 4px; }
+.quote-author-role   { font-size: 11px; color: rgba(247,243,236,0.35); letter-spacing: 1px; }
+
+.nosotros-pillars { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+.pillar {
+  background: var(--cream2); padding: 28px 32px;
+  display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start;
+  transition: background 0.3s;
+}
+.pillar:hover { background: var(--cream); }
+.pillar-num   { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--gold); line-height: 1; }
+.pillar-label { font-size: 12px; font-weight: 600; letter-spacing: 1px; margin-bottom: 6px; color: var(--dark); }
+.pillar-desc  { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+@media (max-width: 1024px) {
+  .nosotros-inner { grid-template-columns: 1fr; gap: 48px; }
+}
+
 /* ── FOOTER ───────────────────────────────────────────────── */
 footer {
   background: #111009; padding: 60px;
