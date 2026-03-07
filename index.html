@@ -3,1426 +3,574 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DealPartners · Admin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg:        #0f0e0c;
-      --bg2:       #161410;
-      --bg3:       #1e1b16;
-      --bg4:       #252118;
-      --border:    rgba(255,255,255,0.07);
-      --border2:   rgba(184,149,42,0.25);
-      --gold:      #b8952a;
-      --gold2:     #d4af5a;
-      --gold3:     #f0e0a8;
-      --cream:     #f7f3ec;
-      --muted:     rgba(247,243,236,0.35);
-      --muted2:    rgba(247,243,236,0.18);
-      --text:      rgba(247,243,236,0.85);
-      --green:     #4caf7d;
-      --red:       #e05555;
-      --blue:      #5b8fd4;
-      --sidebar-w: 220px;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; }
-    body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; font-weight: 300; display: flex; }
-
-    /* ── SIDEBAR ─────────────────────────────────────────────── */
-    .sidebar {
-      width: var(--sidebar-w); min-height: 100vh; flex-shrink: 0;
-      background: var(--bg2); border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      position: fixed; left: 0; top: 0; bottom: 0; z-index: 100;
-    }
-    .sidebar-logo {
-      padding: 24px 20px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .sidebar-logo-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px; font-weight: 500; letter-spacing: 1px; color: var(--cream);
-    }
-    .sidebar-logo-text span { color: var(--gold); }
-    .sidebar-logo-sub {
-      font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
-      color: var(--muted); margin-top: 4px;
-    }
-    .sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
-    .nav-section {
-      font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
-      color: var(--muted2); padding: 16px 20px 6px; font-weight: 600;
-    }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 20px; cursor: pointer;
-      font-size: 11px; letter-spacing: 0.5px; font-weight: 400;
-      color: var(--muted); border-left: 2px solid transparent;
-      transition: all 0.18s; text-decoration: none;
-    }
-    .nav-item:hover { color: var(--cream); background: rgba(255,255,255,0.03); }
-    .nav-item.active { color: var(--gold2); border-left-color: var(--gold); background: rgba(184,149,42,0.06); }
-    .nav-item .icon { width: 16px; text-align: center; font-size: 13px; }
-    .nav-badge {
-      margin-left: auto; background: var(--gold); color: #111;
-      font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 10px;
-    }
-    .sidebar-bottom {
-      padding: 16px 20px; border-top: 1px solid var(--border);
-      font-size: 10px; color: var(--muted2);
-    }
-    .logout-btn {
-      display: block; margin-top: 8px; padding: 8px 12px;
-      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-      color: var(--muted); font-size: 10px; letter-spacing: 1px;
-      text-transform: uppercase; cursor: pointer; text-align: center;
-      font-family: 'Montserrat', sans-serif; width: 100%;
-      transition: all 0.2s;
-    }
-    .logout-btn:hover { border-color: var(--red); color: var(--red); }
-
-    /* ── MAIN ────────────────────────────────────────────────── */
-    .main {
-      margin-left: var(--sidebar-w); flex: 1; display: flex;
-      flex-direction: column; height: 100vh; overflow: hidden;
-    }
-    .topbar {
-      height: 56px; background: var(--bg2); border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 32px; flex-shrink: 0;
-    }
-    .topbar-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 20px; font-weight: 400; color: var(--cream);
-    }
-    .topbar-title em { font-style: italic; color: var(--gold2); }
-    .topbar-right { display: flex; align-items: center; gap: 16px; }
-    .topbar-badge {
-      font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-      color: var(--gold); border: 1px solid var(--border2);
-      padding: 4px 10px;
-    }
-    .content { flex: 1; overflow-y: auto; padding: 32px; }
-    .content::-webkit-scrollbar { width: 4px; }
-    .content::-webkit-scrollbar-thumb { background: var(--gold); }
-
-    /* ── VIEWS ───────────────────────────────────────────────── */
-    .view { display: none; }
-    .view.active { display: block; }
-
-    /* ── KPI GRID ────────────────────────────────────────────── */
-    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
-    .kpi-card {
-      background: var(--bg3); border: 1px solid var(--border);
-      padding: 20px 24px;
-    }
-    .kpi-label { font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 10px; }
-    .kpi-val { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--cream); line-height: 1; }
-    .kpi-val span { font-size: 16px; color: var(--gold2); }
-    .kpi-delta { font-size: 10px; margin-top: 6px; }
-    .kpi-delta.up { color: var(--green); }
-    .kpi-delta.neutral { color: var(--muted); }
-
-    /* ── 2-COL LAYOUT ────────────────────────────────────────── */
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-    .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-
-    /* ── PANEL ───────────────────────────────────────────────── */
-    .panel {
-      background: var(--bg3); border: 1px solid var(--border);
-      margin-bottom: 20px;
-    }
-    .panel-head {
-      padding: 16px 24px; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .panel-title {
-      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-      color: var(--gold); font-weight: 500;
-    }
-    .panel-action {
-      font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
-      color: var(--muted); cursor: pointer; border: 1px solid var(--border);
-      padding: 4px 10px; background: transparent; font-family: 'Montserrat', sans-serif;
-      transition: all 0.2s;
-    }
-    .panel-action:hover { color: var(--gold2); border-color: var(--border2); }
-    .panel-body { padding: 24px; }
-
-    /* ── TABLE ───────────────────────────────────────────────── */
-    .dp-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-    .dp-table th {
-      font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
-      color: var(--muted2); font-weight: 600; padding: 8px 12px;
-      text-align: left; border-bottom: 1px solid var(--border);
-    }
-    .dp-table td {
-      padding: 11px 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
-      color: var(--text); vertical-align: middle;
-    }
-    .dp-table tr:hover td { background: rgba(255,255,255,0.02); }
-    .dp-table tr:last-child td { border-bottom: none; }
-
-    /* ── TAGS ────────────────────────────────────────────────── */
-    .tag {
-      display: inline-block; font-size: 8px; letter-spacing: 1.5px;
-      text-transform: uppercase; font-weight: 600; padding: 3px 8px;
-    }
-    .tag-gold    { background: rgba(184,149,42,0.15); color: var(--gold2); }
-    .tag-green   { background: rgba(76,175,125,0.15); color: var(--green); }
-    .tag-blue    { background: rgba(91,143,212,0.15); color: var(--blue); }
-    .tag-red     { background: rgba(224,85,85,0.15);  color: var(--red); }
-    .tag-muted   { background: rgba(255,255,255,0.06); color: var(--muted); }
-
-    /* ── ACTIVITY FEED ───────────────────────────────────────── */
-    .activity-item {
-      display: flex; gap: 14px; padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-    .activity-item:last-child { border-bottom: none; }
-    .activity-dot {
-      width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0;
-    }
-    .activity-text { font-size: 12px; color: var(--text); line-height: 1.5; }
-    .activity-time { font-size: 10px; color: var(--muted); margin-top: 2px; }
-
-    /* ── SPARKLINE ───────────────────────────────────────────── */
-    .sparkline { height: 40px; display: flex; align-items: flex-end; gap: 3px; }
-    .spark-bar {
-      flex: 1; background: var(--border);
-      border-radius: 1px; transition: background 0.2s; cursor: default;
-    }
-    .spark-bar.hi { background: rgba(184,149,42,0.5); }
-    .spark-bar:hover { background: var(--gold); }
-
-    /* ── MATCHING ────────────────────────────────────────────── */
-    .match-card {
-      background: var(--bg4); border: 1px solid var(--border);
-      padding: 20px; margin-bottom: 12px; position: relative;
-    }
-    .match-score-ring {
-      position: absolute; top: 16px; right: 16px;
-      width: 52px; height: 52px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px; font-weight: 400;
-    }
-    .match-parties { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .match-party {
-      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-      padding: 8px 12px; font-size: 11px; flex: 1;
-    }
-    .match-party-role { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
-    .match-party-name { color: var(--cream); font-weight: 500; }
-    .match-arrow { color: var(--gold); font-size: 18px; flex-shrink: 0; }
-    .match-rationale { font-size: 11px; color: var(--muted); line-height: 1.7; margin-bottom: 10px; }
-    .match-actions { display: flex; gap: 8px; }
-    .match-btn {
-      font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
-      padding: 7px 14px; cursor: pointer; font-family: 'Montserrat', sans-serif;
-      font-weight: 500; border: none; transition: all 0.2s;
-    }
-    .match-btn-primary { background: var(--gold); color: #111; }
-    .match-btn-primary:hover { background: var(--gold2); }
-    .match-btn-secondary {
-      background: transparent; color: var(--muted);
-      border: 1px solid var(--border);
-    }
-    .match-btn-secondary:hover { color: var(--cream); border-color: rgba(255,255,255,0.2); }
-
-    /* ── AI CHAT ─────────────────────────────────────────────── */
-    .ai-area {
-      background: var(--bg4); border: 1px solid var(--border);
-      padding: 24px; margin-bottom: 16px; min-height: 200px;
-      font-size: 12px; line-height: 1.8; color: var(--text);
-    }
-    .ai-loading { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
-    .ai-loading-dots span {
-      display: inline-block; width: 5px; height: 5px; border-radius: 50%;
-      background: var(--gold); animation: dot-pulse 1.2s infinite;
-      margin: 0 2px;
-    }
-    .ai-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .ai-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dot-pulse { 0%,80%,100% { opacity:0.2; transform:scale(0.8); } 40% { opacity:1; transform:scale(1); } }
-
-    .ai-controls { display: flex; gap: 10px; }
-    .ai-prompt {
-      flex: 1; background: var(--bg3); border: 1px solid var(--border);
-      color: var(--cream); font-family: 'Montserrat', sans-serif; font-size: 12px;
-      padding: 12px 16px; outline: none; resize: none; font-weight: 300;
-    }
-    .ai-prompt:focus { border-color: var(--border2); }
-    .ai-send {
-      background: var(--gold); color: #111; border: none;
-      padding: 12px 20px; cursor: pointer; font-family: 'Montserrat', sans-serif;
-      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-      font-weight: 600; transition: background 0.2s; align-self: flex-end;
-    }
-    .ai-send:hover { background: var(--gold2); }
-    .ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* ── FORM INPUTS ─────────────────────────────────────────── */
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-    .form-row.single { grid-template-columns: 1fr; }
-    .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
-    .form-field { display: flex; flex-direction: column; gap: 6px; }
-    .form-label { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-weight: 500; }
-    .form-input, .form-select, .form-textarea {
-      background: var(--bg4); border: 1px solid var(--border);
-      color: var(--cream); font-family: 'Montserrat', sans-serif;
-      font-size: 12px; font-weight: 300; padding: 10px 12px; outline: none;
-      transition: border-color 0.2s; width: 100%;
-    }
-    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--border2); }
-    .form-input::placeholder, .form-textarea::placeholder { color: var(--muted2); }
-    .form-select option { background: var(--bg3); }
-    .form-textarea { resize: vertical; min-height: 80px; }
-    .form-btn {
-      background: var(--gold); color: #111; border: none;
-      padding: 12px 28px; cursor: pointer; font-family: 'Montserrat', sans-serif;
-      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-      font-weight: 600; transition: background 0.2s; margin-top: 8px;
-    }
-    .form-btn:hover { background: var(--gold2); }
-    .form-btn-outline {
-      background: transparent; color: var(--muted); border: 1px solid var(--border);
-      padding: 12px 28px; cursor: pointer; font-family: 'Montserrat', sans-serif;
-      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-      margin-top: 8px; margin-left: 10px; transition: all 0.2s;
-    }
-    .form-btn-outline:hover { color: var(--red); border-color: var(--red); }
-
-    /* ── EMPRESA CARD EDITOR ─────────────────────────────────── */
-    .listing-editor-card {
-      background: var(--bg4); border: 1px solid var(--border);
-      padding: 20px; margin-bottom: 12px;
-      display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: start;
-    }
-    .listing-editor-name { font-size: 14px; color: var(--cream); margin-bottom: 4px; font-weight: 400; }
-    .listing-editor-meta { font-size: 11px; color: var(--muted); }
-    .listing-editor-actions { display: flex; gap: 8px; }
-    .icon-btn {
-      width: 32px; height: 32px; background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border); cursor: pointer; display: flex;
-      align-items: center; justify-content: center; font-size: 14px;
-      transition: all 0.2s;
-    }
-    .icon-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
-    .icon-btn.danger:hover { background: rgba(224,85,85,0.1); border-color: var(--red); }
-
-    /* ── LOGIN ───────────────────────────────────────────────── */
-    #loginScreen {
-      position: fixed; inset: 0; background: var(--bg);
-      display: flex; align-items: center; justify-content: center; z-index: 999;
-    }
-    .login-box {
-      width: 380px; background: var(--bg2); border: 1px solid var(--border);
-      padding: 48px 40px;
-    }
-    .login-logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 28px; font-weight: 400; color: var(--cream);
-      margin-bottom: 6px;
-    }
-    .login-logo span { color: var(--gold); }
-    .login-sub { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 36px; }
-    .login-field { margin-bottom: 16px; }
-    .login-label { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
-    .login-input {
-      width: 100%; background: var(--bg3); border: 1px solid var(--border);
-      color: var(--cream); font-family: 'Montserrat', sans-serif;
-      font-size: 13px; padding: 12px 14px; outline: none;
-      transition: border-color 0.2s;
-    }
-    .login-input:focus { border-color: var(--border2); }
-    .login-btn {
-      width: 100%; background: var(--gold); color: #111; border: none;
-      padding: 14px; cursor: pointer; font-family: 'Montserrat', sans-serif;
-      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-      font-weight: 600; margin-top: 24px; transition: background 0.2s;
-    }
-    .login-btn:hover { background: var(--gold2); }
-    .login-error { color: var(--red); font-size: 11px; margin-top: 10px; display: none; }
-
-    /* ── MODAL ───────────────────────────────────────────────── */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-      display: none; align-items: center; justify-content: center; z-index: 500;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--bg2); border: 1px solid var(--border2);
-      padding: 32px; width: 560px; max-height: 80vh; overflow-y: auto;
-    }
-    .modal::-webkit-scrollbar { width: 4px; }
-    .modal::-webkit-scrollbar-thumb { background: var(--gold); }
-    .modal-title {
-      font-family: 'Cormorant Garamond', serif; font-size: 22px;
-      color: var(--cream); margin-bottom: 4px;
-    }
-    .modal-title em { color: var(--gold2); font-style: italic; }
-    .modal-sub { font-size: 11px; color: var(--muted); margin-bottom: 24px; }
-    .modal-close {
-      position: absolute; top: 16px; right: 16px;
-      background: transparent; border: none; color: var(--muted);
-      font-size: 20px; cursor: pointer;
-    }
-
-    /* ── CONTACT DETAIL ──────────────────────────────────────── */
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .detail-item { }
-    .detail-key { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
-    .detail-val { font-size: 12px; color: var(--cream); }
-
-    /* ── MISC ────────────────────────────────────────────────── */
-    .section-head-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-    .section-head-row h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 24px; font-weight: 300; color: var(--cream);
-    }
-    .section-head-row h2 em { font-style: italic; color: var(--gold2); }
-    .empty-state { text-align: center; padding: 48px; color: var(--muted); font-size: 13px; }
-    .empty-state-icon { font-size: 32px; margin-bottom: 12px; }
-    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
-    .text-gold { color: var(--gold2); }
-    .text-green { color: var(--green); }
-    .text-red { color: var(--red); }
-    .text-muted { color: var(--muted); }
-    .fw500 { font-weight: 500; }
-
-    @media (max-width: 1100px) {
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-      .two-col, .three-col { grid-template-columns: 1fr; }
-    }
-  </style>
+  <title>DealPartners — Plataforma M&A para empresas españolas</title>
+  <meta name="description" content="La plataforma que conecta compradores y vendedores de empresas con asesoramiento estratégico. Deal Strategy, Valoración, Due Diligence y más.">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════
-     LOGIN SCREEN
-══════════════════════════════════════════════════════════ -->
-<div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">Deal<span>Partners</span></div>
-    <div class="login-sub">Panel de Administración</div>
-    <div class="login-field">
-      <label class="login-label">Usuario</label>
-      <input class="login-input" id="loginUser" type="text" placeholder="admin" autocomplete="username">
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">Deal<span>Partners</span></a>
+  <ul class="nav-links">
+    <li><a href="#marketplace">Operaciones</a></li>
+    <li><a href="#vender">Vendedores</a></li>
+    <li><a href="#comprar">Compradores</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#insights">Insights</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="deal-readiness-score.html" class="nav-cta">Valora tu empresa</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Plataforma M&A · España</div>
+    <h1>La plataforma que <em>une</em> compradores y vendedores de empresas</h1>
+    <p class="hero-sub">Asesoramiento estratégico, tecnología y red de inversores para que tu operación sea un éxito. Especializados en PYMES españolas — desde la valoración hasta el cierre.</p>
+    <div class="hero-actions">
+      <a href="registro.html" class="btn-gold">Quiero vender mi empresa</a>
+      <a href="#marketplace" class="btn-outline">Ver empresas en venta</a>
     </div>
-    <div class="login-field">
-      <label class="login-label">Contraseña</label>
-      <input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
-    </div>
-    <button class="login-btn" onclick="doLogin()">Entrar →</button>
-    <div class="login-error" id="loginError">Usuario o contraseña incorrectos.</div>
-    <p style="margin-top:20px;font-size:10px;color:var(--muted2);text-align:center;">Credenciales por defecto: admin / dealpartners2025</p>
   </div>
+  <div class="hero-right">
+    <div class="hero-stats">
+      <div class="hero-stats-title">Actividad de la plataforma</div>
+      <div class="stat-row">
+        <div class="stat-num">47<sup>+</sup></div>
+        <div class="stat-label">Operaciones activas en plataforma</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-num">€2.3<sup>B</sup></div>
+        <div class="stat-label">Valor total de activos listados</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-num">94<sup>%</sup></div>
+        <div class="stat-label">Tasa de éxito en operaciones asesoradas</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-num">6.2<sup>x</sup></div>
+        <div class="stat-label">Múltiplo medio EBITDA cerrado en 2024</div>
+      </div>
+      <div class="hero-claim">
+        <span class="hero-claim-mark">—</span>
+        La plataforma M&A de referencia para PYMES españolas. Alineación total de intereses, criterio independiente y acceso a los compradores que realmente pagan el precio justo.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-gold"></div>
+
+<!-- MARKETPLACE -->
+<section class="marketplace" id="marketplace">
+  <div class="reveal">
+    <div class="section-label">Oportunidades activas</div>
+    <h2 class="section-title">Empresas <em>en venta</em></h2>
+    <p class="section-sub">Operaciones verificadas y bajo NDA. Accede al detalle completo tras registro gratuito como comprador cualificado.</p>
+  </div>
+
+  <div class="filters reveal">
+    <button class="filter-btn active" data-filter="all">Todos los sectores</button>
+    <button class="filter-btn" data-filter="industrial">Industrial</button>
+    <button class="filter-btn" data-filter="tecnologia">Tecnología</button>
+    <button class="filter-btn" data-filter="salud">Salud &amp; Clínicas</button>
+    <button class="filter-btn" data-filter="hosteleria">Hostelería</button>
+    <button class="filter-btn" data-filter="servicios-b2b">Servicios B2B</button>
+    <button class="filter-btn" data-filter="retail">Retail</button>
+  </div>
+
+  <div class="listings-grid" id="listingsGrid">
+    <div class="listing-card" data-sector="industrial">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Industrial · Madrid</div>
+      <div class="listing-name">Fabricante de componentes metálicos para automoción</div>
+      <p class="listing-desc">28 años de historia, contratos recurrentes con Tier-1 automoción. Mínima dependencia del fundador y equipo directivo consolidado.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€8.4M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€1.9M</div></div>
+        <div><div class="metric-label">Empleados</div><div class="metric-val">62</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Madrid</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="salud">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Salud · Cataluña</div>
+      <div class="listing-name">Red de 3 clínicas dentales con marca propia</div>
+      <p class="listing-desc">Grupo dental con posicionamiento premium, fuerte captación digital y equipo médico estable. Potencial de roll-up inmediato.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€3.1M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€720K</div></div>
+        <div><div class="metric-label">Centros</div><div class="metric-val">3</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Cataluña</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="tecnologia">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Software · Remoto</div>
+      <div class="listing-name">SaaS B2B para gestión de flotas logísticas</div>
+      <p class="listing-desc">Plataforma con 140 clientes recurrentes, churn inferior al 4% anual y ARR creciendo al 35% interanual. Fundadores dispuestos a permanencia.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">ARR</div><div class="metric-val">€1.2M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€380K</div></div>
+        <div><div class="metric-label">Clientes</div><div class="metric-val">140</div></div>
+        <div><div class="metric-label">Modelo</div><div class="metric-val">SaaS</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="hosteleria">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Hostelería · Valencia</div>
+      <div class="listing-name">Grupo de 5 restaurantes con marca consolidada</div>
+      <p class="listing-desc">Cadena de restauración con operativa centralizada, carta propia y fuerte reconocimiento de marca en el mercado valenciano.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€4.8M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€560K</div></div>
+        <div><div class="metric-label">Locales</div><div class="metric-val">5</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Valencia</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="servicios-b2b">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Servicios B2B · País Vasco</div>
+      <div class="listing-name">Consultoría de ingeniería con contratos públicos</div>
+      <p class="listing-desc">Consultora técnica especializada en proyectos de ingeniería para administraciones públicas y empresas del sector energético.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€2.3M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€490K</div></div>
+        <div><div class="metric-label">Empleados</div><div class="metric-val">18</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">País Vasco</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-card" data-sector="retail">
+      <div class="listing-confidential">Confidencial</div>
+      <div class="listing-tag">Retail · Andalucía</div>
+      <div class="listing-name">Cadena de moda infantil multimarca</div>
+      <p class="listing-desc">8 puntos de venta en Andalucía con omnicanalidad activa, base de clientes fidelizada y acuerdos exclusivos con proveedores europeos.</p>
+      <div class="listing-metrics">
+        <div><div class="metric-label">Facturación</div><div class="metric-val">€5.6M</div></div>
+        <div><div class="metric-label">EBITDA</div><div class="metric-val">€610K</div></div>
+        <div><div class="metric-label">Tiendas</div><div class="metric-val">8</div></div>
+        <div><div class="metric-label">Región</div><div class="metric-val">Andalucía</div></div>
+      </div>
+      <a href="#contacto" class="listing-link">Solicitar información →</a>
+    </div>
+
+    <div class="listing-empty" id="listingEmpty" style="display:none;">
+      <div class="listing-empty-icon">🔍</div>
+      <div class="listing-empty-title">Sin operaciones activas en este sector</div>
+      <p>Estamos incorporando nuevas oportunidades continuamente. Déjanos tu perfil y te avisamos.</p>
+      <a href="#contacto" class="btn-outline" style="margin-top:20px;display:inline-block;">Recibir alertas</a>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="registro.html" class="btn-outline">Acceder a todas las operaciones — Registro gratuito</a>
+  </div>
+</section>
+
+<!-- VENDER -->
+<section class="sell" id="vender">
+  <div class="reveal">
+    <div class="section-label">Para vendedores</div>
+    <h2 class="section-title" style="color:var(--white)">El proceso de <em>vender</em> tu empresa</h2>
+    <p class="section-sub">Te acompañamos en cada fase para maximizar el valor de tu empresa y garantizar una transacción exitosa.</p>
+  </div>
+  <div class="process-steps reveal">
+    <div class="process-line"></div>
+    <div class="process-step">
+      <div class="step-number">01</div>
+      <div class="step-title">Valoración</div>
+      <p class="step-desc">Análisis financiero profundo, benchmarking sectorial y valoración por múltiplos. Conoce el valor real de tu empresa antes de salir al mercado.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-number">02</div>
+      <div class="step-title">Preparación</div>
+      <p class="step-desc">Reestructuración pre-venta, normalización de EBITDA, ordenación documental y elaboración del Cuaderno de Venta (CIM) profesional.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-number">03</div>
+      <div class="step-title">Búsqueda</div>
+      <p class="step-desc">Acceso a nuestra red de compradores cualificados — family offices, PE, industriales — con proceso discreto y bajo NDA desde el primer contacto.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-number">04</div>
+      <div class="step-title">Cierre</div>
+      <p class="step-desc">Gestión de due diligence, negociación de SPA, coordinación legal y fiscal hasta el cierre definitivo. Sin sorpresas de última hora.</p>
+    </div>
+  </div>
+  <div style="margin-top:72px;text-align:center;" class="reveal">
+    <a href="registro.html?tipo=vendedor" class="btn-gold">Registrarme como vendedor</a>
+  </div>
+</section>
+
+<!-- COMPRAR -->
+<section class="buy" id="comprar">
+  <div class="reveal">
+    <div class="section-label">Para compradores</div>
+    <h2 class="section-title">¿Quién <em>compra</em> en DealPartners?</h2>
+    <p class="section-sub">Accede a operaciones exclusivas verificadas. Filtra por sector, tamaño y geografía. Muévete rápido con información de calidad.</p>
+  </div>
+  <div class="buyer-types reveal">
+    <div class="buyer-card">
+      <span class="buyer-icon">🏛️</span>
+      <div class="buyer-type-label">Inversor institucional</div>
+      <div class="buyer-name">Family Offices &amp; Private Equity</div>
+      <p class="buyer-desc">Acceso prioritario a deal flow exclusivo con información financiera verificada y proceso estructurado.</p>
+      <ul class="buyer-features">
+        <li>Deal flow curado y verificado</li>
+        <li>Información financiera prevalidada</li>
+        <li>Acceso a operaciones pre-mercado</li>
+        <li>Soporte en DD y negociación</li>
+      </ul>
+    </div>
+    <div class="buyer-card">
+      <span class="buyer-icon">🏭</span>
+      <div class="buyer-type-label">Comprador estratégico</div>
+      <div class="buyer-name">Empresarios &amp; Grupos Industriales</div>
+      <p class="buyer-desc">Encuentra la empresa complementaria para crecer inorgánicamente o diversificar en nuevos mercados.</p>
+      <ul class="buyer-features">
+        <li>Búsqueda por criterios específicos</li>
+        <li>Análisis de sinergias estratégicas</li>
+        <li>Integración post-adquisición</li>
+        <li>Financiación corporativa</li>
+      </ul>
+    </div>
+    <div class="buyer-card">
+      <span class="buyer-icon">👔</span>
+      <div class="buyer-type-label">Comprador individual</div>
+      <div class="buyer-name">Directivos &amp; Emprendedores</div>
+      <p class="buyer-desc">Adquiere una empresa con tracción probada en lugar de construir desde cero. ETA (Entrepreneurship Through Acquisition).</p>
+      <ul class="buyer-features">
+        <li>Empresas con equipo y clientes</li>
+        <li>Asesoramiento en financiación</li>
+        <li>Mentoría post-adquisición</li>
+        <li>Comunidad de compradores ETA</li>
+      </ul>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="registro.html?tipo=comprador" class="btn-gold">Registrarme como comprador — Gratis</a>
+  </div>
+</section>
+
+<!-- SERVICIOS — sin precios, solo tiempos orientativos -->
+<section class="services-section" id="servicios">
+  <div class="reveal">
+    <div class="section-label">Asesoramiento</div>
+    <h2 class="section-title">Servicios <em>especializados</em></h2>
+    <p class="section-sub">Más allá del marketplace, nuestro equipo de asesores acompaña cada operación con servicios de alto valor.</p>
+  </div>
+  <div class="services-grid reveal">
+    <div class="service-item">
+      <div class="service-num-big">01</div>
+      <div class="service-content">
+        <div class="service-badge">Valoración</div>
+        <div class="service-title">Valoración de empresa</div>
+        <p class="service-desc">Informe de valoración profesional por múltiplos sectoriales, DCF y transacciones comparables. Defendible ante cualquier comprador.</p>
+        <div class="service-price-tag">Entrega orientativa en 10 días hábiles</div>
+      </div>
+    </div>
+    <div class="service-item">
+      <div class="service-num-big">02</div>
+      <div class="service-content">
+        <div class="service-badge">Due Diligence</div>
+        <div class="service-title">Due Diligence financiera</div>
+        <p class="service-desc">Revisión completa de estados financieros, calidad del EBITDA, estructura de deuda y riesgos ocultos. Vendor DD o Buy-side DD.</p>
+        <div class="service-price-tag">Plazo orientativo: 3–6 semanas</div>
+      </div>
+    </div>
+    <div class="service-item">
+      <div class="service-num-big">03</div>
+      <div class="service-content">
+        <div class="service-badge">Estrategia</div>
+        <div class="service-title">Deal Strategy</div>
+        <p class="service-desc">Diseño de la estrategia óptima de salida, estructuración del deal, earnout, deferred consideration y planificación fiscal de la transacción.</p>
+        <div class="service-price-tag">Alineado con el éxito de la operación</div>
+      </div>
+    </div>
+    <div class="service-item">
+      <div class="service-num-big">04</div>
+      <div class="service-content">
+        <div class="service-badge">Reestructuración</div>
+        <div class="service-title">Preparación pre-venta</div>
+        <p class="service-desc">Normalización contable, reestructuración organizativa, limpieza de balance y mejora de métricas para maximizar la valoración antes de salir al mercado.</p>
+        <div class="service-price-tag">Proceso orientativo: 3–6 meses</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AI SCORE -->
+<section class="ai-score">
+  <div class="ai-score-inner">
+    <div class="reveal">
+      <div class="section-label">Tecnología</div>
+      <h2 class="section-title">AI Deal <em>Readiness</em> Score</h2>
+      <p class="section-sub">Nuestra herramienta evalúa en minutos el estado real de tu empresa para una venta exitosa: valor estimado, riesgos, potencial de mejora y probabilidad de cierre.</p>
+      <p style="font-size:13px;color:rgba(247,243,236,0.35);line-height:1.8;margin-bottom:40px;">Completamente gratuita. Sin compromiso. Sin registro previo.</p>
+      <a href="deal-readiness-score.html" class="btn-gold">Calcular mi Deal Readiness Score →</a>
+    </div>
+    <div class="score-widget reveal reveal-delay-2">
+      <div class="score-widget-title">Deal Readiness Report</div>
+      <div class="score-row">
+        <div class="score-row-header"><span class="score-row-label">Salud financiera</span><span class="score-row-val">82/100</span></div>
+        <div class="score-meter"><div class="score-meter-fill" style="width:82%"></div></div>
+      </div>
+      <div class="score-row">
+        <div class="score-row-header"><span class="score-row-label">Independencia del fundador</span><span class="score-row-val">61/100</span></div>
+        <div class="score-meter"><div class="score-meter-fill" style="width:61%"></div></div>
+      </div>
+      <div class="score-row">
+        <div class="score-row-header"><span class="score-row-label">Recurrencia de ingresos</span><span class="score-row-val">75/100</span></div>
+        <div class="score-meter"><div class="score-meter-fill" style="width:75%"></div></div>
+      </div>
+      <div class="score-row">
+        <div class="score-row-header"><span class="score-row-label">Documentación y compliance</span><span class="score-row-val">48/100</span></div>
+        <div class="score-meter"><div class="score-meter-fill" style="width:48%"></div></div>
+      </div>
+      <div class="score-total">
+        <div class="score-total-num">71</div>
+        <div class="score-total-label">Score global · Listo para el mercado</div>
+      </div>
+      <a href="deal-readiness-score.html" class="score-cta" style="display:block;text-align:center;text-decoration:none;">Calcular el mío gratis →</a>
+    </div>
+  </div>
+</section>
+
+<!-- INSIGHTS — con links reales a insight-article.html -->
+<section class="insights" id="insights">
+  <div class="reveal">
+    <div class="section-label">Conocimiento</div>
+    <h2 class="section-title">Insights <em>M&A</em></h2>
+    <p class="section-sub">Datos reales de mercado, múltiplos por sector y guías para vendedores. El conocimiento que antes solo tenían los bancos de inversión.</p>
+  </div>
+  <div class="insights-grid reveal">
+    <a href="insight-article.html?id=multiplos-2025" class="insight-card featured">
+      <div class="insight-cat">Múltiplos · Actualizado Q1 2025</div>
+      <div class="insight-title">Múltiplos de valoración por sector en España: guía completa 2025</div>
+      <p class="insight-excerpt">Análisis de transacciones cerradas en España durante 2024. Conoce los rangos reales de valoración en tu sector antes de hablar con ningún comprador.</p>
+      <div class="insight-meta">12 min lectura · Muy descargado</div>
+      <div class="insight-arrow">→</div>
+    </a>
+    <a href="insight-article.html?id=eta-espana" class="insight-card">
+      <div class="insight-cat">Tendencias M&A</div>
+      <div class="insight-title">El auge del comprador ETA en España</div>
+      <p class="insight-excerpt">Los directivos que compran empresas están cambiando el mercado.</p>
+      <div class="insight-meta">6 min · Tendencias 2025</div>
+      <div class="insight-arrow">→</div>
+    </a>
+    <a href="insight-article.html?id=errores-venta" class="insight-card">
+      <div class="insight-cat">Guía para vendedores</div>
+      <div class="insight-title">10 errores que destruyen valor antes de vender</div>
+      <p class="insight-excerpt">Los errores más comunes en los 12 meses previos a la venta.</p>
+      <div class="insight-meta">8 min · Muy leído</div>
+      <div class="insight-arrow">→</div>
+    </a>
+    <a href="insight-article.html?id=dd-financiero" class="insight-card">
+      <div class="insight-cat">Due Diligence</div>
+      <div class="insight-title">Qué mirará el comprador en tu DD financiero</div>
+      <p class="insight-excerpt">Lista definitiva de lo que revisan los compradores y cómo prepararte.</p>
+      <div class="insight-meta">5 min · Checklist incluido</div>
+      <div class="insight-arrow">→</div>
+    </a>
+  </div>
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="insight-article.html" class="btn-outline">Ver todos los insights →</a>
+  </div>
+</section>
+
+<!-- NOSOTROS — pillars con layout corregido -->
+<section class="nosotros" id="nosotros">
+  <div class="nosotros-inner">
+    <div class="nosotros-left reveal">
+      <div class="section-label">Quiénes somos</div>
+      <h2 class="section-title">Asesores que han<br>estado <em>al otro lado</em><br>de la mesa</h2>
+      <p class="nosotros-text">DealPartners nació de una convicción: que los empresarios españoles merecen acceso al mismo nivel de asesoramiento estratégico que hasta ahora solo estaba al alcance de las grandes corporaciones.</p>
+      <p class="nosotros-text">Somos un equipo de profesionales con experiencia directa en banca de inversión, private equity y dirección general de empresa. Hemos participado como asesores, como compradores y como vendedores. Esa perspectiva nos permite entender lo que realmente está en juego en cada operación.</p>
+      <p class="nosotros-text">Trabajamos exclusivamente en el segmento de empresas medianas y pequeñas — el mercado donde la calidad del asesoramiento tiene el mayor impacto en el resultado final.</p>
+      <div class="nosotros-values">
+        <div class="value-item">
+          <div class="value-icon">◆</div>
+          <div>
+            <div class="value-name">Confidencialidad total</div>
+            <div class="value-desc">Cada operación se gestiona bajo estricta discreción. Ninguna información sale sin tu consentimiento expreso.</div>
+          </div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">◆</div>
+          <div>
+            <div class="value-name">Alineación de intereses</div>
+            <div class="value-desc">Nuestros honorarios están diseñados para que nuestros objetivos y los tuyos vayan siempre en la misma dirección.</div>
+          </div>
+        </div>
+        <div class="value-item">
+          <div class="value-icon">◆</div>
+          <div>
+            <div class="value-name">Criterio independiente</div>
+            <div class="value-desc">No representamos a fondos ni a compradores recurrentes. Nuestra única lealtad es hacia el cliente que nos contrata.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nosotros-right reveal reveal-delay-2">
+      <div class="nosotros-quote-block">
+        <div class="quote-mark">"</div>
+        <blockquote>Vender una empresa es, con frecuencia, la decisión financiera más importante de la vida de un empresario. Merece el mismo rigor y preparación que cualquier otra gran inversión.</blockquote>
+        <div class="quote-author">
+          <div class="quote-author-name">Equipo DealPartners</div>
+          <div class="quote-author-role">Asesores M&A · España</div>
+        </div>
+      </div>
+      <div class="nosotros-pillars">
+        <div class="pillar">
+          <div class="pillar-num">01</div>
+          <div class="pillar-body">
+            <div class="pillar-label">Foco en PYMES</div>
+            <div class="pillar-desc">Especialistas en empresas con facturación entre 1M€ y 50M€ — donde la diferencia entre un buen y un mal asesor se mide en millones.</div>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-num">02</div>
+          <div class="pillar-body">
+            <div class="pillar-label">Tecnología + criterio humano</div>
+            <div class="pillar-desc">Combinamos herramientas de análisis avanzado con el juicio de profesionales que han visto cientos de operaciones.</div>
+          </div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-num">03</div>
+          <div class="pillar-body">
+            <div class="pillar-label">Red de compradores activa</div>
+            <div class="pillar-desc">Acceso directo a family offices, fondos de private equity y empresarios en proceso de adquisición activa en España.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO — sin email ni teléfono, solo formulario -->
+<section class="final-cta" id="contacto">
+  <div class="cta-left reveal">
+    <div class="section-label" style="color:var(--gold2)">Hablemos</div>
+    <h2>Empieza tu <em>operación</em> hoy</h2>
+    <p>Primera consulta sin coste. Cuéntanos tu situación y un asesor especializado en tu sector te responde en menos de 24 horas.</p>
+    <div class="contact-options">
+      <div class="contact-option contact-option--info">
+        <span class="contact-option-icon">✉️</span>
+        <div>
+          <div class="contact-option-label">Respuesta garantizada</div>
+          <div class="contact-option-val">En menos de 24 horas hábiles</div>
+        </div>
+      </div>
+      <div class="contact-option contact-option--info">
+        <span class="contact-option-icon">📅</span>
+        <div>
+          <div class="contact-option-label">¿Prefieres una videollamada?</div>
+          <div class="contact-option-val">Indícalo en el mensaje y te enviamos enlace</div>
+        </div>
+      </div>
+      <div class="contact-option contact-option--info">
+        <span class="contact-option-icon">🔒</span>
+        <div>
+          <div class="contact-option-label">Confidencialidad total</div>
+          <div class="contact-option-val">Tus datos nunca se comparten sin consentimiento</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-form reveal reveal-delay-2">
+    <form id="contactForm" action="https://formspree.io/f/mvzwoopr" method="POST" novalidate>
+      <input type="hidden" name="_subject" value="Nueva consulta — DealPartners">
+      <input type="hidden" name="_language" value="es">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="cf-nombre">Nombre *</label>
+          <input id="cf-nombre" type="text" name="nombre" placeholder="Tu nombre" required>
+        </div>
+        <div class="form-group">
+          <label for="cf-empresa">Empresa</label>
+          <input id="cf-empresa" type="text" name="empresa" placeholder="Nombre de la empresa">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="cf-email">Email *</label>
+        <input id="cf-email" type="email" name="email" placeholder="tu@empresa.com" required>
+      </div>
+      <div class="form-group">
+        <label for="cf-perfil">Soy…</label>
+        <select id="cf-perfil" name="perfil">
+          <option value="">Selecciona tu perfil</option>
+          <option>Empresario que quiere vender</option>
+          <option>Inversor o comprador</option>
+          <option>Broker o asesor M&A</option>
+          <option>Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="cf-mensaje">Cuéntanos tu situación</label>
+        <textarea id="cf-mensaje" name="mensaje" rows="4" placeholder="¿Qué buscas? Cuanto más nos cuentes, mejor podremos ayudarte."></textarea>
+      </div>
+      <div id="formError" style="display:none;font-size:11px;color:#e57373;margin-bottom:12px;letter-spacing:0.5px;"></div>
+      <button type="submit" class="form-submit" id="formSubmitBtn">Enviar consulta →</button>
+      <div id="formSuccess" style="display:none;background:rgba(74,124,89,0.15);border:1px solid rgba(74,124,89,0.3);padding:20px;margin-top:16px;text-align:center;">
+        <p style="font-size:13px;color:#81c784;letter-spacing:0.5px;">✓ Mensaje recibido — Te contactamos en menos de 24h</p>
+      </div>
+      <p style="font-size:10px;color:rgba(247,243,236,0.25);margin-top:16px;line-height:1.6;letter-spacing:0.5px;">Confidencialidad total garantizada. Tus datos no se comparten con terceros sin tu consentimiento expreso.</p>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">
+    <a href="index.html" class="footer-logo">Deal<span>Partners</span></a>
+    <p class="footer-tagline">La plataforma de referencia para compraventa de empresas en España. Tecnología, red y asesoramiento experto.</p>
+  </div>
+  <div class="footer-col">
+    <h4>Plataforma</h4>
+    <ul>
+      <li><a href="#marketplace">Empresas en venta</a></li>
+      <li><a href="registro.html?tipo=vendedor">Vender mi empresa</a></li>
+      <li><a href="registro.html?tipo=comprador">Para compradores</a></li>
+      <li><a href="deal-readiness-score.html">Valora tu empresa</a></li>
+      <li><a href="#nosotros">Quiénes somos</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Servicios</h4>
+    <ul>
+      <li><a href="#servicios">Valoración</a></li>
+      <li><a href="#servicios">Due Diligence</a></li>
+      <li><a href="#servicios">Deal Strategy</a></li>
+      <li><a href="#servicios">Preparación pre-venta</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Recursos</h4>
+    <ul>
+      <li><a href="#insights">Insights M&A</a></li>
+      <li><a href="insight-article.html?id=multiplos-2025">Múltiplos por sector</a></li>
+      <li><a href="insight-article.html?id=errores-venta">Guías para vendedores</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </div>
+</footer>
+
+<div class="footer-bottom">
+  <p>© 2025 DealPartners · Todos los derechos reservados · Madrid, España</p>
+  <p>Aviso legal · Política de privacidad · Política de cookies</p>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     SIDEBAR
-══════════════════════════════════════════════════════════ -->
-<div class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-text">Deal<span>Partners</span></div>
-    <div class="sidebar-logo-sub">Admin · Backoffice</div>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="nav-section">Principal</div>
-    <div class="nav-item active" onclick="showView('dashboard')">
-      <span class="icon">◈</span> Dashboard
-    </div>
-    <div class="nav-item" onclick="showView('contactos')">
-      <span class="icon">◎</span> Contactos
-      <span class="nav-badge" id="badge-contactos">0</span>
-    </div>
-
-    <div class="nav-section">Operaciones</div>
-    <div class="nav-item" onclick="showView('vendedores')">
-      <span class="icon">↑</span> Vendedores
-      <span class="nav-badge" id="badge-vendedores">0</span>
-    </div>
-    <div class="nav-item" onclick="showView('compradores')">
-      <span class="icon">↓</span> Compradores
-      <span class="nav-badge" id="badge-compradores">0</span>
-    </div>
-    <div class="nav-item" onclick="showView('matching')">
-      <span class="icon">⟡</span> AI Matching
-    </div>
-
-    <div class="nav-section">Marketplace</div>
-    <div class="nav-item" onclick="showView('listings')">
-      <span class="icon">▦</span> Empresas en venta
-    </div>
-    <div class="nav-item" onclick="showView('nueva-empresa')">
-      <span class="icon">+</span> Añadir empresa
-    </div>
-
-    <div class="nav-section">Estadísticas</div>
-    <div class="nav-item" onclick="showView('stats')">
-      <span class="icon">∿</span> Analítica
-    </div>
-  </nav>
-  <div class="sidebar-bottom">
-    <div>Sesión: <span class="text-gold" id="sessionUser">admin</span></div>
-    <button class="logout-btn" onclick="doLogout()">Cerrar sesión</button>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════
-     MAIN CONTENT
-══════════════════════════════════════════════════════════ -->
-<div class="main">
-  <div class="topbar">
-    <div class="topbar-title" id="topbarTitle">Dashboard <em>general</em></div>
-    <div class="topbar-right">
-      <span class="topbar-badge" id="topbarDate"></span>
-      <a href="index.html" target="_blank" style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:4px 10px;">Ver web →</a>
-    </div>
-  </div>
-
-  <div class="content">
-
-    <!-- ── DASHBOARD ──────────────────────────────────────── -->
-    <div class="view active" id="view-dashboard">
-      <div class="kpi-grid" id="kpiGrid">
-        <div class="kpi-card">
-          <div class="kpi-label">Registros totales</div>
-          <div class="kpi-val" id="kpi-total">0</div>
-          <div class="kpi-delta neutral">Todos los contactos</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Vendedores activos</div>
-          <div class="kpi-val" id="kpi-vendedores">0</div>
-          <div class="kpi-delta up">En proceso de alta</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Compradores activos</div>
-          <div class="kpi-val" id="kpi-compradores">0</div>
-          <div class="kpi-delta up">Perfil verificado</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Empresas en marketplace</div>
-          <div class="kpi-val">6<span> activas</span></div>
-          <div class="kpi-delta neutral">€26.4M facturación total</div>
-        </div>
-      </div>
-
-      <div class="two-col">
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">Últimos registros</div>
-            <button class="panel-action" onclick="showView('contactos')">Ver todos</button>
-          </div>
-          <div class="panel-body" style="padding:0;">
-            <table class="dp-table" id="dashRecentTable">
-              <thead><tr>
-                <th>Nombre</th><th>Tipo</th><th>Empresa</th><th>Fecha</th>
-              </tr></thead>
-              <tbody id="dashRecentBody">
-                <tr><td colspan="4" class="empty-state" style="padding:24px;">Sin registros aún</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-head">
-            <div class="panel-title">Actividad reciente</div>
-          </div>
-          <div class="panel-body" id="activityFeed">
-            <div class="activity-item">
-              <div class="activity-dot" style="background:var(--gold)"></div>
-              <div>
-                <div class="activity-text">Panel de administración iniciado</div>
-                <div class="activity-time">Ahora mismo</div>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot" style="background:var(--green)"></div>
-              <div>
-                <div class="activity-text">6 empresas activas en marketplace</div>
-                <div class="activity-time">Estado actual</div>
-              </div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-dot" style="background:var(--blue)"></div>
-              <div>
-                <div class="activity-text">AI Matching disponible en pestaña lateral</div>
-                <div class="activity-time">Sistema listo</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="two-col">
-        <div class="panel">
-          <div class="panel-head"><div class="panel-title">Distribución por sector</div></div>
-          <div class="panel-body" id="sectorChart">
-            <div class="empty-state"><div class="empty-state-icon">◈</div>Aparecerá cuando haya registros</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><div class="panel-title">Empresas en marketplace · resumen</div></div>
-          <div class="panel-body" style="padding:0;">
-            <table class="dp-table">
-              <thead><tr><th>Empresa</th><th>Sector</th><th>Facturación</th><th>Estado</th></tr></thead>
-              <tbody>
-                <tr><td>Fabricante componentes metálicos</td><td>Industrial</td><td class="text-gold">€8.4M</td><td><span class="tag tag-green">Activa</span></td></tr>
-                <tr><td>Red clínicas dentales</td><td>Salud</td><td class="text-gold">€3.1M</td><td><span class="tag tag-green">Activa</span></td></tr>
-                <tr><td>SaaS gestión flotas</td><td>Tech</td><td class="text-gold">€1.2M ARR</td><td><span class="tag tag-green">Activa</span></td></tr>
-                <tr><td>Grupo restaurantes Valencia</td><td>Hostelería</td><td class="text-gold">€4.8M</td><td><span class="tag tag-green">Activa</span></td></tr>
-                <tr><td>Consultoría ingeniería</td><td>B2B</td><td class="text-gold">€2.3M</td><td><span class="tag tag-green">Activa</span></td></tr>
-                <tr><td>Cadena moda infantil</td><td>Retail</td><td class="text-gold">€5.6M</td><td><span class="tag tag-green">Activa</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── CONTACTOS ──────────────────────────────────────── -->
-    <div class="view" id="view-contactos">
-      <div class="section-head-row">
-        <h2>Todos los <em>contactos</em></h2>
-        <div style="display:flex;gap:8px;">
-          <button class="panel-action" onclick="exportCSV()">Exportar CSV</button>
-          <button class="panel-action" onclick="clearAllData()" style="color:var(--red)">Limpiar datos</button>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-body" style="padding:0;">
-          <table class="dp-table" id="contactosTable">
-            <thead><tr>
-              <th>Nombre</th><th>Email</th><th>Empresa</th><th>Tipo</th><th>Sector</th><th>Fecha</th><th>Acciones</th>
-            </tr></thead>
-            <tbody id="contactosBody">
-              <tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">◎</div>Sin contactos registrados.<br><span style="font-size:11px;">Los registros del formulario aparecerán aquí automáticamente.</span></div></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── VENDEDORES ─────────────────────────────────────── -->
-    <div class="view" id="view-vendedores">
-      <div class="section-head-row">
-        <h2><em>Vendedores</em> registrados</h2>
-      </div>
-      <div class="panel">
-        <div class="panel-body" style="padding:0;">
-          <table class="dp-table" id="vendedoresTable">
-            <thead><tr>
-              <th>Empresa</th><th>Sector</th><th>Facturación</th><th>EBITDA</th><th>Región</th><th>Contacto</th><th>Plazo</th><th>Acciones</th>
-            </tr></thead>
-            <tbody id="vendedoresBody">
-              <tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">↑</div>Sin vendedores registrados aún</div></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── COMPRADORES ────────────────────────────────────── -->
-    <div class="view" id="view-compradores">
-      <div class="section-head-row">
-        <h2><em>Compradores</em> registrados</h2>
-      </div>
-      <div class="panel">
-        <div class="panel-body" style="padding:0;">
-          <table class="dp-table" id="compradoresTable">
-            <thead><tr>
-              <th>Nombre</th><th>Empresa</th><th>Perfil</th><th>Sectores</th><th>Precio</th><th>Email</th><th>Acciones</th>
-            </tr></thead>
-            <tbody id="compradoresBody">
-              <tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">↓</div>Sin compradores registrados aún</div></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── AI MATCHING ────────────────────────────────────── -->
-    <div class="view" id="view-matching">
-      <div class="section-head-row">
-        <h2>AI <em>Matching</em></h2>
-        <button class="panel-action" onclick="runAutoMatching()" id="matchRunBtn">▶ Ejecutar matching automático</button>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <div class="panel-title">Asistente de matching · Claude AI</div>
-          <span class="tag tag-gold">Powered by Claude</span>
-        </div>
-        <div class="panel-body">
-          <div class="ai-area" id="aiArea">
-            <div style="color:var(--muted);font-size:12px;line-height:1.8;">
-              <strong style="color:var(--gold2);">Sistema de matching inteligente listo.</strong><br><br>
-              Puedes pedirme que analice compatibilidades entre compradores y vendedores registrados, o hacer preguntas específicas sobre perfiles. Ejemplos:<br><br>
-              <span style="color:var(--muted2);">
-              · "Analiza todos los compradores y vendedores y genera matches con puntuación"<br>
-              · "¿Qué comprador encaja mejor con el vendedor del sector tecnológico?"<br>
-              · "Dame un resumen del pipeline actual"<br>
-              · "¿Qué vendedores tienen mayor probabilidad de cierre rápido?"
-              </span>
-            </div>
-          </div>
-          <div class="ai-controls">
-            <textarea class="ai-prompt" id="aiPrompt" rows="3" placeholder="Escribe tu consulta sobre el pipeline de operaciones..."></textarea>
-            <button class="ai-send" id="aiSendBtn" onclick="sendAIQuery()">Enviar</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="matchResultsArea"></div>
-    </div>
-
-    <!-- ── LISTINGS / MARKETPLACE ─────────────────────────── -->
-    <div class="view" id="view-listings">
-      <div class="section-head-row">
-        <h2>Empresas en <em>marketplace</em></h2>
-        <button class="panel-action" onclick="showView('nueva-empresa')">+ Añadir nueva</button>
-      </div>
-      <div id="listingsContainer"></div>
-    </div>
-
-    <!-- ── NUEVA EMPRESA ──────────────────────────────────── -->
-    <div class="view" id="view-nueva-empresa">
-      <div class="section-head-row">
-        <h2>Añadir <em>empresa</em> al marketplace</h2>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><div class="panel-title">Datos de la empresa</div></div>
-        <div class="panel-body">
-          <div class="form-row">
-            <div class="form-field">
-              <label class="form-label">Nombre / Descripción *</label>
-              <input class="form-input" id="ne-nombre" placeholder="Ej: Fabricante de componentes metálicos para automoción">
-            </div>
-            <div class="form-field">
-              <label class="form-label">Sector *</label>
-              <select class="form-select" id="ne-sector">
-                <option value="industrial">Industrial / Fabricación</option>
-                <option value="tecnologia">Tecnología / Software</option>
-                <option value="salud">Salud / Clínicas</option>
-                <option value="hosteleria">Hostelería / Restauración</option>
-                <option value="servicios-b2b">Servicios B2B</option>
-                <option value="retail">Retail / Comercio</option>
-                <option value="alimentacion">Alimentación / Bebidas</option>
-                <option value="educacion">Educación / Formación</option>
-                <option value="energia">Energía / Sostenibilidad</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row single">
-            <div class="form-field">
-              <label class="form-label">Descripción corta *</label>
-              <textarea class="form-textarea" id="ne-desc" placeholder="2-3 frases sobre el negocio, diferencial y situación actual..."></textarea>
-            </div>
-          </div>
-          <div class="form-row three">
-            <div class="form-field">
-              <label class="form-label">Facturación</label>
-              <input class="form-input" id="ne-facturacion" placeholder="€8.4M">
-            </div>
-            <div class="form-field">
-              <label class="form-label">EBITDA</label>
-              <input class="form-input" id="ne-ebitda" placeholder="€1.9M">
-            </div>
-            <div class="form-field">
-              <label class="form-label">Región</label>
-              <input class="form-input" id="ne-region" placeholder="Madrid">
-            </div>
-          </div>
-          <div class="form-row three">
-            <div class="form-field">
-              <label class="form-label">Métrica extra (label)</label>
-              <input class="form-input" id="ne-metric-label" placeholder="Empleados / Clientes / Tiendas...">
-            </div>
-            <div class="form-field">
-              <label class="form-label">Métrica extra (valor)</label>
-              <input class="form-input" id="ne-metric-val" placeholder="62 / 140 / 5...">
-            </div>
-            <div class="form-field">
-              <label class="form-label">Estado</label>
-              <select class="form-select" id="ne-estado">
-                <option value="activa">Activa</option>
-                <option value="confidencial">Confidencial</option>
-                <option value="en-proceso">En proceso</option>
-                <option value="cerrada">Cerrada</option>
-              </select>
-            </div>
-          </div>
-          <div style="display:flex;gap:10px;margin-top:8px;">
-            <button class="form-btn" onclick="saveNewEmpresa()">Guardar empresa</button>
-            <button class="form-btn-outline" onclick="showView('listings')">Cancelar</button>
-          </div>
-          <div id="ne-msg" style="margin-top:12px;font-size:12px;display:none;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── STATS ──────────────────────────────────────────── -->
-    <div class="view" id="view-stats">
-      <div class="section-head-row">
-        <h2>Analítica <em>y estadísticas</em></h2>
-      </div>
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Tasa conversión registro</div>
-          <div class="kpi-val">—</div>
-          <div class="kpi-delta neutral">Requiere Google Analytics</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Tiempo medio al match</div>
-          <div class="kpi-val">—</div>
-          <div class="kpi-delta neutral">Basado en operaciones</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">NDA pendientes firma</div>
-          <div class="kpi-val" id="kpi-nda-pendientes">0</div>
-          <div class="kpi-delta neutral">Registros sin confirmar</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Valor medio operación</div>
-          <div class="kpi-val">€4.4<span>M</span></div>
-          <div class="kpi-delta neutral">Basado en marketplace</div>
-        </div>
-      </div>
-      <div class="two-col">
-        <div class="panel">
-          <div class="panel-head"><div class="panel-title">Registros por tipo</div></div>
-          <div class="panel-body" id="statsByTipo">
-            <div class="empty-state"><div class="empty-state-icon">∿</div>Sin datos aún</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><div class="panel-title">Registros por sector</div></div>
-          <div class="panel-body" id="statsBySector">
-            <div class="empty-state"><div class="empty-state-icon">∿</div>Sin datos aún</div>
-          </div>
-        </div>
-      </div>
-      <div class="panel">
-        <div class="panel-head"><div class="panel-title">Actividad del marketplace</div></div>
-        <div class="panel-body">
-          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:16px;">
-            <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);">6</div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Activas</div></div>
-            <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold2);">€26.4M</div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Facturación</div></div>
-            <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);">€4.66M</div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:4px;">EBITDA total</div></div>
-            <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);">6</div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Sectores</div></div>
-            <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--gold2);">17.6%</div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Margen medio</div></div>
-            <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:var(--cream);">47<sup style="font-size:14px;">+</sup></div><div style="font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-top:4px;">Total platform</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /content -->
-</div><!-- /main -->
-
-<!-- ══════════════════════════════════════════════════════════
-     MODAL - DETALLE CONTACTO
-══════════════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="contactModal" onclick="closeModal(event)">
-  <div class="modal" style="position:relative;">
-    <button class="modal-close" onclick="document.getElementById('contactModal').classList.remove('open')">✕</button>
-    <div class="modal-title" id="modalTitle">Detalle</div>
-    <div class="modal-sub" id="modalSub">Información completa del registro</div>
-    <div id="modalBody"></div>
-  </div>
-</div>
-
-<script>
-/* ═══════════════════════════════════════════════════════════
-   DEALPARTNERS ADMIN PANEL
-   Estético, funcional, sin dependencias externas excepto Claude API
-═══════════════════════════════════════════════════════════ */
-
-// ── CONFIG ─────────────────────────────────────────────────
-const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'dealpartners2025';
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
-
-// Datos del marketplace (sincronizados con index.html)
-const MARKETPLACE_LISTINGS = [
-  { id: 1, nombre: 'Fabricante de componentes metálicos para automoción', sector: 'industrial', tag: 'Industrial · Madrid', desc: '28 años de historia, contratos recurrentes con Tier-1 automoción. Mínima dependencia del fundador.', facturacion: '€8.4M', ebitda: '€1.9M', metricLabel: 'Empleados', metricVal: '62', region: 'Madrid', estado: 'activa' },
-  { id: 2, nombre: 'Red de 3 clínicas dentales con marca propia', sector: 'salud', tag: 'Salud · Cataluña', desc: 'Grupo dental con posicionamiento premium, fuerte captación digital y equipo médico estable. Potencial de roll-up inmediato.', facturacion: '€3.1M', ebitda: '€720K', metricLabel: 'Centros', metricVal: '3', region: 'Cataluña', estado: 'activa' },
-  { id: 3, nombre: 'SaaS B2B para gestión de flotas logísticas', sector: 'tecnologia', tag: 'Software · Remoto', desc: 'Plataforma con 140 clientes recurrentes, churn inferior al 4% anual y ARR creciendo al 35% interanual.', facturacion: '€1.2M ARR', ebitda: '€380K', metricLabel: 'Clientes', metricVal: '140', region: 'Remoto', estado: 'activa' },
-  { id: 4, nombre: 'Grupo de 5 restaurantes con marca consolidada', sector: 'hosteleria', tag: 'Hostelería · Valencia', desc: 'Cadena de restauración con operativa centralizada, carta propia y fuerte reconocimiento de marca en el mercado valenciano.', facturacion: '€4.8M', ebitda: '€560K', metricLabel: 'Locales', metricVal: '5', region: 'Valencia', estado: 'activa' },
-  { id: 5, nombre: 'Consultoría de ingeniería con contratos públicos', sector: 'servicios-b2b', tag: 'Servicios B2B · País Vasco', desc: 'Consultora técnica especializada en proyectos de ingeniería para administraciones públicas y sector energético.', facturacion: '€2.3M', ebitda: '€490K', metricLabel: 'Empleados', metricVal: '18', region: 'País Vasco', estado: 'activa' },
-  { id: 6, nombre: 'Cadena de moda infantil multimarca', sector: 'retail', tag: 'Retail · Andalucía', desc: '8 puntos de venta con omnicanalidad activa, base de clientes fidelizada y acuerdos exclusivos con proveedores europeos.', facturacion: '€5.6M', ebitda: '€610K', metricLabel: 'Tiendas', metricVal: '8', region: 'Andalucía', estado: 'activa' },
-];
-
-// ── STATE ───────────────────────────────────────────────────
-let currentView = 'dashboard';
-let allListings  = [...MARKETPLACE_LISTINGS];
-let aiHistory    = [];
-
-// ── LOGIN ───────────────────────────────────────────────────
-function doLogin() {
-  const u = document.getElementById('loginUser').value;
-  const p = document.getElementById('loginPass').value;
-  if (u === ADMIN_USER && p === ADMIN_PASS) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('sessionUser').textContent = u;
-    init();
-  } else {
-    const err = document.getElementById('loginError');
-    err.style.display = 'block';
-    setTimeout(() => err.style.display = 'none', 3000);
-  }
-}
-document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-document.getElementById('loginUser').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-function doLogout() {
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginUser').value = '';
-  document.getElementById('loginPass').value = '';
-}
-
-// ── INIT ────────────────────────────────────────────────────
-function init() {
-  document.getElementById('topbarDate').textContent =
-    new Date().toLocaleDateString('es-ES', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
-  refreshAll();
-  renderListings();
-}
-
-// ── READ DATA ───────────────────────────────────────────────
-function getRegistros() {
-  try { return JSON.parse(localStorage.getItem('dp_registros') || '[]'); } catch { return []; }
-}
-function getVendedores()  { return getRegistros().filter(r => r._tipo === 'vendedor'); }
-function getCompradores() { return getRegistros().filter(r => r._tipo === 'comprador'); }
-
-// ── REFRESH ─────────────────────────────────────────────────
-function refreshAll() {
-  const regs = getRegistros();
-  const vend = getVendedores();
-  const comp = getCompradores();
-
-  // KPIs
-  document.getElementById('kpi-total').textContent      = regs.length;
-  document.getElementById('kpi-vendedores').textContent  = vend.length;
-  document.getElementById('kpi-compradores').textContent = comp.length;
-  document.getElementById('kpi-nda-pendientes').textContent = regs.length;
-
-  // Badges
-  document.getElementById('badge-contactos').textContent  = regs.length;
-  document.getElementById('badge-vendedores').textContent  = vend.length;
-  document.getElementById('badge-compradores').textContent = comp.length;
-
-  // Tables
-  renderContactosTable(regs);
-  renderVendedoresTable(vend);
-  renderCompradoresTable(comp);
-  renderDashRecent(regs);
-  renderStats(regs);
-}
-
-// ── RENDER DASHBOARD RECENT ──────────────────────────────────
-function renderDashRecent(regs) {
-  const tbody = document.getElementById('dashRecentBody');
-  if (!regs.length) {
-    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state" style="padding:24px;">Sin registros aún.<br><span style="font-size:11px;color:var(--muted2);">Los envíos del formulario aparecen aquí.</span></div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = regs.slice(-5).reverse().map(r => `
-    <tr>
-      <td class="fw500">${esc(r.nombre)} ${esc(r.apellidos||'')}</td>
-      <td><span class="tag ${r._tipo==='vendedor'?'tag-gold':'tag-blue'}">${r._tipo}</span></td>
-      <td class="text-muted">${esc(r.empresa||'—')}</td>
-      <td class="text-muted">${fmtDate(r._ts)}</td>
-    </tr>`).join('');
-}
-
-// ── RENDER CONTACTOS ─────────────────────────────────────────
-function renderContactosTable(regs) {
-  const tbody = document.getElementById('contactosBody');
-  if (!regs.length) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">◎</div>Sin contactos registrados.<br><span style="font-size:11px;">Los registros del formulario aparecerán aquí automáticamente.</span></div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = regs.map((r, i) => `
-    <tr>
-      <td class="fw500">${esc(r.nombre)} ${esc(r.apellidos||'')}</td>
-      <td><a href="mailto:${esc(r.email)}" style="color:var(--gold2);text-decoration:none;">${esc(r.email)}</a></td>
-      <td>${esc(r.empresa||'—')}</td>
-      <td><span class="tag ${r._tipo==='vendedor'?'tag-gold':'tag-blue'}">${r._tipo}</span></td>
-      <td class="text-muted">${esc(r.sector||r.tipoPerfil||'—')}</td>
-      <td class="text-muted">${fmtDate(r._ts)}</td>
-      <td>
-        <div style="display:flex;gap:6px;">
-          <button class="icon-btn" onclick="showContactDetail(${i})" title="Ver detalle">👁</button>
-          <button class="icon-btn danger" onclick="deleteRegistro(${i})" title="Eliminar">✕</button>
-        </div>
-      </td>
-    </tr>`).join('');
-}
-
-// ── RENDER VENDEDORES ────────────────────────────────────────
-function renderVendedoresTable(vend) {
-  const tbody = document.getElementById('vendedoresBody');
-  if (!vend.length) {
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">↑</div>Sin vendedores registrados aún</div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = vend.map((r, i) => `
-    <tr>
-      <td class="fw500">${esc(r.empresa||'—')}</td>
-      <td><span class="tag tag-gold">${esc(r.sector||'—')}</span></td>
-      <td class="text-gold">${esc(r.facturacion||'—')}</td>
-      <td class="text-gold">${esc(r.ebitda||'—')}</td>
-      <td class="text-muted">${esc(r.region||'—')}</td>
-      <td>${esc(r.nombre)} <span class="text-muted">&lt;${esc(r.email)}&gt;</span></td>
-      <td class="text-muted">${esc(r.plazo||'—')}</td>
-      <td><button class="icon-btn" onclick="showContactDetail(${getRegistros().indexOf(r)})" title="Ver">👁</button></td>
-    </tr>`).join('');
-}
-
-// ── RENDER COMPRADORES ───────────────────────────────────────
-function renderCompradoresTable(comp) {
-  const tbody = document.getElementById('compradoresBody');
-  if (!comp.length) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">↓</div>Sin compradores registrados aún</div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = comp.map((r, i) => `
-    <tr>
-      <td class="fw500">${esc(r.nombre)} ${esc(r.apellidos||'')}</td>
-      <td>${esc(r.empresa||'—')}</td>
-      <td><span class="tag tag-blue">${esc(r.tipoPerfil||'—')}</span></td>
-      <td class="text-muted" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r.sectores||'—')}</td>
-      <td class="text-gold">${esc(r.precio||'—')}</td>
-      <td><a href="mailto:${esc(r.email)}" style="color:var(--gold2);text-decoration:none;">${esc(r.email)}</a></td>
-      <td><button class="icon-btn" onclick="showContactDetail(${getRegistros().indexOf(r)})" title="Ver">👁</button></td>
-    </tr>`).join('');
-}
-
-// ── RENDER STATS ─────────────────────────────────────────────
-function renderStats(regs) {
-  // By tipo
-  const byTipo = document.getElementById('statsByTipo');
-  if (regs.length) {
-    const vend = regs.filter(r => r._tipo === 'vendedor').length;
-    const comp = regs.filter(r => r._tipo === 'comprador').length;
-    const total = regs.length;
-    byTipo.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        ${statBar('Vendedores', vend, total, 'var(--gold)')}
-        ${statBar('Compradores', comp, total, 'var(--blue)')}
-      </div>`;
-  }
-  // Sector chart dashboard
-  const sChart = document.getElementById('sectorChart');
-  if (regs.length) {
-    const sectors = {};
-    regs.forEach(r => { const s = r.sector || r.tipoPerfil || 'Otro'; sectors[s] = (sectors[s]||0)+1; });
-    sChart.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px;">${
-      Object.entries(sectors).sort((a,b)=>b[1]-a[1]).map(([s,n]) =>
-        statBar(s, n, regs.length, 'var(--gold)')
-      ).join('')}</div>`;
-  }
-  // By sector stats
-  const bySector = document.getElementById('statsBySector');
-  if (regs.length) {
-    const sectors = {};
-    regs.forEach(r => { const s = r.sector || r.tipoPerfil || 'Otro'; sectors[s] = (sectors[s]||0)+1; });
-    bySector.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;">${
-      Object.entries(sectors).sort((a,b)=>b[1]-a[1]).map(([s,n]) =>
-        statBar(s, n, regs.length, 'var(--gold)')
-      ).join('')}</div>`;
-  }
-}
-
-function statBar(label, val, total, color) {
-  const pct = total ? Math.round((val/total)*100) : 0;
-  return `<div>
-    <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-      <span style="font-size:11px;color:var(--text);">${esc(label)}</span>
-      <span style="font-size:11px;color:var(--muted);">${val} <span style="color:var(--muted2);">(${pct}%)</span></span>
-    </div>
-    <div style="height:4px;background:var(--border);border-radius:2px;">
-      <div style="height:4px;width:${pct}%;background:${color};border-radius:2px;transition:width 0.5s;"></div>
-    </div>
-  </div>`;
-}
-
-// ── CONTACT DETAIL MODAL ─────────────────────────────────────
-function showContactDetail(idx) {
-  const regs = getRegistros();
-  const r = regs[idx];
-  if (!r) return;
-  document.getElementById('modalTitle').innerHTML = `${esc(r.nombre)} ${esc(r.apellidos||'')}`;
-  document.getElementById('modalSub').textContent = `${r._tipo === 'vendedor' ? '↑ Vendedor' : '↓ Comprador'} · Registrado ${fmtDate(r._ts)}`;
-
-  const fields = Object.entries(r).filter(([k]) => !k.startsWith('_'));
-  document.getElementById('modalBody').innerHTML = `
-    <div class="detail-grid">${fields.map(([k,v]) => v ? `
-      <div class="detail-item">
-        <div class="detail-key">${esc(k)}</div>
-        <div class="detail-val">${esc(String(v))}</div>
-      </div>` : '').join('')}
-    </div>
-    <hr class="divider">
-    <div style="display:flex;gap:8px;">
-      <a href="mailto:${esc(r.email)}" class="form-btn" style="text-decoration:none;display:inline-block;">Enviar email</a>
-      <button class="form-btn-outline" onclick="deleteRegistro(${idx});document.getElementById('contactModal').classList.remove('open');">Eliminar registro</button>
-    </div>`;
-  document.getElementById('contactModal').classList.add('open');
-}
-function closeModal(e) {
-  if (e.target === document.getElementById('contactModal'))
-    document.getElementById('contactModal').classList.remove('open');
-}
-
-// ── DELETE ───────────────────────────────────────────────────
-function deleteRegistro(idx) {
-  const regs = getRegistros();
-  regs.splice(idx, 1);
-  localStorage.setItem('dp_registros', JSON.stringify(regs));
-  refreshAll();
-}
-function clearAllData() {
-  if (!confirm('¿Eliminar TODOS los registros del panel local? Esta acción no afecta a Formspree ni Google Sheets.')) return;
-  localStorage.removeItem('dp_registros');
-  refreshAll();
-}
-
-// ── EXPORT CSV ───────────────────────────────────────────────
-function exportCSV() {
-  const regs = getRegistros();
-  if (!regs.length) { alert('Sin registros para exportar'); return; }
-  const keys = [...new Set(regs.flatMap(r => Object.keys(r)))];
-  const rows = [keys.join(','), ...regs.map(r => keys.map(k => `"${String(r[k]||'').replace(/"/g,'""')}"`).join(','))];
-  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `DealPartners_Registros_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-}
-
-// ── RENDER LISTINGS ──────────────────────────────────────────
-function renderListings() {
-  const container = document.getElementById('listingsContainer');
-  container.innerHTML = allListings.map((l, i) => `
-    <div class="listing-editor-card">
-      <div>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-          <span class="tag tag-gold">${esc(l.sector)}</span>
-          <span class="tag ${l.estado==='activa'?'tag-green':'tag-muted'}">${esc(l.estado)}</span>
-        </div>
-        <div class="listing-editor-name">${esc(l.nombre)}</div>
-        <div class="listing-editor-meta">${esc(l.desc)}</div>
-        <div style="display:flex;gap:16px;margin-top:10px;">
-          <span style="font-size:11px;color:var(--gold2);">Facturación: ${esc(l.facturacion)}</span>
-          <span style="font-size:11px;color:var(--gold2);">EBITDA: ${esc(l.ebitda)}</span>
-          <span style="font-size:11px;color:var(--muted);">📍 ${esc(l.region)}</span>
-          <span style="font-size:11px;color:var(--muted);">${esc(l.metricLabel)}: ${esc(l.metricVal)}</span>
-        </div>
-      </div>
-      <div class="listing-editor-actions">
-        <button class="icon-btn" onclick="editListing(${i})" title="Editar">✏️</button>
-        <button class="icon-btn danger" onclick="deleteListing(${i})" title="Eliminar">✕</button>
-      </div>
-    </div>`).join('');
-}
-
-function deleteListing(i) {
-  if (!confirm(`¿Eliminar "${allListings[i].nombre}" del panel? (No afecta a index.html hasta redesplegar)`)) return;
-  allListings.splice(i, 1);
-  renderListings();
-}
-
-function saveNewEmpresa() {
-  const nombre = document.getElementById('ne-nombre').value.trim();
-  const desc   = document.getElementById('ne-desc').value.trim();
-  if (!nombre || !desc) {
-    const msg = document.getElementById('ne-msg');
-    msg.textContent = 'Por favor rellena al menos nombre y descripción.';
-    msg.style.display = 'block'; msg.style.color = 'var(--red)';
-    return;
-  }
-  const nueva = {
-    id: Date.now(),
-    nombre,
-    sector:      document.getElementById('ne-sector').value,
-    tag:         document.getElementById('ne-sector').value + ' · ' + document.getElementById('ne-region').value,
-    desc,
-    facturacion: document.getElementById('ne-facturacion').value,
-    ebitda:      document.getElementById('ne-ebitda').value,
-    metricLabel: document.getElementById('ne-metric-label').value || 'Empleados',
-    metricVal:   document.getElementById('ne-metric-val').value || '—',
-    region:      document.getElementById('ne-region').value,
-    estado:      document.getElementById('ne-estado').value,
-  };
-  allListings.push(nueva);
-  renderListings();
-  const msg = document.getElementById('ne-msg');
-  msg.textContent = '✓ Empresa guardada en el panel. Para publicarla en la web, edita el index.html con los datos introducidos.';
-  msg.style.display = 'block'; msg.style.color = 'var(--green)';
-  setTimeout(() => showView('listings'), 1800);
-}
-
-function editListing(i) {
-  const l = allListings[i];
-  showView('nueva-empresa');
-  setTimeout(() => {
-    document.getElementById('ne-nombre').value      = l.nombre;
-    document.getElementById('ne-sector').value      = l.sector;
-    document.getElementById('ne-desc').value        = l.desc;
-    document.getElementById('ne-facturacion').value = l.facturacion;
-    document.getElementById('ne-ebitda').value      = l.ebitda;
-    document.getElementById('ne-region').value      = l.region;
-    document.getElementById('ne-metric-label').value = l.metricLabel;
-    document.getElementById('ne-metric-val').value  = l.metricVal;
-    document.getElementById('ne-estado').value      = l.estado;
-  }, 50);
-}
-
-// ── AI MATCHING ──────────────────────────────────────────────
-async function sendAIQuery() {
-  const prompt = document.getElementById('aiPrompt').value.trim();
-  if (!prompt) return;
-
-  const btn = document.getElementById('aiSendBtn');
-  btn.disabled = true;
-
-  const aiArea = document.getElementById('aiArea');
-  aiArea.innerHTML = `<div class="ai-loading">Analizando el pipeline<div class="ai-loading-dots"><span></span><span></span><span></span></div></div>`;
-
-  // Build context from real data
-  const vend = getVendedores();
-  const comp = getCompradores();
-  const context = buildContext(vend, comp);
-
-  aiHistory.push({ role: 'user', content: prompt });
-
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 1000,
-        system: `Eres el asistente de inteligencia de negocio de DealPartners, plataforma M&A española especializada en PYMEs. Tu rol es analizar el pipeline de operaciones, hacer matching entre compradores y vendedores, y dar recomendaciones accionables al equipo de DealPartners.
-
-DATOS ACTUALES DEL PIPELINE:
-${context}
-
-EMPRESAS EN MARKETPLACE:
-${allListings.map(l => `- ${l.nombre} (${l.sector}, ${l.facturacion}, EBITDA ${l.ebitda}, ${l.region})`).join('\n')}
-
-Responde siempre en español, de forma concisa y directamente útil para el equipo. Cuando hagas matching, da una puntuación del 1-10 y explica el razonamiento en 2-3 frases. Si no hay datos suficientes, dilo claramente y sugiere qué información faltaría para hacer un mejor análisis.`,
-        messages: aiHistory,
-      })
-    });
-
-    const data = await response.json();
-    const reply = data.content?.map(c => c.text || '').join('') || 'Sin respuesta';
-    aiHistory.push({ role: 'assistant', content: reply });
-
-    aiArea.innerHTML = `<div style="white-space:pre-wrap;line-height:1.8;">${formatAIResponse(esc(reply))}</div>`;
-  } catch (err) {
-    aiArea.innerHTML = `<div style="color:var(--red);">Error al conectar con Claude API: ${esc(err.message)}<br><br><span style="color:var(--muted);font-size:11px;">Verifica que estás usando este panel desde Claude.ai (Artifacts) donde la API está disponible.</span></div>`;
-  }
-
-  document.getElementById('aiPrompt').value = '';
-  btn.disabled = false;
-}
-
-async function runAutoMatching() {
-  const vend = getVendedores();
-  const comp = getCompradores();
-
-  if (!vend.length || !comp.length) {
-    document.getElementById('matchResultsArea').innerHTML = `<div class="panel"><div class="panel-body"><div class="empty-state"><div class="empty-state-icon">⟡</div>Necesitas al menos 1 vendedor y 1 comprador registrados para hacer matching automático.</div></div></div>`;
-    return;
-  }
-
-  const btn = document.getElementById('matchRunBtn');
-  btn.textContent = '⟳ Analizando...';
-  btn.disabled = true;
-
-  document.getElementById('matchResultsArea').innerHTML = `<div class="panel"><div class="panel-body"><div class="ai-loading">Generando matches con IA<div class="ai-loading-dots"><span></span><span></span><span></span></div></div></div></div>`;
-
-  const context = buildContext(vend, comp);
-
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 1000,
-        system: `Eres el motor de matching de DealPartners, plataforma M&A para PYMEs españolas. Analiza compradores y vendedores y genera matches con puntuaciones. Responde SOLO en JSON válido, sin texto extra ni markdown.`,
-        messages: [{
-          role: 'user',
-          content: `Analiza estos compradores y vendedores y genera los mejores matches posibles.
-
-${context}
-
-Responde SOLO con este JSON (sin texto extra ni backticks):
-{
-  "matches": [
-    {
-      "score": 8,
-      "comprador_nombre": "nombre del comprador",
-      "comprador_empresa": "empresa del comprador",
-      "vendedor_empresa": "empresa del vendedor",
-      "vendedor_sector": "sector",
-      "razonamiento": "2-3 frases explicando el match",
-      "siguiente_paso": "acción concreta recomendada"
-    }
-  ],
-  "resumen": "1 frase resumen del pipeline"
-}`
-        }]
-      })
-    });
-
-    const data = await response.json();
-    let raw = data.content?.map(c => c.text || '').join('') || '{}';
-    raw = raw.replace(/```json|```/g, '').trim();
-    const result = JSON.parse(raw);
-    renderMatchResults(result, vend, comp);
-  } catch (err) {
-    document.getElementById('matchResultsArea').innerHTML = `<div class="panel"><div class="panel-body" style="color:var(--red);">Error en matching automático: ${esc(err.message)}</div></div>`;
-  }
-
-  btn.textContent = '▶ Ejecutar matching automático';
-  btn.disabled = false;
-}
-
-function renderMatchResults(result, vend, comp) {
-  const area = document.getElementById('matchResultsArea');
-  if (!result.matches?.length) {
-    area.innerHTML = `<div class="panel"><div class="panel-body"><div class="empty-state">No se encontraron matches relevantes con los datos actuales.</div></div></div>`;
-    return;
-  }
-
-  const scoreColor = s => s >= 8 ? 'var(--green)' : s >= 6 ? 'var(--gold2)' : 'var(--muted)';
-  const scoreBg    = s => s >= 8 ? 'rgba(76,175,125,0.15)' : s >= 6 ? 'rgba(184,149,42,0.15)' : 'rgba(255,255,255,0.06)';
-
-  area.innerHTML = `
-    <div class="panel">
-      <div class="panel-head">
-        <div class="panel-title">Matches generados por IA · ${result.matches.length} resultados</div>
-        ${result.resumen ? `<span style="font-size:11px;color:var(--muted);">${esc(result.resumen)}</span>` : ''}
-      </div>
-      <div class="panel-body">
-        ${result.matches.map(m => `
-          <div class="match-card">
-            <div class="match-score-ring" style="background:${scoreBg(m.score)};border:2px solid ${scoreColor(m.score)};color:${scoreColor(m.score)};">
-              ${m.score}/10
-            </div>
-            <div class="match-parties">
-              <div class="match-party">
-                <div class="match-party-role">↓ Comprador</div>
-                <div class="match-party-name">${esc(m.comprador_empresa||m.comprador_nombre||'—')}</div>
-                <div style="font-size:10px;color:var(--muted);">${esc(m.comprador_nombre||'')}</div>
-              </div>
-              <div class="match-arrow">⟷</div>
-              <div class="match-party">
-                <div class="match-party-role">↑ Vendedor</div>
-                <div class="match-party-name">${esc(m.vendedor_empresa||'—')}</div>
-                <div style="font-size:10px;color:var(--muted);">${esc(m.vendedor_sector||'')}</div>
-              </div>
-            </div>
-            <div class="match-rationale">${esc(m.razonamiento||'')}</div>
-            ${m.siguiente_paso ? `<div style="font-size:11px;color:var(--gold2);margin-bottom:10px;">→ ${esc(m.siguiente_paso)}</div>` : ''}
-            <div class="match-actions">
-              <button class="match-btn match-btn-primary" onclick="startIntroEmail('${esc(m.comprador_nombre||'')}','${esc(m.vendedor_empresa||'')}')">Preparar introducción</button>
-              <button class="match-btn match-btn-secondary">Descartar match</button>
-            </div>
-          </div>`).join('')}
-      </div>
-    </div>`;
-}
-
-function startIntroEmail(comprador, vendedor) {
-  document.getElementById('aiPrompt').value = `Redacta un email de introducción profesional para presentar al comprador "${comprador}" con el vendedor "${vendedor}". El email debe ir de DealPartners a ambas partes, explicando el motivo del match y los siguientes pasos. Tono: profesional, conciso, en español.`;
-  document.getElementById('aiArea').innerHTML = `<div style="color:var(--muted);">Prompt cargado. Pulsa "Enviar" para generar el email de introducción.</div>`;
-}
-
-// ── AI HELPERS ───────────────────────────────────────────────
-function buildContext(vend, comp) {
-  let ctx = '';
-  if (vend.length) {
-    ctx += `\nVENDEDORES (${vend.length}):\n`;
-    vend.forEach((r, i) => {
-      ctx += `${i+1}. Empresa: "${r.empresa||'N/A'}", Sector: ${r.sector||'N/A'}, Facturación: ${r.facturacion||'N/A'}, EBITDA: ${r.ebitda||'N/A'}, Región: ${r.region||'N/A'}, Empleados: ${r.empleados||'N/A'}, Plazo venta: ${r.plazo||'N/A'}, Expectativa precio: ${r.expectativa||'N/A'}, Notas: ${r.notas||'ninguna'}\n`;
-    });
-  } else { ctx += '\nVENDEDORES: Sin registros todavía.\n'; }
-
-  if (comp.length) {
-    ctx += `\nCOMPRADORES (${comp.length}):\n`;
-    comp.forEach((r, i) => {
-      ctx += `${i+1}. Nombre: ${r.nombre||'N/A'} (${r.empresa||'N/A'}), Perfil: ${r.tipoPerfil||'N/A'}, Sectores interés: ${r.sectores||'N/A'}, Precio buscado: ${r.precio||'N/A'}, Geografía: ${r.geo||'N/A'}, Financiación: ${r.financiacion||'N/A'}, Experiencia: ${r.experiencia||'N/A'}, Plazo: ${r.plazo||'N/A'}\n`;
-    });
-  } else { ctx += '\nCOMPRADORES: Sin registros todavía.\n'; }
-
-  return ctx;
-}
-
-function formatAIResponse(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<strong style="color:var(--cream);">$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em style="color:var(--gold2);">$1</em>')
-    .replace(/^(\d+\.\s)/gm, '<span style="color:var(--gold);">$1</span>')
-    .replace(/^(·|-)\s/gm, '<span style="color:var(--gold);">·</span> ');
-}
-
-// ── NAVIGATION ───────────────────────────────────────────────
-const VIEW_TITLES = {
-  dashboard:      'Dashboard <em>general</em>',
-  contactos:      'Todos los <em>contactos</em>',
-  vendedores:     '<em>Vendedores</em> registrados',
-  compradores:    '<em>Compradores</em> registrados',
-  matching:       'AI <em>Matching</em>',
-  listings:       'Empresas en <em>marketplace</em>',
-  'nueva-empresa':'Añadir <em>empresa</em>',
-  stats:          'Analítica <em>y estadísticas</em>',
-};
-
-function showView(name) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-  const view = document.getElementById('view-' + name);
-  if (view) view.classList.add('active');
-
-  // Activate matching sidebar item
-  document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.getAttribute('onclick')?.includes(`'${name}'`)) n.classList.add('active');
-  });
-
-  document.getElementById('topbarTitle').innerHTML = VIEW_TITLES[name] || name;
-  currentView = name;
-  if (name === 'listings') renderListings();
-  if (name === 'dashboard') refreshAll();
-  document.querySelector('.content').scrollTop = 0;
-}
-
-// ── UTILS ────────────────────────────────────────────────────
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function fmtDate(iso) {
-  if (!iso) return '—';
-  try { return new Date(iso).toLocaleDateString('es-ES', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }); }
-  catch { return iso.slice(0,10); }
-}
-
-// Keyboard shortcut: Enter to send AI query
-document.getElementById('aiPrompt').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) sendAIQuery();
-});
-</script>
+<script src="script.js"></script>
 </body>
 </html>

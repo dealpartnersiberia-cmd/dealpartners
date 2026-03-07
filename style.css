@@ -1,1403 +1,569 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro — DealPartners</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    /* ── REGISTRO PAGE ───────────────────────────────────────── */
-    body { background: var(--dark); }
+/* ============================================================
+   DealPartners — Main Stylesheet
+   ============================================================ */
 
-    .reg-hero {
-      background: var(--dark);
-      padding: 120px 60px 0;
-      text-align: center;
-      position: relative; overflow: hidden;
-    }
-    .reg-hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(184,149,42,0.12) 0%, transparent 70%);
-    }
-    .reg-hero-inner { max-width: 640px; margin: 0 auto; position: relative; z-index: 1; }
-    .reg-eyebrow {
-      font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
-      color: var(--gold); font-weight: 500; margin-bottom: 20px;
-    }
-    .reg-hero h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(36px, 5vw, 56px); font-weight: 300;
-      color: var(--white); line-height: 1.1; margin-bottom: 16px;
-    }
-    .reg-hero h1 em { font-style: italic; color: var(--gold2); }
-    .reg-hero p {
-      font-size: 14px; color: rgba(247,243,236,0.45); line-height: 1.8; margin-bottom: 48px;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=Montserrat+Alternates:wght@300;400&display=swap');
 
-    /* ── TAB SWITCHER ────────────────────────────────────────── */
-    .reg-tabs {
-      display: inline-flex; gap: 1px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 0; position: relative; z-index: 1;
-    }
-    .reg-tab {
-      padding: 14px 40px;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-      font-weight: 500; cursor: pointer; border: none;
-      background: transparent; color: rgba(247,243,236,0.35);
-      transition: all 0.25s;
-    }
-    .reg-tab.active {
-      background: var(--gold); color: var(--white);
-    }
-    .reg-tab:not(.active):hover { color: var(--cream); }
+/* ── RESET & ROOT ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── MAIN FORM AREA ─────────────────────────────────────── */
-    .reg-main {
-      max-width: 900px; margin: 0 auto;
-      padding: 0 60px 120px;
-    }
-
-    .reg-form-panel { display: none; }
-    .reg-form-panel.active { display: block; }
-
-    /* ── STEP SYSTEM ─────────────────────────────────────────── */
-    .reg-steps {
-      display: flex; gap: 0; margin: 48px 0 40px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .reg-step {
-      flex: 1; padding: 16px 0; text-align: center;
-      font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-      color: rgba(255,255,255,0.2); font-weight: 500;
-      position: relative; cursor: default;
-      transition: color 0.3s;
-    }
-    .reg-step::after {
-      content: '';
-      position: absolute; bottom: -1px; left: 0; right: 0; height: 2px;
-      background: var(--gold); transform: scaleX(0); transition: transform 0.3s;
-    }
-    .reg-step.active { color: var(--gold2); }
-    .reg-step.active::after { transform: scaleX(1); }
-    .reg-step.done { color: rgba(255,255,255,0.4); }
-    .reg-step-num {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 24px; height: 24px; border-radius: 50%;
-      background: rgba(255,255,255,0.06); font-size: 11px;
-      margin-bottom: 6px; font-family: 'Cormorant Garamond', serif;
-      font-weight: 500; color: inherit;
-    }
-    .reg-step.active .reg-step-num { background: var(--gold); color: var(--white); }
-    .reg-step.done .reg-step-num { background: rgba(74,124,89,0.4); color: #81c784; }
-
-    /* ── FORM FIELDS ─────────────────────────────────────────── */
-    .reg-section { display: none; }
-    .reg-section.active { display: block; animation: fadeUp 0.4s ease forwards; }
-
-    .reg-section-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 28px; font-weight: 300; color: var(--white);
-      margin-bottom: 8px;
-    }
-    .reg-section-title em { font-style: italic; color: var(--gold2); }
-    .reg-section-desc { font-size: 13px; color: rgba(247,243,236,0.35); margin-bottom: 36px; line-height: 1.7; }
-
-    .reg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .reg-grid.full { grid-template-columns: 1fr; }
-    .reg-field { margin-bottom: 20px; }
-    .reg-field.col-2 { grid-column: span 2; }
-
-    .reg-field label {
-      display: block; font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-      color: rgba(247,243,236,0.4); margin-bottom: 8px; font-weight: 500;
-    }
-    .reg-field label .req { color: var(--gold); margin-left: 2px; }
-    .reg-field input,
-    .reg-field select,
-    .reg-field textarea {
-      width: 100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: var(--cream); padding: 13px 16px;
-      font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 300;
-      outline: none; transition: border-color 0.2s;
-      appearance: none;
-    }
-    .reg-field input:focus,
-    .reg-field select:focus,
-    .reg-field textarea:focus { border-color: var(--gold); }
-    .reg-field select option { background: var(--dark2); }
-    .reg-field textarea { resize: vertical; min-height: 100px; }
-
-    /* Checkbox group */
-    .check-group { display: flex; flex-direction: column; gap: 10px; }
-    .check-item {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 14px 16px;
-      border: 1px solid rgba(255,255,255,0.06);
-      cursor: pointer; transition: border-color 0.2s, background 0.2s;
-    }
-    .check-item:hover { border-color: rgba(184,149,42,0.3); background: rgba(184,149,42,0.04); }
-    .check-item input[type="checkbox"] {
-      width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px;
-      accent-color: var(--gold); padding: 0; border: none; background: none;
-    }
-    .check-item-label { font-size: 13px; color: rgba(247,243,236,0.7); line-height: 1.5; }
-    .check-item-sub { font-size: 11px; color: rgba(247,243,236,0.3); margin-top: 2px; }
-
-    /* Radio group */
-    .radio-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .radio-item {
-      padding: 16px; border: 1px solid rgba(255,255,255,0.08);
-      cursor: pointer; text-align: center; transition: all 0.2s;
-      position: relative;
-    }
-    .radio-item input[type="radio"] { position: absolute; opacity: 0; }
-    .radio-item:has(input:checked) { border-color: var(--gold); background: rgba(184,149,42,0.08); }
-    .radio-label { font-size: 12px; letter-spacing: 1px; color: rgba(247,243,236,0.6); }
-    .radio-item:has(input:checked) .radio-label { color: var(--gold2); }
-
-    /* Progress indicator for range */
-    .reg-range-group { position: relative; }
-    .reg-range-labels {
-      display: flex; justify-content: space-between;
-      font-size: 9px; color: rgba(247,243,236,0.3);
-      letter-spacing: 1px; margin-top: 6px;
-    }
-
-    /* ── NAVIGATION BUTTONS ──────────────────────────────────── */
-    .reg-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-top: 40px; padding-top: 32px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    .reg-btn-back {
-      background: transparent; border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(247,243,236,0.45); padding: 14px 32px;
-      font-family: 'Montserrat', sans-serif; font-size: 10px;
-      letter-spacing: 2px; text-transform: uppercase;
-      cursor: pointer; transition: all 0.2s; font-weight: 500;
-    }
-    .reg-btn-back:hover { border-color: rgba(255,255,255,0.3); color: var(--cream); }
-    .reg-btn-next {
-      background: var(--gold); color: var(--white);
-      border: none; padding: 14px 40px;
-      font-family: 'Montserrat', sans-serif; font-size: 10px;
-      letter-spacing: 3px; text-transform: uppercase;
-      cursor: pointer; transition: background 0.2s, transform 0.2s;
-      font-weight: 500;
-    }
-    .reg-btn-next:hover { background: var(--gold2); transform: translateY(-2px); }
-    .reg-btn-submit {
-      background: var(--gold2); color: var(--dark);
-      border: none; padding: 14px 40px;
-      font-family: 'Montserrat', sans-serif; font-size: 10px;
-      letter-spacing: 3px; text-transform: uppercase;
-      cursor: pointer; transition: background 0.2s, transform 0.2s;
-      font-weight: 600;
-    }
-    .reg-btn-submit:hover { background: var(--gold); color: var(--white); transform: translateY(-2px); }
-
-    .reg-error {
-      font-size: 11px; color: #e57373; letter-spacing: 0.5px;
-      margin-bottom: 12px; display: none;
-    }
-
-    /* ── SUCCESS SCREEN ──────────────────────────────────────── */
-    .reg-success {
-      display: none; text-align: center;
-      padding: 80px 40px;
-      animation: fadeUp 0.6s ease forwards;
-    }
-    .reg-success-icon {
-      width: 80px; height: 80px; border-radius: 50%;
-      background: rgba(74,124,89,0.2); border: 2px solid rgba(74,124,89,0.4);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 32px; margin: 0 auto 32px;
-    }
-    .reg-success h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 36px; font-weight: 300; color: var(--white);
-      margin-bottom: 16px;
-    }
-    .reg-success h2 em { font-style: italic; color: var(--gold2); }
-    .reg-success p { font-size: 14px; color: rgba(247,243,236,0.45); line-height: 1.8; max-width: 480px; margin: 0 auto 12px; }
-    .reg-success-steps {
-      display: flex; gap: 24px; justify-content: center; margin: 48px 0;
-      flex-wrap: wrap;
-    }
-    .reg-success-step {
-      text-align: center; flex: 1; min-width: 140px; max-width: 180px;
-    }
-    .reg-success-step-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 40px; font-weight: 300; color: var(--gold2);
-      line-height: 1; margin-bottom: 8px;
-    }
-    .reg-success-step p {
-      font-size: 12px; color: rgba(247,243,236,0.35); margin: 0;
-    }
-
-    /* ── TRUST BADGES ────────────────────────────────────────── */
-    .reg-trust {
-      display: flex; gap: 32px; justify-content: center;
-      margin: 48px 0 0; flex-wrap: wrap;
-    }
-    .reg-trust-item {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 11px; color: rgba(247,243,236,0.25);
-      letter-spacing: 0.5px;
-    }
-    .reg-trust-item span:first-child { font-size: 16px; }
-
-    @media (max-width: 768px) {
-      .reg-hero { padding: 100px 24px 0; }
-      .reg-main { padding: 0 24px 80px; }
-      .reg-grid { grid-template-columns: 1fr; }
-      .reg-field.col-2 { grid-column: span 1; }
-      .radio-group { grid-template-columns: 1fr; }
-      .reg-success-steps { flex-direction: column; align-items: center; }
-    }
-  </style>
-</head>
-<body>
-
-<nav id="navbar" style="background:rgba(26,24,20,0.96); border-bottom-color:rgba(255,255,255,0.06);">
-  <a href="index.html" class="nav-logo" style="color:var(--cream);">Deal<span>Partners</span></a>
-  <ul class="nav-links">
-    <li><a href="index.html#marketplace">Operaciones</a></li>
-    <li><a href="index.html#vender">Vendedores</a></li>
-    <li><a href="index.html#comprar">Compradores</a></li>
-    <li><a href="index.html#servicios">Servicios</a></li>
-    <li><a href="index.html#insights">Insights</a></li>
-    <li><a href="index.html#nosotros">Nosotros</a></li>
-    <li><a href="deal-readiness-score.html" class="nav-cta">Valora tu empresa</a></li>
-  </ul>
-</nav>
-
-<!-- HERO -->
-<div class="reg-hero">
-  <div class="reg-hero-inner">
-    <div class="reg-eyebrow">Acceso a la plataforma</div>
-    <h1>Únete a <em>DealPartners</em></h1>
-    <p>El registro es gratuito. Cuéntanos tu perfil para que podamos ofrecerte operaciones y asesoramiento relevante desde el primer día.</p>
-    <div class="reg-tabs">
-      <button class="reg-tab" data-tab="vendedor" onclick="setTab('vendedor', this)">Quiero vender mi empresa</button>
-      <button class="reg-tab" data-tab="comprador" onclick="setTab('comprador', this)">Quiero comprar una empresa</button>
-    </div>
-  </div>
-</div>
-
-<!-- MAIN FORM AREA -->
-<div class="reg-main">
-
-  <!-- ══════════════════════════════════════════════════════
-       VENDEDOR FORM
-  ══════════════════════════════════════════════════════ -->
-  <div class="reg-form-panel" id="panel-vendedor">
-    <!-- Steps indicator -->
-    <div class="reg-steps" id="steps-vendedor">
-      <div class="reg-step active" data-step="v1">
-        <div><div class="reg-step-num">1</div></div>
-        <div>Tu empresa</div>
-      </div>
-      <div class="reg-step" data-step="v2">
-        <div><div class="reg-step-num">2</div></div>
-        <div>Financiero</div>
-      </div>
-      <div class="reg-step" data-step="v3">
-        <div><div class="reg-step-num">3</div></div>
-        <div>Proceso</div>
-      </div>
-      <div class="reg-step" data-step="v4">
-        <div><div class="reg-step-num">4</div></div>
-        <div>Tus datos</div>
-      </div>
-    </div>
-
-    <div id="reg-error-v" class="reg-error"></div>
-
-    <!-- Section 1: Empresa -->
-    <div class="reg-section active" id="v1">
-      <div class="reg-section-title">Tu <em>empresa</em></div>
-      <div class="reg-section-desc">Información básica sobre el negocio. Todo bajo estricta confidencialidad.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Nombre de la empresa (o descripción)<span class="req">*</span></label>
-          <input type="text" id="v-empresa" placeholder="Puedes usar una descripción genérica">
-        </div>
-        <div class="reg-field">
-          <label>Sector principal<span class="req">*</span></label>
-          <select id="v-sector">
-            <option value="">Selecciona el sector</option>
-            <option>Industrial / Fabricación</option>
-            <option>Tecnología / Software</option>
-            <option>Salud / Clínicas</option>
-            <option>Hostelería / Restauración</option>
-            <option>Servicios B2B</option>
-            <option>Retail / Comercio</option>
-            <option>Distribución / Logística</option>
-            <option>Construcción / Inmobiliario</option>
-            <option>Educación / Formación</option>
-            <option>Otro</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Año de fundación</label>
-          <input type="number" id="v-fundacion" placeholder="Ej: 2005" min="1900" max="2024">
-        </div>
-        <div class="reg-field">
-          <label>Número de empleados</label>
-          <select id="v-empleados">
-            <option value="">Selecciona rango</option>
-            <option>Menos de 5</option>
-            <option>5 – 15</option>
-            <option>16 – 50</option>
-            <option>51 – 150</option>
-            <option>Más de 150</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Región donde opera<span class="req">*</span></label>
-          <select id="v-region">
-            <option value="">Selecciona comunidad autónoma</option>
-            <option>Madrid</option><option>Cataluña</option><option>Andalucía</option>
-            <option>Comunidad Valenciana</option><option>País Vasco</option>
-            <option>Galicia</option><option>Castilla y León</option>
-            <option>Aragón</option><option>Navarra</option>
-            <option>Canarias</option><option>Baleares</option>
-            <option>Murcia</option><option>Asturias</option>
-            <option>Extremadura</option><option>La Rioja</option>
-            <option>Cantabria</option><option>Ceuta / Melilla</option>
-            <option>Operación nacional / Sin sede fija</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Modelo de negocio principal</label>
-          <select id="v-modelo">
-            <option value="">Selecciona modelo</option>
-            <option>Producto / Fabricación</option>
-            <option>Servicios recurrentes / SaaS</option>
-            <option>Proyectos / Consultoría</option>
-            <option>Distribución / Comercial</option>
-            <option>Franquicia</option>
-            <option>Mixto</option>
-          </select>
-        </div>
-        <div class="reg-field col-2">
-          <label>Descripción breve de la empresa</label>
-          <textarea id="v-descripcion" placeholder="¿A qué se dedica? ¿Cuál es su diferencial? (máx. 300 caracteres)" maxlength="300"></textarea>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <div></div>
-        <button class="reg-btn-next" onclick="goNext('v', 1)">Siguiente → Información financiera</button>
-      </div>
-    </div>
-
-    <!-- Section 2: Financiero -->
-    <div class="reg-section" id="v2">
-      <div class="reg-section-title">Información <em>financiera</em></div>
-      <div class="reg-section-desc">Datos orientativos del último ejercicio cerrado. No es necesario ser exacto en esta fase.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Facturación anual (último ejercicio)<span class="req">*</span></label>
-          <select id="v-facturacion">
-            <option value="">Selecciona rango</option>
-            <option>Menos de 500K€</option>
-            <option>500K€ – 1M€</option>
-            <option>1M€ – 3M€</option>
-            <option>3M€ – 7M€</option>
-            <option>7M€ – 15M€</option>
-            <option>15M€ – 30M€</option>
-            <option>Más de 30M€</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>EBITDA estimado (último ejercicio)<span class="req">*</span></label>
-          <select id="v-ebitda">
-            <option value="">Selecciona rango</option>
-            <option>Negativo / Break-even</option>
-            <option>Menos de 150K€</option>
-            <option>150K€ – 400K€</option>
-            <option>400K€ – 800K€</option>
-            <option>800K€ – 2M€</option>
-            <option>Más de 2M€</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Tendencia de facturación (últimos 3 años)</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="v-tendencia" value="creciendo"> <span class="radio-label">📈 Creciendo</span></label>
-            <label class="radio-item"><input type="radio" name="v-tendencia" value="estable"> <span class="radio-label">➡️ Estable</span></label>
-            <label class="radio-item"><input type="radio" name="v-tendencia" value="decreciendo"> <span class="radio-label">📉 Decreciendo</span></label>
-            <label class="radio-item"><input type="radio" name="v-tendencia" value="variable"> <span class="radio-label">〰️ Variable</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Nivel de deuda financiera</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="v-deuda" value="sin"> <span class="radio-label">Sin deuda</span></label>
-            <label class="radio-item"><input type="radio" name="v-deuda" value="baja"> <span class="radio-label">Baja (&lt;1x EBITDA)</span></label>
-            <label class="radio-item"><input type="radio" name="v-deuda" value="media"> <span class="radio-label">Media (1–3x EBITDA)</span></label>
-            <label class="radio-item"><input type="radio" name="v-deuda" value="alta"> <span class="radio-label">Alta (&gt;3x EBITDA)</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>% de ingresos recurrentes (contratos, suscripciones...)</label>
-          <select id="v-recurrencia">
-            <option value="">Selecciona rango</option>
-            <option>Menos del 20%</option>
-            <option>20% – 50%</option>
-            <option>50% – 80%</option>
-            <option>Más del 80%</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Concentración de clientes</label>
-          <select id="v-clientes">
-            <option value="">Selecciona</option>
-            <option>Top 3 clientes &lt; 20% de facturación</option>
-            <option>Top 3 clientes entre 20%–40%</option>
-            <option>Top 3 clientes entre 40%–60%</option>
-            <option>Top 3 clientes &gt; 60% de facturación</option>
-          </select>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('v', 2)">← Volver</button>
-        <button class="reg-btn-next" onclick="goNext('v', 2)">Siguiente → Proceso de venta</button>
-      </div>
-    </div>
-
-    <!-- Section 3: Proceso -->
-    <div class="reg-section" id="v3">
-      <div class="reg-section-title">Proceso de <em>venta</em></div>
-      <div class="reg-section-desc">Cuéntanos en qué punto estás y qué tipo de proceso buscas.</div>
-      <div class="reg-grid full">
-        <div class="reg-field">
-          <label>¿Cuándo te planteas iniciar el proceso de venta?<span class="req">*</span></label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="v-plazo" value="inmediato"> <span class="radio-label">En los próximos 6 meses</span></label>
-            <label class="radio-item"><input type="radio" name="v-plazo" value="medio"> <span class="radio-label">6–18 meses</span></label>
-            <label class="radio-item"><input type="radio" name="v-plazo" value="largo"> <span class="radio-label">Más de 18 meses</span></label>
-            <label class="radio-item"><input type="radio" name="v-plazo" value="explorando"> <span class="radio-label">Solo estoy explorando</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿Qué tipo de operación buscas?</label>
-          <div class="check-group">
-            <label class="check-item">
-              <input type="checkbox" name="v-operacion" value="venta-total">
-              <div><div class="check-item-label">Venta total del 100% de la empresa</div></div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" name="v-operacion" value="venta-parcial">
-              <div><div class="check-item-label">Venta parcial / entrada de socio</div><div class="check-item-sub">Mantener participación minoritaria</div></div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" name="v-operacion" value="management-buyout">
-              <div><div class="check-item-label">Management buyout (venta al equipo directivo)</div></div>
-            </label>
-            <label class="check-item">
-              <input type="checkbox" name="v-operacion" value="no-se">
-              <div><div class="check-item-label">No lo tengo claro todavía</div><div class="check-item-sub">Quiero asesoramiento sobre las opciones</div></div>
-            </label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿Ya has hablado con otros asesores o compradores?</label>
-          <select id="v-previo">
-            <option value="">Selecciona</option>
-            <option>No, es mi primer contacto</option>
-            <option>He hablado con asesores informalmente</option>
-            <option>Tengo un proceso en curso con otro asesor</option>
-            <option>He tenido contactos con posibles compradores</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>Rango de valoración que esperas obtener</label>
-          <select id="v-expectativa">
-            <option value="">Selecciona expectativa (opcional)</option>
-            <option>Menos de 1M€</option>
-            <option>1M€ – 3M€</option>
-            <option>3M€ – 8M€</option>
-            <option>8M€ – 20M€</option>
-            <option>Más de 20M€</option>
-            <option>No lo sé / necesito ayuda para estimarlo</option>
-          </select>
-        </div>
-        <div class="reg-field">
-          <label>¿Qué información adicional quieres compartir?</label>
-          <textarea id="v-notas" placeholder="Motivación para vender, situación especial, preferencias sobre el tipo de comprador..."></textarea>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('v', 3)">← Volver</button>
-        <button class="reg-btn-next" onclick="goNext('v', 3)">Siguiente → Tus datos de contacto</button>
-      </div>
-    </div>
-
-    <!-- Section 4: Contacto -->
-    <div class="reg-section" id="v4">
-      <div class="reg-section-title">Tus datos de <em>contacto</em></div>
-      <div class="reg-section-desc">Solo nos pondremos en contacto contigo. Nunca compartiremos tus datos sin tu consentimiento.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Nombre<span class="req">*</span></label>
-          <input type="text" id="v-nombre" placeholder="Tu nombre">
-        </div>
-        <div class="reg-field">
-          <label>Apellidos<span class="req">*</span></label>
-          <input type="text" id="v-apellidos" placeholder="Tus apellidos">
-        </div>
-        <div class="reg-field">
-          <label>Email<span class="req">*</span></label>
-          <input type="email" id="v-email" placeholder="tu@empresa.com">
-        </div>
-        <div class="reg-field">
-          <label>Cargo en la empresa</label>
-          <select id="v-cargo">
-            <option value="">Selecciona</option>
-            <option>Fundador / Propietario</option>
-            <option>CEO / Director General</option>
-            <option>Socio</option>
-            <option>Director Financiero</option>
-            <option>Otro</option>
-          </select>
-        </div>
-        <div class="reg-field col-2">
-          <label>¿Cómo prefieres que te contactemos?</label>
-          <div class="radio-group" style="grid-template-columns:1fr 1fr 1fr;">
-            <label class="radio-item"><input type="radio" name="v-contacto-pref" value="email"> <span class="radio-label">✉️ Email</span></label>
-            <label class="radio-item"><input type="radio" name="v-contacto-pref" value="videollamada"> <span class="radio-label">💻 Videollamada</span></label>
-            <label class="radio-item"><input type="radio" name="v-contacto-pref" value="indiferente"> <span class="radio-label">Indiferente</span></label>
-          </div>
-        </div>
-        <div class="reg-field col-2">
-          <label class="check-item" style="border:1px solid rgba(255,255,255,0.08);padding:14px 16px;cursor:pointer;">
-            <input type="checkbox" id="v-ndacheck">
-            <div><div class="check-item-label">Acepto que DealPartners gestione mis datos para ponerme en contacto con asesores y compradores relevantes, siempre bajo confidencialidad y con mi consentimiento previo.</div></div>
-          </label>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('v', 4)">← Volver</button>
-        <button class="reg-btn-submit" id="v-submit-btn" onclick="submitForm('vendedor')">Enviar solicitud de registro →</button>
-      </div>
-    </div>
-
-    <!-- Success -->
-    <div class="reg-success" id="success-vendedor">
-      <div class="reg-success-icon">✓</div>
-      <h2>Solicitud recibida. <em>Revisa tu descarga.</em></h2>
-      <p>Se ha descargado automáticamente un <strong>borrador de NDA</strong> en tu dispositivo. Completa los campos marcados, fírmalo y envíanoslo a <strong>dealpartners.iberia@gmail.com</strong> para completar el alta.</p>
-      <p style="margin-top:12px; font-size:13px; color:rgba(247,243,236,0.35);">Una vez recibido el NDA firmado y verificados tus datos, un asesor se pondrá en contacto contigo en las próximas 24 horas hábiles.</p>
-      <div class="reg-success-steps">
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">1</div>
-          <p>Completa y firma el NDA descargado</p>
-        </div>
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">2</div>
-          <p>Envíalo a dealpartners.iberia@gmail.com</p>
-        </div>
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">3</div>
-          <p>Alta confirmada y asesor asignado en 24h</p>
-        </div>
-      </div>
-      <a href="deal-readiness-score.html" class="btn-gold" style="margin-right:16px;">Calcular mi Deal Score →</a>
-      <a href="index.html" class="btn-outline" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);">Volver al inicio</a>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════════
-       COMPRADOR FORM
-  ══════════════════════════════════════════════════════ -->
-  <div class="reg-form-panel" id="panel-comprador">
-    <div class="reg-steps" id="steps-comprador">
-      <div class="reg-step active" data-step="c1">
-        <div><div class="reg-step-num">1</div></div>
-        <div>Tu perfil</div>
-      </div>
-      <div class="reg-step" data-step="c2">
-        <div><div class="reg-step-num">2</div></div>
-        <div>Qué buscas</div>
-      </div>
-      <div class="reg-step" data-step="c3">
-        <div><div class="reg-step-num">3</div></div>
-        <div>Capacidad</div>
-      </div>
-      <div class="reg-step" data-step="c4">
-        <div><div class="reg-step-num">4</div></div>
-        <div>Tus datos</div>
-      </div>
-    </div>
-
-    <div id="reg-error-c" class="reg-error"></div>
-
-    <!-- Section 1: Perfil comprador -->
-    <div class="reg-section active" id="c1">
-      <div class="reg-section-title">Tu perfil como <em>comprador</em></div>
-      <div class="reg-section-desc">¿Cómo describirías tu perfil? Esto nos permite presentarte las operaciones más relevantes.</div>
-      <div class="reg-grid full">
-        <div class="reg-field">
-          <label>Tipo de comprador<span class="req">*</span></label>
-          <div class="check-group">
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="family-office">
-              <div><div class="check-item-label">Family Office</div><div class="check-item-sub">Gestión de patrimonio familiar con vocación inversora</div></div>
-            </label>
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="private-equity">
-              <div><div class="check-item-label">Fondo de Private Equity / Venture Capital</div></div>
-            </label>
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="empresario-industrial">
-              <div><div class="check-item-label">Empresario / Grupo Industrial</div><div class="check-item-sub">Busco adquisiciones complementarias a mi actividad actual</div></div>
-            </label>
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="eta-directivo">
-              <div><div class="check-item-label">Directivo / ETA (Entrepreneurship Through Acquisition)</div><div class="check-item-sub">Quiero dirigir y hacer crecer una empresa adquiriéndola</div></div>
-            </label>
-            <label class="check-item">
-              <input type="radio" name="c-tipo" value="inversor-privado">
-              <div><div class="check-item-label">Inversor privado / Ángel inversor</div></div>
-            </label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿Cuántas adquisiciones has completado anteriormente?</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-experiencia" value="ninguna"> <span class="radio-label">Ninguna (primera operación)</span></label>
-            <label class="radio-item"><input type="radio" name="c-experiencia" value="1-2"> <span class="radio-label">1–2 operaciones</span></label>
-            <label class="radio-item"><input type="radio" name="c-experiencia" value="3-plus"> <span class="radio-label">3 o más operaciones</span></label>
-            <label class="radio-item"><input type="radio" name="c-experiencia" value="muchas"> <span class="radio-label">Soy inversor activo habitual</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Describe brevemente tu perfil o empresa</label>
-          <textarea id="c-perfil-desc" placeholder="¿A qué te dedicas actualmente? ¿Qué tipo de empresa buscas y con qué objetivo?"></textarea>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <div></div>
-        <button class="reg-btn-next" onclick="goNext('c', 1)">Siguiente → Qué empresa buscas</button>
-      </div>
-    </div>
-
-    <!-- Section 2: Criterios de búsqueda -->
-    <div class="reg-section" id="c2">
-      <div class="reg-section-title">¿Qué empresa <em>buscas?</em></div>
-      <div class="reg-section-desc">Define tus criterios de inversión para que podamos identificar las operaciones más adecuadas para ti.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Sectores de interés<span class="req">*</span></label>
-          <div class="check-group">
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="industrial"> <div class="check-item-label">Industrial / Fabricación</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="tecnologia"> <div class="check-item-label">Tecnología / Software / SaaS</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="salud"> <div class="check-item-label">Salud / Clínicas / Bienestar</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="hosteleria"> <div class="check-item-label">Hostelería / Restauración</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="b2b"> <div class="check-item-label">Servicios B2B</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="retail"> <div class="check-item-label">Retail / Comercio</div></label>
-            <label class="check-item"><input type="checkbox" name="c-sectores" value="cualquiera"> <div class="check-item-label">Agnóstico de sector — priorizo rentabilidad</div></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Geografía de interés</label>
-          <div class="check-group">
-            <label class="check-item"><input type="checkbox" name="c-geo" value="madrid"> <div class="check-item-label">Madrid</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="cataluna"> <div class="check-item-label">Cataluña</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="andalucia"> <div class="check-item-label">Andalucía</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="pais-vasco"> <div class="check-item-label">País Vasco</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="nacional"> <div class="check-item-label">España completa</div></label>
-            <label class="check-item"><input type="checkbox" name="c-geo" value="remoto"> <div class="check-item-label">Empresas sin limitación geográfica / digitales</div></label>
-          </div>
-        </div>
-        <div class="reg-field col-2">
-          <label>Tamaño de empresa buscado (facturación)</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-tamano" value="micro"> <span class="radio-label">Hasta 1M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-tamano" value="pequena"> <span class="radio-label">1M€ – 5M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-tamano" value="mediana"> <span class="radio-label">5M€ – 20M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-tamano" value="grande"> <span class="radio-label">Más de 20M€</span></label>
-          </div>
-        </div>
-        <div class="reg-field col-2">
-          <label>¿Qué características son imprescindibles en la empresa?</label>
-          <div class="check-group">
-            <label class="check-item"><input type="checkbox" name="c-must" value="rentable"> <div class="check-item-label">EBITDA positivo desde el primer año</div></label>
-            <label class="check-item"><input type="checkbox" name="c-must" value="recurrente"> <div class="check-item-label">Ingresos recurrentes / contratos</div></label>
-            <label class="check-item"><input type="checkbox" name="c-must" value="equipo"> <div class="check-item-label">Equipo directivo sólido (no depende del dueño)</div></label>
-            <label class="check-item"><input type="checkbox" name="c-must" value="digital"> <div class="check-item-label">Presencia digital relevante</div></label>
-            <label class="check-item"><input type="checkbox" name="c-must" value="scalable"> <div class="check-item-label">Alto potencial de escalado</div></label>
-          </div>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('c', 2)">← Volver</button>
-        <button class="reg-btn-next" onclick="goNext('c', 2)">Siguiente → Capacidad de inversión</button>
-      </div>
-    </div>
-
-    <!-- Section 3: Capacidad -->
-    <div class="reg-section" id="c3">
-      <div class="reg-section-title">Capacidad de <em>inversión</em></div>
-      <div class="reg-section-desc">Esta información es confidencial y nos ayuda a filtrar las oportunidades más adecuadas para tu perfil.</div>
-      <div class="reg-grid full">
-        <div class="reg-field">
-          <label>Rango de precio de adquisición buscado<span class="req">*</span></label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-precio" value="hasta-1m"> <span class="radio-label">Hasta 1M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-precio" value="1-3m"> <span class="radio-label">1M€ – 3M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-precio" value="3-10m"> <span class="radio-label">3M€ – 10M€</span></label>
-            <label class="radio-item"><input type="radio" name="c-precio" value="10m-plus"> <span class="radio-label">Más de 10M€</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Fuente de financiación prevista</label>
-          <div class="check-group">
-            <label class="check-item"><input type="checkbox" name="c-financiacion" value="propia"> <div class="check-item-label">Fondos propios (equity)</div></label>
-            <label class="check-item"><input type="checkbox" name="c-financiacion" value="bancaria"> <div class="check-item-label">Financiación bancaria / deuda</div></label>
-            <label class="check-item"><input type="checkbox" name="c-financiacion" value="cofund"> <div class="check-item-label">Co-inversores / socios</div></label>
-            <label class="check-item"><input type="checkbox" name="c-financiacion" value="por-definir"> <div class="check-item-label">Aún por definir / necesito asesoramiento</div></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿En qué plazo buscas cerrar una operación?</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-plazo" value="3m"> <span class="radio-label">Menos de 3 meses</span></label>
-            <label class="radio-item"><input type="radio" name="c-plazo" value="6m"> <span class="radio-label">3–6 meses</span></label>
-            <label class="radio-item"><input type="radio" name="c-plazo" value="12m"> <span class="radio-label">6–12 meses</span></label>
-            <label class="radio-item"><input type="radio" name="c-plazo" value="explorando"> <span class="radio-label">Solo estoy explorando</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>¿Tienes mandato de inversión ya definido o criterios pre-aprobados?</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-mandato" value="si"> <span class="radio-label">Sí, mandato definido</span></label>
-            <label class="radio-item"><input type="radio" name="c-mandato" value="no"> <span class="radio-label">No, es flexible</span></label>
-            <label class="radio-item"><input type="radio" name="c-mandato" value="en-proceso"> <span class="radio-label">En proceso de definición</span></label>
-          </div>
-        </div>
-        <div class="reg-field">
-          <label>Información adicional relevante</label>
-          <textarea id="c-notas" placeholder="¿Tienes alguna operación en mente? ¿Sector o empresa específica que te interesa? ¿Alguna restricción?"></textarea>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('c', 3)">← Volver</button>
-        <button class="reg-btn-next" onclick="goNext('c', 3)">Siguiente → Tus datos de contacto</button>
-      </div>
-    </div>
-
-    <!-- Section 4: Contacto comprador -->
-    <div class="reg-section" id="c4">
-      <div class="reg-section-title">Tus datos de <em>contacto</em></div>
-      <div class="reg-section-desc">Confidencialidad total. Solo nos pondremos en contacto contigo con oportunidades que encajen con tu perfil.</div>
-      <div class="reg-grid">
-        <div class="reg-field">
-          <label>Nombre<span class="req">*</span></label>
-          <input type="text" id="c-nombre" placeholder="Tu nombre">
-        </div>
-        <div class="reg-field">
-          <label>Apellidos<span class="req">*</span></label>
-          <input type="text" id="c-apellidos" placeholder="Tus apellidos">
-        </div>
-        <div class="reg-field">
-          <label>Email<span class="req">*</span></label>
-          <input type="email" id="c-email" placeholder="tu@empresa.com">
-        </div>
-        <div class="reg-field">
-          <label>Empresa / Fondo (si aplica)</label>
-          <input type="text" id="c-empresa" placeholder="Nombre de tu empresa o fondo">
-        </div>
-        <div class="reg-field">
-          <label>LinkedIn (opcional)</label>
-          <input type="url" id="c-linkedin" placeholder="https://linkedin.com/in/tu-perfil">
-        </div>
-        <div class="reg-field">
-          <label>Cómo prefieres que te contactemos</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="c-contacto-pref" value="email"> <span class="radio-label">✉️ Email</span></label>
-            <label class="radio-item"><input type="radio" name="c-contacto-pref" value="videollamada"> <span class="radio-label">💻 Videollamada</span></label>
-            <label class="radio-item"><input type="radio" name="c-contacto-pref" value="indiferente"> <span class="radio-label">Indiferente</span></label>
-          </div>
-        </div>
-        <div class="reg-field col-2">
-          <label class="check-item" style="border:1px solid rgba(255,255,255,0.08);padding:14px 16px;cursor:pointer;">
-            <input type="checkbox" id="c-ndacheck">
-            <div><div class="check-item-label">Acepto que DealPartners gestione mis datos para presentarme operaciones relevantes. Entiendo que las operaciones están bajo NDA y que la información se comparte solo entre partes cualificadas.</div></div>
-          </label>
-        </div>
-      </div>
-      <div class="reg-nav">
-        <button class="reg-btn-back" onclick="goBack('c', 4)">← Volver</button>
-        <button class="reg-btn-submit" id="c-submit-btn" onclick="submitForm('comprador')">Enviar solicitud de registro →</button>
-      </div>
-    </div>
-
-    <!-- Success comprador -->
-    <div class="reg-success" id="success-comprador">
-      <div class="reg-success-icon">✓</div>
-      <h2>Solicitud recibida. <em>Revisa tu descarga.</em></h2>
-      <p>Se ha descargado automáticamente un <strong>borrador de NDA</strong> en tu dispositivo. Completa los campos marcados, fírmalo y envíanoslo a <strong>dealpartners.iberia@gmail.com</strong> para completar el alta.</p>
-      <p style="margin-top:12px; font-size:13px; color:rgba(247,243,236,0.35);">Una vez recibido el NDA firmado y verificados tus datos, te daremos acceso al deal flow con las operaciones que encajan con tu perfil.</p>
-      <div class="reg-success-steps">
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">1</div>
-          <p>Completa y firma el NDA descargado</p>
-        </div>
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">2</div>
-          <p>Envíalo a dealpartners.iberia@gmail.com</p>
-        </div>
-        <div class="reg-success-step">
-          <div class="reg-success-step-num">3</div>
-          <p>Acceso al deal flow en 48h</p>
-        </div>
-      </div>
-      <a href="index.html" class="btn-outline" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.4);">Volver al inicio</a>
-    </div>
-  </div>
-
-  <div class="reg-trust">
-    <div class="reg-trust-item"><span>🔒</span><span>Confidencialidad garantizada</span></div>
-    <div class="reg-trust-item"><span>✓</span><span>Sin spam ni llamadas no solicitadas</span></div>
-    <div class="reg-trust-item"><span>0€</span><span>Registro completamente gratuito</span></div>
-  </div>
-</div>
-
-<script>
-/* ══════════════════════════════════════════════════════════
-   REGISTRO PAGE LOGIC
-════════════════════════════════════════════════════════════ */
-
-// FORMSPREE ENDPOINT — reemplaza con tu Form ID de Formspree
-const FORMSPREE_URL = 'https://formspree.io/f/xzdjbbbp';
-// APPS SCRIPT URL — reemplaza con tu URL de Google Apps Script
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqpEq9MxZ897RSBmpP7jTAM6x3LprSNFdr94FDmyMXtFwUzEqaqz7tj-CISIQqjOR4/exec';
-
-/* ── TAB SWITCH ─────────────────────────────────────────── */
-function setTab(tipo, btn) {
-  document.querySelectorAll('.reg-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.reg-form-panel').forEach(p => p.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  document.getElementById('panel-' + tipo).classList.add('active');
+:root {
+  --cream:      #f7f3ec;
+  --cream2:     #ede8df;
+  --dark:       #1a1814;
+  --dark2:      #2c2820;
+  --gold:       #b8952a;
+  --gold2:      #d4af5a;
+  --gold-light: #f0e0a8;
+  --muted:      #7a6f60;
+  --border:     #ddd5c4;
+  --white:      #ffffff;
 }
 
-/* ── STEP NAVIGATION ─────────────────────────────────────── */
-function goNext(prefix, currentStep) {
-  if (!validateSection(prefix, currentStep)) return;
-  const nextStep = currentStep + 1;
-  showSection(prefix, currentStep, nextStep);
-}
-function goBack(prefix, currentStep) {
-  const prevStep = currentStep - 1;
-  showSection(prefix, currentStep, prevStep);
-}
-function showSection(prefix, from, to) {
-  const err = document.getElementById('reg-error-' + prefix);
-  if (err) { err.style.display = 'none'; err.textContent = ''; }
+html { scroll-behavior: smooth; }
 
-  document.getElementById(prefix + from).classList.remove('active');
-  document.getElementById(prefix + to).classList.add('active');
-
-  // Update step indicators
-  const steps = document.querySelectorAll('#steps-' + prefix + ' .reg-step');
-  steps.forEach((s, i) => {
-    s.classList.remove('active','done');
-    if (i < to - 1) s.classList.add('done');
-    if (i === to - 1) s.classList.add('active');
-  });
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+body {
+  background: var(--cream);
+  color: var(--dark);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
 }
 
-/* ── VALIDATION ──────────────────────────────────────────── */
-function showError(prefix, msg) {
-  const el = document.getElementById('reg-error-' + prefix);
-  if (el) { el.textContent = msg; el.style.display = 'block'; }
+/* ── SCROLLBAR ────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; }
+::-webkit-scrollbar-track { background: var(--cream2); }
+::-webkit-scrollbar-thumb { background: var(--gold); }
+
+/* ── NAVIGATION ───────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 200;
+  padding: 0 40px;
+  height: 72px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  background: rgba(247,243,236,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
 }
-function validateSection(prefix, step) {
-  if (prefix === 'v') {
-    if (step === 1) {
-      if (!document.getElementById('v-empresa').value.trim()) { showError('v', 'Por favor indica el nombre o descripción de tu empresa.'); return false; }
-      if (!document.getElementById('v-sector').value)         { showError('v', 'Por favor selecciona el sector de tu empresa.'); return false; }
-      if (!document.getElementById('v-region').value)         { showError('v', 'Por favor selecciona la región.'); return false; }
-    }
-    if (step === 2) {
-      if (!document.getElementById('v-facturacion').value) { showError('v', 'Por favor selecciona el rango de facturación.'); return false; }
-      if (!document.getElementById('v-ebitda').value)      { showError('v', 'Por favor selecciona el rango de EBITDA.'); return false; }
-    }
-    if (step === 3) {
-      if (!document.querySelector('input[name="v-plazo"]:checked')) { showError('v', 'Por favor indica cuándo te planteas iniciar el proceso.'); return false; }
-    }
-    if (step === 4) {
-      if (!document.getElementById('v-nombre').value.trim())    { showError('v', 'Por favor introduce tu nombre.'); return false; }
-      if (!document.getElementById('v-apellidos').value.trim()) { showError('v', 'Por favor introduce tus apellidos.'); return false; }
-      if (!document.getElementById('v-email').value.trim())     { showError('v', 'Por favor introduce tu email.'); return false; }
-      if (!document.getElementById('v-ndacheck').checked)       { showError('v', 'Por favor acepta las condiciones para continuar.'); return false; }
-    }
-  }
-  if (prefix === 'c') {
-    if (step === 1) {
-      if (!document.querySelector('input[name="c-tipo"]:checked')) { showError('c', 'Por favor selecciona tu tipo de perfil.'); return false; }
-    }
-    if (step === 2) {
-      const sectores = document.querySelectorAll('input[name="c-sectores"]:checked');
-      if (sectores.length === 0) { showError('c', 'Por favor selecciona al menos un sector de interés.'); return false; }
-    }
-    if (step === 3) {
-      if (!document.querySelector('input[name="c-precio"]:checked')) { showError('c', 'Por favor indica el rango de precio buscado.'); return false; }
-    }
-    if (step === 4) {
-      if (!document.getElementById('c-nombre').value.trim())    { showError('c', 'Por favor introduce tu nombre.'); return false; }
-      if (!document.getElementById('c-apellidos').value.trim()) { showError('c', 'Por favor introduce tus apellidos.'); return false; }
-      if (!document.getElementById('c-email').value.trim())     { showError('c', 'Por favor introduce tu email.'); return false; }
-      if (!document.getElementById('c-ndacheck').checked)       { showError('c', 'Por favor acepta las condiciones para continuar.'); return false; }
-    }
-  }
-  return true;
+nav.scrolled { box-shadow: 0 4px 40px rgba(26,24,20,0.08); }
+
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 500; letter-spacing: 1.5px;
+  color: var(--dark); text-decoration: none;
+  flex-shrink: 0;
 }
+.nav-logo span { color: var(--gold); }
 
-/* ── COLLECT DATA ────────────────────────────────────────── */
-function collectVendedor() {
-  return {
-    type: 'registro-vendedor',
-    empresa:      document.getElementById('v-empresa').value,
-    sector:       document.getElementById('v-sector').value,
-    fundacion:    document.getElementById('v-fundacion').value,
-    empleados:    document.getElementById('v-empleados').value,
-    region:       document.getElementById('v-region').value,
-    modelo:       document.getElementById('v-modelo').value,
-    descripcion:  document.getElementById('v-descripcion').value,
-    facturacion:  document.getElementById('v-facturacion').value,
-    ebitda:       document.getElementById('v-ebitda').value,
-    tendencia:    document.querySelector('input[name="v-tendencia"]:checked')?.value || '',
-    deuda:        document.querySelector('input[name="v-deuda"]:checked')?.value || '',
-    recurrencia:  document.getElementById('v-recurrencia').value,
-    clientes:     document.getElementById('v-clientes').value,
-    plazo:        document.querySelector('input[name="v-plazo"]:checked')?.value || '',
-    operaciones:  [...document.querySelectorAll('input[name="v-operacion"]:checked')].map(i => i.value).join(', '),
-    previo:       document.getElementById('v-previo').value,
-    expectativa:  document.getElementById('v-expectativa').value,
-    notas:        document.getElementById('v-notas').value,
-    nombre:       document.getElementById('v-nombre').value,
-    apellidos:    document.getElementById('v-apellidos').value,
-    email:        document.getElementById('v-email').value,
-    cargo:        document.getElementById('v-cargo').value,
-    contactoPref: document.querySelector('input[name="v-contacto-pref"]:checked')?.value || '',
-  };
+.nav-links {
+  display: flex; gap: 12px; align-items: center;
+  list-style: none;
+  flex-shrink: 0;
 }
-
-function collectComprador() {
-  return {
-    type: 'registro-comprador',
-    tipoPerfil:   document.querySelector('input[name="c-tipo"]:checked')?.value || '',
-    experiencia:  document.querySelector('input[name="c-experiencia"]:checked')?.value || '',
-    perfilDesc:   document.getElementById('c-perfil-desc').value,
-    sectores:     [...document.querySelectorAll('input[name="c-sectores"]:checked')].map(i => i.value).join(', '),
-    geo:          [...document.querySelectorAll('input[name="c-geo"]:checked')].map(i => i.value).join(', '),
-    tamano:       document.querySelector('input[name="c-tamano"]:checked')?.value || '',
-    must:         [...document.querySelectorAll('input[name="c-must"]:checked')].map(i => i.value).join(', '),
-    precio:       document.querySelector('input[name="c-precio"]:checked')?.value || '',
-    financiacion: [...document.querySelectorAll('input[name="c-financiacion"]:checked')].map(i => i.value).join(', '),
-    plazo:        document.querySelector('input[name="c-plazo"]:checked')?.value || '',
-    mandato:      document.querySelector('input[name="c-mandato"]:checked')?.value || '',
-    notas:        document.getElementById('c-notas').value,
-    nombre:       document.getElementById('c-nombre').value,
-    apellidos:    document.getElementById('c-apellidos').value,
-    email:        document.getElementById('c-email').value,
-    empresa:      document.getElementById('c-empresa').value,
-    linkedin:     document.getElementById('c-linkedin').value,
-    contactoPref: document.querySelector('input[name="c-contacto-pref"]:checked')?.value || '',
-  };
+.nav-links a {
+  font-size: 10px; letter-spacing: 0.8px; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  transition: color 0.2s; font-weight: 500;
+  white-space: nowrap;
 }
+.nav-links a:hover { color: var(--dark); }
 
-/* ── SUBMIT ──────────────────────────────────────────────── */
-async function submitForm(tipo) {
-  const prefix = tipo === 'vendedor' ? 'v' : 'c';
-  if (!validateSection(prefix, 4)) return;
+.nav-cta {
+  background: var(--dark);
+  color: var(--cream) !important;
+  padding: 9px 18px;
+  letter-spacing: 1px; font-size: 10px !important;
+  transition: background 0.2s !important;
+  white-space: nowrap;
+}
+.nav-cta:hover { background: var(--gold) !important; color: var(--white) !important; }
 
-  const btn = document.getElementById(prefix + '-submit-btn');
-  btn.textContent = 'Enviando…';
-  btn.disabled = true;
+/* ── BUTTONS ──────────────────────────────────────────────── */
+.btn-gold {
+  background: var(--gold); color: var(--white);
+  padding: 16px 36px; font-size: 10px; letter-spacing: 3px;
+  text-transform: uppercase; text-decoration: none; font-weight: 500;
+  transition: background 0.25s, transform 0.2s; display: inline-block;
+}
+.btn-gold:hover { background: var(--dark); transform: translateY(-2px); }
 
-  const data = tipo === 'vendedor' ? collectVendedor() : collectComprador();
+.btn-outline {
+  border: 1px solid var(--border); color: var(--dark);
+  padding: 16px 36px; font-size: 10px; letter-spacing: 3px;
+  text-transform: uppercase; text-decoration: none; font-weight: 500;
+  transition: border-color 0.2s, background 0.2s; display: inline-block;
+}
+.btn-outline:hover { border-color: var(--dark); background: var(--dark); color: var(--cream); }
 
-  // Build FormData for Formspree
-  // Key fix: Formspree needs email as '_replyto' AND 'email', sent as JSON not FormData
-  // to avoid CORS issues on custom domains. Using JSON body with Content-Type header.
-  const payload = {
-    _subject: `Nuevo registro ${tipo} — ${data.nombre} ${data.apellidos || ''}`,
-    _replyto:  data.email,
-    ...data,
-  };
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+  padding-top: 72px; position: relative; overflow: hidden;
+  align-items: start;
+}
+.hero-left {
+  padding: 120px 60px 80px;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  position: relative; z-index: 2;
+}
+.hero-eyebrow {
+  font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--gold); font-weight: 500; margin-bottom: 32px;
+  display: flex; align-items: center; gap: 12px;
+  opacity: 0; animation: fadeUp 0.9s 0.2s forwards;
+}
+.hero-eyebrow::before { content: ''; width: 40px; height: 1px; background: var(--gold); }
 
-  let ok = false;
+.hero h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(52px, 5.5vw, 82px); font-weight: 300; line-height: 1.05;
+  margin-bottom: 32px; opacity: 0; animation: fadeUp 0.9s 0.4s forwards;
+}
+.hero h1 em { font-style: italic; color: var(--gold); }
 
-  // 1. Formspree — send as JSON (more reliable, avoids multipart issues)
-  try {
-    const res  = await fetch(FORMSPREE_URL, {
-      method:  'POST',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload),
-    });
-    const json = await res.json().catch(() => ({}));
-    ok = res.ok;
-    if (!ok) console.warn('Formspree error response:', json);
-  } catch (e) { console.warn('Formspree fetch error:', e); }
-
-  // 2. Google Sheets (fire-and-forget, no-cors — response not readable but data arrives)
-  try {
-    fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body:   JSON.stringify(data),
-      mode:   'no-cors',
-    });
-  } catch (e) { console.warn('Sheets error:', e); }
-
-  // 3. Save to localStorage as backup (admin panel can read this)
-  try {
-    const store = JSON.parse(localStorage.getItem('dp_registros') || '[]');
-    store.push({ ...data, _ts: new Date().toISOString(), _tipo: tipo });
-    localStorage.setItem('dp_registros', JSON.stringify(store));
-  } catch(e) {}
-
-  if (ok) {
-    // Generate NDA PDF — wrapped so PDF errors never block success screen
-    try { generateNDA(tipo, data); } catch(e) { console.warn('NDA PDF error:', e); }
-    // Show success
-    document.getElementById(prefix + '4').style.display = 'none';
-    document.querySelector('#steps-' + prefix).style.display = 'none';
-    document.getElementById('success-' + tipo).style.display = 'block';
-  } else {
-    btn.textContent = 'Enviar solicitud de registro →';
-    btn.disabled = false;
-    showError(prefix, 'No se pudo enviar el registro. Por favor escríbenos a dealpartners.iberia@gmail.com');
-  }
+.hero-sub {
+  font-size: 15px; color: var(--muted); line-height: 1.8;
+  max-width: 440px; margin-bottom: 52px; font-weight: 300;
+  opacity: 0; animation: fadeUp 0.9s 0.6s forwards;
+}
+.hero-actions {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  opacity: 0; animation: fadeUp 0.9s 0.8s forwards;
 }
 
-/* ── GENERATE NDA PDF ────────────────────────────────────── */
-function generateNDA(tipo, data) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+.hero-right {
+  background: var(--dark); position: relative; overflow: hidden;
+  display: flex; align-items: stretch; justify-content: center;
+  min-height: calc(100vh - 72px);
+}
+.hero-right::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 60% at 30% 40%, rgba(184,149,42,0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 80%, rgba(184,149,42,0.08) 0%, transparent 60%);
+}
+.hero-stats { position: relative; z-index: 1; padding: 120px 60px 80px; width: 100%; }
+.hero-stats-title {
+  font-size: 10px; font-family: 'Montserrat', sans-serif;
+  letter-spacing: 5px; color: var(--gold2); text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 48px; opacity: 0; animation: fadeIn 1s 1s forwards;
+}
+.stat-row {
+  border-top: 1px solid rgba(255,255,255,0.08); padding: 28px 0;
+  display: flex; justify-content: space-between; align-items: baseline;
+  opacity: 0;
+}
+.stat-row:nth-child(2) { animation: fadeIn 0.8s 1.1s forwards; }
+.stat-row:nth-child(3) { animation: fadeIn 0.8s 1.2s forwards; }
+.stat-row:nth-child(4) { animation: fadeIn 0.8s 1.3s forwards; }
+.stat-row:nth-child(5) { animation: fadeIn 0.8s 1.4s forwards; }
+.stat-num {
+  font-family: 'Cormorant Garamond', serif; font-size: 48px;
+  font-weight: 300; color: var(--white); line-height: 1;
+}
+.stat-num sup  { font-size: 20px; color: var(--gold2); }
+.stat-label    { font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.4); text-align: right; max-width: 160px; line-height: 1.6; }
 
-  // ── Fecha y metadatos ──────────────────────────────────────
-  const now         = new Date();
-  const fechaLarga  = now.toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
-  const fechaCorta  = now.toLocaleDateString('es-ES', { day:'numeric', month:'long', year:'numeric' });
-  const timestamp   = now.toISOString();
-  const refNum      = `NDA-${Date.now().toString().slice(-6)}`;
-  const W = 210, ML = 20, MR = 20, TW = W - ML - MR;
-  let y = 0;
-  const BLANK = '[_______________________]';
-
-  // ── Datos del receptor desde el formulario ─────────────────
-  const esVendedor = tipo === 'vendedor';
-  const nombre     = (`${data.nombre || ''} ${data.apellidos || ''}`).trim() || BLANK;
-  const empresa    = data.empresa || BLANK;
-  const email      = data.email   || BLANK;
-  const cargo      = data.cargo   || BLANK;
-  const sector     = esVendedor ? (data.sector || '') : '';
-  const desc       = esVendedor ? (data.descripcion || '') : '';
-  const factur     = esVendedor ? (data.facturacion || '') : '';
-  const region     = esVendedor ? (data.region || '') : '';
-
-  // ── Helpers ────────────────────────────────────────────────
-  function addPage() {
-    doc.addPage(); y = 22;
-    doc.setDrawColor(184,149,42); doc.setLineWidth(0.3);
-    doc.line(ML, 14, W-MR, 14);
-    doc.setFontSize(7); doc.setFont('helvetica','normal'); doc.setTextColor(150,130,80);
-    doc.text(`ACUERDO DE CONFIDENCIALIDAD · DEALPARTNERS · ${refNum} · CONFIDENCIAL`, W/2, 11, { align:'center' });
-  }
-  function chkY(n) { if (y + n > 272) addPage(); }
-
-  function artHead(num, titulo) {
-    chkY(16); y += 5;
-    doc.setFontSize(8.5); doc.setFont('helvetica','bold'); doc.setTextColor(184,149,42);
-    doc.text(`${num}. ${titulo}`, ML, y);
-    y += 5; doc.setTextColor(40,36,30);
-  }
-
-  function p(text, color) {
-    chkY(10);
-    doc.setFontSize(8.5); doc.setFont('helvetica','normal');
-    doc.setTextColor(...(color || [50,45,35]));
-    const lines = doc.splitTextToSize(text, TW);
-    doc.text(lines, ML, y);
-    y += lines.length * 4.5 + 2;
-  }
-
-  function pBold(label, rest) {
-    chkY(10);
-    doc.setFontSize(8.5); doc.setTextColor(50,45,35);
-    doc.setFont('helvetica','bold');
-    const lw = doc.getTextWidth(label + ' ');
-    doc.text(label, ML, y);
-    doc.setFont('helvetica','normal');
-    const lines = doc.splitTextToSize(rest, TW - lw);
-    doc.text(lines[0] || '', ML + lw, y);
-    for (let i = 1; i < lines.length; i++) { y += 4.5; doc.text(lines[i], ML, y); }
-    y += 4.5 + 2;
-  }
-
-  function bullet(letter, text) {
-    chkY(8);
-    doc.setFontSize(8.5); doc.setFont('helvetica','normal'); doc.setTextColor(50,45,35);
-    if (letter) {
-      doc.setFont('helvetica','bold');
-      doc.text(`${letter})`, ML + 2, y);
-      doc.setFont('helvetica','normal');
-    } else {
-      doc.setTextColor(184,149,42);
-      doc.text('\u2014', ML + 2, y);
-      doc.setTextColor(50,45,35);
-    }
-    const lines = doc.splitTextToSize(text, TW - 9);
-    doc.text(lines, ML + 9, y);
-    y += lines.length * 4.5 + 1.5;
-  }
-
-  // ══════════════════════════════════════════════════════════
-  // PÁGINA 1 — CABECERA
-  // ══════════════════════════════════════════════════════════
-  doc.setFillColor(26,24,20);
-  doc.rect(0, 0, W, 46, 'F');
-  doc.setFillColor(184,149,42);
-  doc.rect(0, 46, W, 1.5, 'F');
-
-  // Logo
-  doc.setFontSize(20); doc.setFont('helvetica','bold'); doc.setTextColor(247,243,236);
-  doc.text('Deal', 20, 23);
-  doc.setTextColor(184,149,42);
-  doc.text('Partners', 39.5, 23);
-  doc.setFontSize(7); doc.setFont('helvetica','normal'); doc.setTextColor(120,108,75);
-  doc.text('PLATAFORMA M&A  \u00b7  FUSIONES Y ADQUISICIONES  \u00b7  ESPANA', 20, 31);
-
-  // Título derecha
-  doc.setFontSize(9.5); doc.setFont('helvetica','bold'); doc.setTextColor(247,243,236);
-  doc.text('ACUERDO DE CONFIDENCIALIDAD', W-MR, 19, { align:'right' });
-  doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.setTextColor(184,149,42);
-  doc.text('Non-Disclosure & Non-Circumvention Agreement', W-MR, 26, { align:'right' });
-  doc.setTextColor(110,100,72);
-  doc.text(`${fechaCorta}  \u00b7  Ref. ${refNum}`, W-MR, 33, { align:'right' });
-  doc.setTextColor(90,82,60);
-  doc.text('Ley espanola  \u00b7  Jurisdiccion Madrid', W-MR, 39, { align:'right' });
-
-  y = 57;
-
-  // Banner tipo receptor
-  const bannerColor = esVendedor ? [40,32,15] : [20,30,45];
-  const bannerBorder = esVendedor ? [184,149,42] : [80,130,184];
-  doc.setFillColor(...bannerColor);
-  doc.setDrawColor(...bannerBorder); doc.setLineWidth(0.4);
-  doc.rect(ML, y, TW, 10, 'FD');
-  doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.setTextColor(...bannerBorder);
-  const bannerTxt = esVendedor
-    ? `RECEPTOR: VENDEDOR / EMPRESARIO  \u00b7  Sector: ${sector || '---'}${region ? '  \u00b7  Region: ' + region : ''}`
-    : `RECEPTOR: COMPRADOR / INVERSOR  \u00b7  Perfil: ${data.tipo || data.perfil || 'Inversor'}`;
-  doc.text(bannerTxt, W/2, y+6.5, { align:'center' });
-  y += 16;
-
-  // Aviso borrador
-  doc.setFillColor(45,40,22);
-  doc.setDrawColor(184,149,42); doc.setLineWidth(0.3);
-  doc.rect(ML, y, TW, 9, 'FD');
-  doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(184,149,42);
-  doc.text('BORRADOR PREGENERADO  \u2014  Completar campos [___] antes de firmar y enviar a dealpartners.iberia@gmail.com', W/2, y+5.5, { align:'center' });
-  y += 15;
-
-  // Fecha (precargada)
-  doc.setFontSize(8.5); doc.setFont('helvetica','normal'); doc.setTextColor(55,50,38);
-  p(`En Madrid, a ${fechaLarga}.`);
-  y += 4;
-
-  // Partes
-  doc.setFontSize(9); doc.setFont('helvetica','bold'); doc.setTextColor(40,36,28);
-  doc.text('PARTES DEL ACUERDO', ML, y); y += 8;
-
-  pBold('LA PLATAFORMA:', `DealPartners (en adelante, la "Plataforma"), actuando como intermediario en la presentacion de oportunidades de compra y venta de empresas.`);
-
-  pBold('EL RECEPTOR:', `${empresa}, con NIF/CIF ${BLANK}, domicilio en ${BLANK}, representada por D./Dna. ${nombre}, cargo: ${cargo === BLANK ? BLANK : cargo}, con DNI/NIE ${BLANK} (en adelante, el "Receptor").`);
-
-  doc.setFontSize(7.5); doc.setFont('helvetica','italic'); doc.setTextColor(130,118,85);
-  p(`Fecha de aceptacion: ${fechaLarga}  \u00b7  Referencia: ${refNum}  \u00b7  Email: ${email}`);
-  doc.setFont('helvetica','normal'); doc.setTextColor(50,45,35);
-  y += 3;
-
-  // ══════════════════════════════════════════════════════════
-  // ARTÍCULOS
-  // ══════════════════════════════════════════════════════════
-
-  artHead('1', 'Definicion de Informacion Confidencial');
-  p(`A efectos del presente Acuerdo, se considerara "Informacion Confidencial" toda informacion, datos, documentacion, analisis, valoraciones, estados financieros, memorandos, estrategias comerciales o cualquier otra informacion relacionada con empresas, oportunidades de inversion o transaccion empresarial, que sea proporcionada por la Plataforma, sus usuarios o terceros autorizados, con independencia del formato en que dicha informacion sea recibida.`);
-  p(`Asimismo, se considerara Informacion Confidencial la informacion generada o procesada dentro del Marketplace de la Plataforma relativa a oportunidades de negocio.`);
-  if (esVendedor && desc) {
-    y += 1;
-    doc.setFontSize(8); doc.setFont('helvetica','italic'); doc.setTextColor(128,116,82);
-    const ref = `Operacion de referencia: empresa sector "${sector}"` +
-      (factur ? `, facturacion aprox. ${factur}` : '') + (region ? `, radicada en ${region}` : '') +
-      `. ${desc}`;
-    const lines = doc.splitTextToSize(ref, TW);
-    doc.text(lines, ML, y);
-    y += lines.length * 4.2 + 3;
-    doc.setFontSize(8.5); doc.setFont('helvetica','normal'); doc.setTextColor(50,45,35);
-  }
-
-  artHead('2', 'Obligaciones de Confidencialidad');
-  p(`El Receptor se obliga a:`);
-  bullet(null, `Mantener la Informacion Confidencial de forma estrictamente reservada.`);
-  bullet(null, `Utilizarla unicamente para la evaluacion de posibles transacciones empresariales dentro del ambito del Marketplace.`);
-  bullet(null, `No divulgarla a terceros, salvo a empleados, asesores o colaboradores que la requieran para el mismo fin, siempre bajo obligaciones de confidencialidad equivalentes.`);
-  bullet(null, `Adoptar medidas de seguridad razonables, al menos equivalentes a las que aplica para su propia informacion confidencial.`);
-  bullet(null, `No reproducir, analizar o procesar informacion del Marketplace mediante tecnicas de extraccion automatizada de datos, mineria de informacion o inteligencia artificial con fines comerciales o competitivos.`);
-
-  artHead('3', 'No Circunvencion');
-  p(`El Receptor se compromete a no contactar, negociar ni formalizar transacciones directa o indirectamente con empresas, socios, accionistas, directivos o asesores presentados a traves del Marketplace de la Plataforma, fuera de los canales de la misma, salvo autorizacion previa y por escrito de la Plataforma.`);
-  y += 1;
-  p(`Esta obligacion sera de aplicacion durante 48 meses desde la fecha de aceptacion del presente Acuerdo.`);
-  y += 1;
-  p(`Asimismo, el Receptor no realizara actuaciones destinadas a eludir el pago de honorarios, comisiones o contraprestaciones economicas correspondientes a la Plataforma.`);
-
-  artHead('4', 'Uso de la Informacion y Licencia Limitada');
-  p(`El Receptor reconoce que:`);
-  bullet(null, `La propiedad de la Informacion Confidencial permanece en sus respectivos titulares.`);
-  bullet(null, `La Plataforma podra utilizar, mostrar y distribuir la informacion facilitada dentro del Marketplace con la exclusiva finalidad de facilitar la intermediacion de transacciones.`);
-  bullet(null, `El presente Acuerdo no otorga al Receptor derechos de exclusividad sobre ninguna oportunidad de negocio publicada en el Marketplace.`);
-
-  artHead('5', 'Duracion de las Obligaciones');
-  bullet(null, `Las obligaciones de confidencialidad estaran vigentes durante 5 anos desde la fecha de aceptacion.`);
-  bullet(null, `Las obligaciones de no circunvencion estaran vigentes durante 48 meses desde la misma fecha.`);
-  bullet(null, `Estas obligaciones sobreviviran a la terminacion del Acuerdo en la medida permitida por la legislacion aplicable.`);
-
-  artHead('6', 'Exclusiones');
-  p(`Las obligaciones de confidencialidad no se aplicaran a informacion que:`);
-  bullet('a', `Sea de dominio publico sin intervencion o incumplimiento del Receptor.`);
-  bullet('b', `Haya sido conocida previamente por el Receptor y pueda acreditarse documentalmente.`);
-  bullet('c', `Sea recibida de un tercero sin vulneracion de obligaciones de confidencialidad.`);
-  bullet('d', `Sea desarrollada de forma independiente por el Receptor.`);
-  bullet('e', `Deba divulgarse por requerimiento legal, judicial o administrativo, en cuyo caso el Receptor informara a la Plataforma en la mayor medida posible y limitara la divulgacion a lo estrictamente requerido.`);
-
-  artHead('7', 'Limitacion de Responsabilidad');
-  p(`La Plataforma no garantiza la exactitud, integridad, viabilidad economica o comercial de la informacion publicada en el Marketplace. El Receptor sera responsable de realizar sus propios analisis, verificaciones y procesos de due diligence antes de formalizar cualquier transaccion.`);
-
-  artHead('8', 'Uso de Marca y Reputacion');
-  p(`El Receptor no podra utilizar el nombre, marcas, logotipos o signos distintivos de la Plataforma sin autorizacion previa y por escrito.`);
-
-  artHead('9', 'Medidas de Proteccion');
-  p(`El Receptor reconoce que el incumplimiento del presente Acuerdo puede causar danos irreparables a la Plataforma, la cual podra ejercer las acciones legales y solicitar las medidas cautelares que correspondan, sin necesidad de prestar fianza o garantia adicional.`);
-
-  artHead('10', 'Ley Aplicable y Jurisdiccion');
-  p(`El presente Acuerdo se regira por la legislacion espanola. Las partes se someten expresamente a la jurisdiccion de los Juzgados y Tribunales de Madrid, con renuncia a cualquier otro fuero que pudiera corresponderles.`);
-
-  // ══════════════════════════════════════════════════════════
-  // ACEPTACIÓN ELECTRÓNICA + METADATOS
-  // ══════════════════════════════════════════════════════════
-  chkY(55);
-  y += 4;
-  doc.setDrawColor(184,149,42); doc.setLineWidth(0.3);
-  doc.line(ML, y, W-MR, y); y += 6;
-
-  doc.setFontSize(8.5); doc.setFont('helvetica','bold'); doc.setTextColor(40,36,28);
-  doc.text('ACEPTACION ELECTRONICA Y REGISTRO', ML, y); y += 6;
-
-  doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(70,63,50);
-  p(`El registro en la plataforma DealPartners y el envio del formulario de alta constituyen aceptacion expresa del presente Acuerdo. A efectos probatorios se registran los siguientes metadatos:`);
-  y += 1;
-
-  // Caja de metadatos
-  doc.setFillColor(30,26,16);
-  doc.setDrawColor(184,149,42); doc.setLineWidth(0.3);
-  doc.rect(ML, y, TW, 32, 'FD');
-  const meta = [
-    ['Empresa / Receptor:',  empresa],
-    ['Representante:',        nombre],
-    ['Email:',                email],
-    ['Fecha de aceptacion:',  fechaLarga],
-    ['Timestamp (ISO 8601):', timestamp],
-    ['Referencia NDA:',       refNum],
-    ['Tipo de receptor:',     esVendedor ? 'Vendedor / Empresario' : 'Comprador / Inversor'],
-    ['Version del documento:','2.1  \u00b7  Ley espanola'],
-  ];
-  let my = y + 5;
-  meta.forEach(([lbl, val]) => {
-    doc.setFontSize(7); doc.setFont('helvetica','bold'); doc.setTextColor(184,149,42);
-    doc.text(lbl, ML + 4, my);
-    doc.setFont('helvetica','normal'); doc.setTextColor(200,188,155);
-    doc.text(String(val), ML + 50, my);
-    my += 3.6;
-  });
-  y += 37;
-
-  // ══════════════════════════════════════════════════════════
-  // BLOQUE DE FIRMA
-  // ══════════════════════════════════════════════════════════
-  chkY(68);
-  y += 6;
-  doc.setDrawColor(184,149,42); doc.setLineWidth(0.5);
-  doc.line(ML, y, W-MR, y); y += 8;
-
-  doc.setFontSize(8.5); doc.setFont('helvetica','bold'); doc.setTextColor(40,36,28);
-  doc.text('FIRMA DEL RECEPTOR', ML, y); y += 10;
-
-  // Una sola columna de firma para el receptor (DealPartners acepta digitalmente)
-  const sigFields = [
-    ['Nombre:',   nombre],
-    ['Cargo:',    cargo === BLANK ? '___________________________________' : cargo],
-    ['Empresa:',  empresa],
-    ['Fecha:',    fechaCorta],
-    ['Firma:',    '___________________________________'],
-  ];
-
-  sigFields.forEach(([lbl, val]) => {
-    doc.setFontSize(8); doc.setFont('helvetica','bold'); doc.setTextColor(100,92,72);
-    doc.text(lbl, ML, y);
-    doc.setFont('helvetica','normal'); doc.setTextColor(50,45,35);
-    doc.text(String(val), ML + 22, y);
-    y += 8;
-  });
-
-  y += 8;
-  doc.setFontSize(7.5); doc.setFont('helvetica','italic'); doc.setTextColor(130,120,90);
-  p(`La firma manuscrita o digital en este documento, junto con el timestamp registrado (${timestamp}), constituye aceptacion plena y vinculante del presente Acuerdo de Confidencialidad en los terminos descritos.`);
-
-  // ── FOOTER TODAS LAS PÁGINAS ───────────────────────────────
-  const pages = doc.getNumberOfPages();
-  for (let i = 1; i <= pages; i++) {
-    doc.setPage(i);
-    doc.setFillColor(26,24,20);
-    doc.rect(0, 285, W, 12, 'F');
-    doc.setFontSize(6.5); doc.setFont('helvetica','normal'); doc.setTextColor(130,115,75);
-    doc.text('DealPartners  \u00b7  Plataforma M&A  \u00b7  dealpartners.iberia@gmail.com  \u00b7  Documento Confidencial', W/2, 291, { align:'center' });
-    doc.setTextColor(100,90,60);
-    doc.text(`Pag. ${i} / ${pages}  \u00b7  ${refNum}  \u00b7  v2.1`, W-MR, 291, { align:'right' });
-  }
-
-  // ── DESCARGA ───────────────────────────────────────────────
-  const slug = (data.empresa || 'empresa').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'').slice(0,30);
-  doc.save(`NDA_DealPartners_${slug}_${now.toISOString().slice(0,10)}_BORRADOR.pdf`);
+.hero-claim {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(184,149,42,0.25);
+  font-size: 13px; line-height: 1.8; font-weight: 300;
+  color: rgba(247,243,236,0.55);
+  opacity: 0; animation: fadeIn 0.8s 1.6s forwards;
+}
+.hero-claim-mark {
+  display: block; color: var(--gold); font-size: 18px;
+  margin-bottom: 10px; letter-spacing: 2px;
 }
 
-/* ── INIT: read URL param ────────────────────────────────── */
-window.addEventListener('scroll', () => {
-  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
-});
+/* ── DIVIDER ──────────────────────────────────────────────── */
+.divider-gold {
+  height: 4px;
+  background: linear-gradient(to right, var(--gold), var(--gold2), transparent);
+}
 
-const tipo = new URLSearchParams(window.location.search).get('tipo');
-const activeTab = (tipo === 'comprador') ? 'comprador' : 'vendedor';
-const btn = document.querySelector(`[data-tab="${activeTab}"]`);
-setTab(activeTab, btn);
-if (btn) btn.classList.add('active');
-else document.querySelector('.reg-tab').classList.add('active');
-</script>
-</body>
-</html>
+/* ── SECTION BASE ─────────────────────────────────────────── */
+section { padding: 120px 60px; }
+
+.section-label {
+  font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--gold); font-weight: 500;
+  display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); max-width: 60px; }
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 4vw, 58px); font-weight: 300; line-height: 1.1; margin-bottom: 16px;
+}
+.section-title em { font-style: italic; color: var(--gold); }
+
+.section-sub { font-size: 14px; color: var(--muted); line-height: 1.8; max-width: 520px; margin-bottom: 64px; }
+
+/* ── MARKETPLACE ──────────────────────────────────────────── */
+.marketplace { background: var(--white); }
+
+.filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 48px; }
+.filter-btn {
+  padding: 8px 20px; border: 1px solid var(--border); background: transparent;
+  font-family: 'Montserrat', sans-serif; font-size: 11px; letter-spacing: 2px;
+  color: var(--muted); cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+}
+.filter-btn.active,
+.filter-btn:hover { background: var(--dark); color: var(--cream); border-color: var(--dark); }
+
+.listings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+
+.listing-card {
+  background: var(--white); padding: 40px 36px;
+  transition: background 0.3s; position: relative; overflow: hidden;
+}
+.listing-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
+}
+.listing-card:hover                { background: var(--cream); }
+.listing-card:hover::after         { transform: scaleX(1); }
+
+.listing-tag {
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); font-weight: 500; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.listing-tag::before { content: '●'; font-size: 6px; }
+
+.listing-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; margin-bottom: 12px; line-height: 1.2; }
+.listing-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
+
+.listing-metrics {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px;
+  border-top: 1px solid var(--border); padding-top: 24px;
+}
+.metric-label { font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+.metric-val   { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; }
+
+.listing-link {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); text-decoration: none; font-weight: 500;
+  display: flex; align-items: center; gap: 8px; transition: gap 0.2s;
+}
+.listing-link:hover { gap: 14px; }
+
+.listing-confidential {
+  position: absolute; top: 20px; right: 20px;
+  font-size: 9px; letter-spacing: 2px; color: var(--muted);
+  border: 1px solid var(--border); padding: 4px 10px; text-transform: uppercase;
+}
+
+/* ── SELL PROCESS ─────────────────────────────────────────── */
+.sell                           { background: var(--dark); color: var(--cream); }
+.sell .section-label            { color: var(--gold2); }
+.sell .section-label::after     { background: rgba(255,255,255,0.1); }
+.sell .section-title em         { color: var(--gold2); }
+.sell .section-sub              { color: rgba(247,243,236,0.5); }
+
+.process-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; margin-top: 80px; }
+.process-line {
+  position: absolute; top: 32px; left: 8%; right: 8%;
+  height: 1px; background: linear-gradient(to right, var(--gold), rgba(184,149,42,0.2));
+}
+.process-step { padding: 0 32px; position: relative; }
+.step-number {
+  width: 64px; height: 64px; border: 1px solid rgba(184,149,42,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300;
+  color: var(--gold2); margin-bottom: 28px; position: relative; z-index: 1;
+  background: var(--dark); transition: border-color 0.3s, background 0.3s;
+}
+.process-step:hover .step-number { border-color: var(--gold); background: rgba(184,149,42,0.1); }
+.step-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; margin-bottom: 12px; color: var(--white); }
+.step-desc  { font-size: 13px; color: rgba(247,243,236,0.45); line-height: 1.7; }
+
+/* ── BUYER SECTION ────────────────────────────────────────── */
+.buy         { background: var(--cream2); }
+.buyer-types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+.buyer-card {
+  border: 1px solid var(--border); padding: 48px 40px;
+  background: var(--cream); position: relative;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.buyer-card:hover { border-color: var(--gold); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(26,24,20,0.1); }
+
+.buyer-icon       { font-size: 32px; margin-bottom: 24px; display: block; }
+.buyer-type-label { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; font-weight: 500; }
+.buyer-name       { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 500; margin-bottom: 16px; line-height: 1.2; }
+.buyer-desc       { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 32px; }
+
+.buyer-features { list-style: none; }
+.buyer-features li {
+  font-size: 12px; color: var(--muted); padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px;
+}
+.buyer-features li::before { content: '—'; color: var(--gold); font-size: 14px; flex-shrink: 0; }
+
+/* ── SERVICES ─────────────────────────────────────────────── */
+.services-section { background: var(--white); }
+.services-grid    { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); }
+
+.service-item {
+  background: var(--white); padding: 52px 48px;
+  display: grid; grid-template-columns: auto 1fr; gap: 32px;
+  align-items: start; transition: background 0.3s;
+}
+.service-item:hover { background: var(--cream); }
+
+.service-num-big {
+  font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 300;
+  color: var(--border); line-height: 1; transition: color 0.3s;
+}
+.service-item:hover .service-num-big { color: var(--gold-light); }
+
+.service-badge     { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 500; margin-bottom: 12px; }
+.service-title     { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 500; margin-bottom: 12px; }
+.service-desc      { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 20px; }
+.service-price-tag { font-size: 11px; letter-spacing: 2px; color: var(--dark); border-left: 2px solid var(--gold); padding-left: 12px; font-weight: 500; }
+
+/* ── AI SCORE SECTION ─────────────────────────────────────── */
+.ai-score {
+  background: linear-gradient(135deg, var(--dark) 0%, #2c2414 100%);
+  color: var(--cream); position: relative; overflow: hidden;
+}
+.ai-score::before {
+  content: ''; position: absolute; top: -200px; right: -200px;
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(184,149,42,0.12) 0%, transparent 70%);
+}
+.ai-score-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; position: relative; z-index: 1; }
+.ai-score .section-label        { color: var(--gold2); }
+.ai-score .section-label::after { background: rgba(255,255,255,0.1); }
+.ai-score .section-title        { color: var(--white); }
+.ai-score .section-title em     { color: var(--gold2); }
+.ai-score .section-sub          { color: rgba(247,243,236,0.5); margin-bottom: 40px; }
+
+.score-widget { background: rgba(255,255,255,0.04); border: 1px solid rgba(184,149,42,0.25); padding: 48px; }
+.score-widget-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 2px; color: var(--gold2); margin-bottom: 32px; text-align: center; text-transform: uppercase; }
+.score-meter      { position: relative; height: 8px; background: rgba(255,255,255,0.1); margin-bottom: 8px; }
+.score-meter-fill { position: absolute; top: 0; left: 0; bottom: 0; background: linear-gradient(to right, var(--gold), var(--gold2)); transition: width 1.5s ease; }
+.score-row        { margin-bottom: 24px; }
+.score-row-header { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 1px; margin-bottom: 8px; }
+.score-row-label  { color: rgba(255,255,255,0.6); }
+.score-row-val    { color: var(--gold2); font-weight: 500; }
+.score-total      { border-top: 1px solid rgba(184,149,42,0.2); padding-top: 28px; margin-top: 8px; text-align: center; }
+.score-total-num  { font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 300; color: var(--gold2); line-height: 1; }
+.score-total-label { font-size: 10px; letter-spacing: 4px; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-top: 8px; }
+.score-cta {
+  margin-top: 28px; width: 100%; background: var(--gold); color: var(--white);
+  border: none; padding: 16px; font-family: 'Montserrat', sans-serif;
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer; font-weight: 500; transition: background 0.2s;
+}
+.score-cta:hover { background: var(--gold2); }
+
+/* ── INSIGHTS ─────────────────────────────────────────────── */
+.insights      { background: var(--cream2); }
+.insights-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1px; background: var(--border); }
+
+.insight-card          { background: var(--cream2); padding: 40px 36px; transition: background 0.3s; cursor: pointer; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
+.insight-card:hover    { background: var(--white); }
+.insight-card.featured { grid-row: span 2; }
+
+.insight-cat           { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 500; margin-bottom: 16px; }
+.insight-title         { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; line-height: 1.3; margin-bottom: 12px; }
+.insight-card.featured .insight-title { font-size: 32px; }
+.insight-excerpt       { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+.insight-meta          { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+
+/* ── CONTACT / FINAL CTA ──────────────────────────────────── */
+.final-cta {
+  background: var(--dark); padding: 120px 60px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
+}
+.cta-left .section-label        { color: var(--gold2); }
+.cta-left .section-label::after { background: rgba(255,255,255,0.1); }
+.cta-left h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(40px, 4vw, 64px); font-weight: 300; line-height: 1.1;
+  color: var(--white); margin-bottom: 24px;
+}
+.cta-left h2 em { font-style: italic; color: var(--gold2); }
+.cta-left p     { font-size: 14px; color: rgba(247,243,236,0.5); line-height: 1.8; margin-bottom: 40px; }
+
+.contact-options { display: flex; flex-direction: column; gap: 1px; }
+.contact-option {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+  padding: 20px 24px; display: flex; align-items: center; gap: 20px;
+  transition: background 0.3s, border-color 0.3s; color: inherit;
+}
+.contact-option--info { cursor: default; }
+.contact-option-icon         { font-size: 20px; flex-shrink: 0; }
+.contact-option-label        { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold2); margin-bottom: 4px; }
+.contact-option-val          { font-size: 13px; color: var(--white); font-weight: 300; }
+
+/* ── INSIGHT ARROW ────────────────────────────────────────── */
+.insight-arrow {
+  font-size: 18px; color: var(--gold);
+  margin-top: auto; padding-top: 16px;
+  display: block; transition: transform 0.2s;
+}
+.insight-card:hover .insight-arrow { transform: translateX(6px); }
+
+/* ── LISTING EMPTY STATE ──────────────────────────────────── */
+.listing-empty {
+  grid-column: 1 / -1;
+  text-align: center; padding: 80px 40px;
+  background: var(--white);
+}
+.listing-empty-icon  { font-size: 40px; margin-bottom: 16px; opacity: 0.4; }
+.listing-empty-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 500; margin-bottom: 12px; }
+.listing-empty p     { font-size: 13px; color: var(--muted); }
+
+.form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(247,243,236,0.5); margin-bottom: 8px; font-weight: 500;
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  color: var(--cream); padding: 14px 18px;
+  font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 300;
+  outline: none; transition: border-color 0.2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--gold); }
+.form-group select option   { background: var(--dark2); }
+.form-submit {
+  width: 100%; background: var(--gold); color: var(--white);
+  border: none; padding: 18px; font-family: 'Montserrat', sans-serif;
+  font-size: 10px; letter-spacing: 4px; text-transform: uppercase; font-weight: 500;
+  cursor: pointer; transition: background 0.2s, transform 0.2s;
+}
+.form-submit:hover { background: var(--gold2); transform: translateY(-2px); }
+
+/* ── NOSOTROS ─────────────────────────────────────────────── */
+.nosotros { background: var(--white); }
+.nosotros-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: start;
+}
+
+.nosotros-text {
+  font-size: 14px; color: var(--muted); line-height: 1.9;
+  margin-bottom: 20px; font-weight: 300;
+}
+.nosotros-values { margin-top: 40px; display: flex; flex-direction: column; gap: 24px; }
+.value-item {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding-bottom: 24px; border-bottom: 1px solid var(--border);
+}
+.value-item:last-child { border-bottom: none; padding-bottom: 0; }
+.value-icon { color: var(--gold); font-size: 10px; margin-top: 4px; flex-shrink: 0; }
+.value-name { font-size: 13px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; color: var(--dark); }
+.value-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+.nosotros-quote-block {
+  background: var(--dark);
+  padding: 48px; margin-bottom: 1px; position: relative;
+}
+.quote-mark {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 120px; line-height: 0.6; color: var(--gold);
+  opacity: 0.25; position: absolute; top: 32px; left: 36px;
+  pointer-events: none;
+}
+blockquote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 300; font-style: italic;
+  color: var(--cream); line-height: 1.6; margin-bottom: 28px;
+  position: relative; z-index: 1;
+}
+.quote-author        { border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; }
+.quote-author-name   { font-size: 12px; letter-spacing: 2px; font-weight: 500; color: var(--gold2); margin-bottom: 4px; }
+.quote-author-role   { font-size: 11px; color: rgba(247,243,236,0.35); letter-spacing: 1px; }
+
+.nosotros-pillars { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+.pillar {
+  background: var(--cream2); padding: 24px 28px;
+  display: flex; gap: 20px; align-items: flex-start;
+  transition: background 0.3s;
+}
+.pillar:hover { background: var(--cream); }
+.pillar-num   { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--gold); line-height: 1; flex-shrink: 0; min-width: 40px; }
+.pillar-body  { flex: 1; }
+.pillar-label { font-size: 12px; font-weight: 600; letter-spacing: 1px; margin-bottom: 6px; color: var(--dark); }
+.pillar-desc  { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+@media (max-width: 1024px) {
+  .nosotros-inner { grid-template-columns: 1fr; gap: 48px; }
+}
+
+/* ── FOOTER ───────────────────────────────────────────────── */
+footer {
+  background: #111009; padding: 60px;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.footer-brand   {}
+.footer-logo    { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 500; letter-spacing: 2px; color: var(--white); margin-bottom: 16px; display: block; }
+.footer-logo span { color: var(--gold); }
+.footer-tagline { font-size: 12px; color: rgba(255,255,255,0.3); line-height: 1.7; max-width: 240px; }
+.footer-col h4  { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; font-weight: 500; }
+.footer-col ul  { list-style: none; }
+.footer-col li  { margin-bottom: 12px; }
+.footer-col a   { font-size: 12px; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; letter-spacing: 0.5px; }
+.footer-col a:hover { color: var(--white); }
+
+.footer-bottom {
+  background: #0d0c08; padding: 20px 60px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.footer-bottom p { font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 1px; }
+
+/* ── ANIMATIONS ───────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.reveal                { opacity: 0; transform: translateY(32px); transition: opacity 0.9s ease, transform 0.9s ease; }
+.reveal.visible        { opacity: 1; transform: translateY(0); }
+.reveal-delay-1        { transition-delay: 0.1s; }
+.reveal-delay-2        { transition-delay: 0.2s; }
+.reveal-delay-3        { transition-delay: 0.3s; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  nav              { padding: 0 24px; }
+  .nav-links       { display: none; }
+  .hero            { grid-template-columns: 1fr; }
+  .hero-right      { min-height: 340px; }
+  .hero-left       { padding: 60px 24px; }
+  section          { padding: 80px 24px; }
+  .listings-grid   { grid-template-columns: 1fr; }
+  .process-steps   { grid-template-columns: 1fr 1fr; }
+  .process-line    { display: none; }
+  .buyer-types     { grid-template-columns: 1fr; }
+  .services-grid   { grid-template-columns: 1fr; }
+  .ai-score-inner  { grid-template-columns: 1fr; gap: 48px; }
+  .insights-grid   { grid-template-columns: 1fr; }
+  .final-cta       { grid-template-columns: 1fr; padding: 80px 24px; gap: 48px; }
+  footer           { grid-template-columns: 1fr 1fr; padding: 48px 24px; }
+  .footer-bottom   { padding: 20px 24px; flex-direction: column; gap: 8px; text-align: center; }
+  .form-row        { grid-template-columns: 1fr; }
+}
