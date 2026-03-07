@@ -1,156 +1,284 @@
-# DealPartners — Guía de configuración
-## Formularios y base de datos (30 minutos, todo gratuito)
+/**
+ * ============================================================
+ *  DealPartners — Google Apps Script
+ *  Base de datos en Google Sheets (gratuito, sin backend)
+ * ============================================================
+ *
+ *  INSTRUCCIONES DE INSTALACIÓN (10 minutos):
+ *
+ *  1. Ve a https://sheets.google.com con tu cuenta Gmail
+ *  2. Crea una hoja nueva llamada "DealPartners — Leads"
+ *  3. En el menú: Extensiones → Apps Script
+ *  4. Borra el código que aparece y pega TODO este archivo
+ *  5. Guarda (Ctrl+S) con nombre "DealPartners Script"
+ *  6. Haz clic en "Implementar" → "Nueva implementación"
+ *  7. Tipo: "Aplicación web"
+ *     - Ejecutar como: Yo (tu cuenta)
+ *     - Quién tiene acceso: Cualquier usuario
+ *  8. Haz clic en "Implementar" → Autoriza los permisos
+ *  9. Copia la URL que aparece (formato: https://script.google.com/macros/s/XXXXX/exec)
+ * 10. Pega esa URL en deal-readiness-score.html y en script.js
+ *     donde pone "TU_APPS_SCRIPT_URL"
+ *
+ * ============================================================
+ */
 
----
+// ── CONFIGURACIÓN ───────────────────────────────────────────
+const CONFIG = {
+  SHEET_CONTACTO:  'Contactos',      // Pestaña para formulario de contacto
+  SHEET_SCORE:     'Deal Score',     // Pestaña para resultados del AI Score
+  EMAIL_NOTIF:     'dealpartners.iberia@gmail.com',  // Email que recibirá alertas
+  NOTIF_CONTACTO:  true,   // Enviar email al recibir contacto
+  NOTIF_SCORE:     true,   // Enviar email al recibir score
+};
 
-## PARTE 1 — Formulario de contacto (Formspree)
-*Tiempo: 5 minutos*
+// ── CABECERAS DE CADA HOJA ──────────────────────────────────
+const HEADERS_CONTACTO = [
+  'Fecha', 'Nombre', 'Empresa', 'Email', 'Perfil', 'Facturación', 'Mensaje', 'IP aproximada'
+];
 
-El formulario de contacto de la landing page usa **Formspree**, que envía los datos
-directamente a tu email sin necesitar ningún servidor propio.
+const HEADERS_SCORE = [
+  'Fecha', 'Score Global', 'Nivel',
+  'Salud Financiera', 'Independencia Fundador', 'Solidez Operativa', 'Documentación Legal', 'Posición Mercado',
+  'EBITDA', 'Crecimiento', 'Recurrencia Ingresos', 'Nivel Deuda',
+  'Dependencia Fundador', 'Equipo Directivo', 'Concentración Clientes', 'Permanencia Post-venta',
+  'Procesos Documentados', 'Estabilidad Equipo', 'Diferenciación', 'Escalabilidad',
+  'Cuentas Auditadas', 'Contingencias', 'Contratos Formalizados', 'Propiedad Intelectual',
+  'Posición Competitiva', 'Tendencia Sector', 'Actividad MA Sector', 'Motivación Venta',
+  'Rango Valoración Estimado', 'Nombre', 'Email', 'Empresa', 'Teléfono'
+];
 
-### Pasos:
+// ── ENTRADA PRINCIPAL (recibe todas las peticiones) ─────────
+function doPost(e) {
+  try {
+    // no-cors desde el navegador envía text/plain — intentamos parsear igual
+    const raw  = e.postData.contents;
+    const data = JSON.parse(raw);
+    const type = data.type || 'contacto';
 
-1. Ve a **https://formspree.io** y crea una cuenta con `dealpartners.iberia@gmail.com`
+    if (type === 'contacto' || type === 'registro-vendedor' || type === 'registro-comprador') {
+      return saveContacto(data);
+    } else if (type === 'score') {
+      return saveScore(data);
+    }
 
-2. En el dashboard, haz clic en **"+ New Form"**
-   - Name: "DealPartners Contacto"
-   - Email: dealpartners.iberia@gmail.com
+    return jsonResponse({ ok: false, error: 'Tipo desconocido: ' + type });
+  } catch (err) {
+    // Guardar el error en una hoja de debug para diagnóstico
+    try {
+      const ss    = SpreadsheetApp.getActiveSpreadsheet();
+      let dbg     = ss.getSheetByName('_debug');
+      if (!dbg) dbg = ss.insertSheet('_debug');
+      dbg.appendRow([new Date(), err.message, e.postData ? e.postData.contents : 'sin contenido']);
+    } catch(_) {}
+    return jsonResponse({ ok: false, error: err.message });
+  }
+}
 
-3. Copia el **Form ID** que aparece (formato: `xyzabcde`)
+// También acepta GET para testing
+function doGet(e) {
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok: true, message: 'DealPartners API activa ✓' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
 
-4. Abre `index.html` y busca esta línea:
-   ```html
-   action="https://formspree.io/f/TU_FORM_ID"
-   ```
-   Reemplaza `TU_FORM_ID` por tu ID real. Ejemplo:
-   ```html
-   action="https://formspree.io/f/xyzabcde"
-   ```
+// ── GUARDAR CONTACTO ────────────────────────────────────────
+function saveContacto(data) {
+  const sheet = getOrCreateSheet(CONFIG.SHEET_CONTACTO, HEADERS_CONTACTO);
+  const now   = new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
 
-5. En Formspree, ve a Settings del form → Email notifications:
-   - Confirma el email de destino: dealpartners.iberia@gmail.com
+  sheet.appendRow([
+    now,
+    data.nombre      || '',
+    data.empresa     || '',
+    data.email       || '',
+    data.perfil      || '',
+    data.facturacion || '',
+    data.mensaje     || '',
+    data.ip          || 'No disponible',
+  ]);
 
-✅ Listo. Cada vez que alguien envíe el formulario recibirás un email.
+  // Colorear fila según perfil
+  colorLastRow(sheet, getColorByPerfil(data.perfil));
 
----
+  // Email de notificación
+  if (CONFIG.NOTIF_CONTACTO && data.email) {
+    sendNotificationContacto(data, now);
+  }
 
-## PARTE 2 — Base de datos Google Sheets (Apps Script)
-*Tiempo: 15 minutos*
+  return jsonResponse({ ok: true, message: 'Contacto guardado' });
+}
 
-Todos los datos del formulario de contacto Y del AI Deal Readiness Score
-se guardan automáticamente en una hoja de Google Sheets.
-Recibirás también un email de alerta por cada envío.
+// ── GUARDAR SCORE ────────────────────────────────────────────
+function saveScore(data) {
+  const sheet = getOrCreateSheet(CONFIG.SHEET_SCORE, HEADERS_SCORE);
+  const now   = new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' });
+  const score = data.scores || {};
+  const ans   = data.answers || {};
 
-### Pasos:
+  // Texto del nivel
+  const nivel = getScoreLevel(data.overall);
 
-#### 2.1 Crear la hoja de cálculo
-1. Ve a **https://sheets.google.com** (con tu cuenta Gmail)
-2. Crea una hoja nueva → nómbrala: **"DealPartners — Leads"**
-3. Guárdala (se crea automáticamente en Google Drive)
+  sheet.appendRow([
+    now,
+    data.overall                    || 0,
+    nivel,
+    score.financiero?.pct           || 0,
+    score.dependencia?.pct          || 0,
+    score.operaciones?.pct          || 0,
+    score.legal?.pct                || 0,
+    score.mercado?.pct              || 0,
+    // Respuestas individuales financiero
+    ans['financiero_0']             || '',
+    ans['financiero_1']             || '',
+    ans['financiero_2']             || '',
+    ans['financiero_3']             || '',
+    // Respuestas dependencia
+    ans['dependencia_0']            || '',
+    ans['dependencia_1']            || '',
+    ans['dependencia_2']            || '',
+    ans['dependencia_3']            || '',
+    // Respuestas operaciones
+    ans['operaciones_0']            || '',
+    ans['operaciones_1']            || '',
+    ans['operaciones_2']            || '',
+    ans['operaciones_3']            || '',
+    // Respuestas legal
+    ans['legal_0']                  || '',
+    ans['legal_1']                  || '',
+    ans['legal_2']                  || '',
+    ans['legal_3']                  || '',
+    // Respuestas mercado
+    ans['mercado_0']                || '',
+    ans['mercado_1']                || '',
+    ans['mercado_2']                || '',
+    ans['mercado_3']                || '',
+    // Valoración y contacto
+    data.valuationRange             || '',
+    data.contactNombre              || '',
+    data.contactEmail               || '',
+    data.contactEmpresa             || '',
+    data.contactTelefono            || '',
+  ]);
 
-#### 2.2 Instalar el script
-1. En la hoja, ve al menú: **Extensiones → Apps Script**
-2. Se abre el editor. Borra TODO el código que aparece por defecto
-3. Abre el archivo `database/google-apps-script.js` de este proyecto
-4. Copia TODO su contenido y pégalo en el editor de Apps Script
-5. Haz clic en el icono de guardar 💾 (o Ctrl+S)
-   - Nombre del proyecto: "DealPartners Script"
+  // Colorear según score
+  colorLastRow(sheet, getColorByScore(data.overall));
 
-#### 2.3 Implementar como API web
-1. Haz clic en el botón azul **"Implementar"** → **"Nueva implementación"**
-2. Haz clic en el icono ⚙️ junto a "Tipo" → selecciona **"Aplicación web"**
-3. Configura:
-   - **Descripción:** DealPartners API v1
-   - **Ejecutar como:** Yo (tu cuenta de Google)
-   - **Quién tiene acceso:** Cualquier usuario
-4. Haz clic en **"Implementar"**
-5. Si pide autorización → haz clic en "Autorizar acceso":
-   - Selecciona tu cuenta Gmail
-   - Haz clic en "Opciones avanzadas" → "Ir a DealPartners Script (no seguro)"
-   - Haz clic en "Permitir"
-6. **Copia la URL** que aparece. Tiene este formato:
-   ```
-   https://script.google.com/macros/s/AKfycb.../exec
-   ```
+  // Email notificación si dejó contacto
+  if (CONFIG.NOTIF_SCORE && data.contactEmail) {
+    sendNotificationScore(data, now, nivel);
+  }
 
-#### 2.4 Conectar la URL al proyecto web
-Abre **dos archivos** y reemplaza `TU_APPS_SCRIPT_URL` por la URL copiada:
+  return jsonResponse({ ok: true, message: 'Score guardado' });
+}
 
-**En `script.js`** (línea ~45):
-```javascript
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/TU_URL/exec';
-```
+// ── HELPERS ─────────────────────────────────────────────────
+function getOrCreateSheet(name, headers) {
+  const ss    = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet   = ss.getSheetByName(name);
 
-**En `deal-readiness-score.html`** (busca `TU_APPS_SCRIPT_URL`):
-```javascript
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/TU_URL/exec';
-```
+  if (!sheet) {
+    sheet = ss.insertSheet(name);
+    // Cabecera con estilo
+    const headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setValues([headers]);
+    headerRange.setBackground('#1a1814');
+    headerRange.setFontColor('#d4af5a');
+    headerRange.setFontWeight('bold');
+    headerRange.setFontSize(10);
+    sheet.setFrozenRows(1);
+    // Autoajustar columnas
+    headers.forEach((_, i) => sheet.autoResizeColumn(i + 1));
+  }
 
-✅ Listo. Desde ahora:
-- Cada contacto del formulario → nueva fila en pestaña "Contactos" + email de alerta
-- Cada Score completado → nueva fila en pestaña "Deal Score" + email de alerta
+  return sheet;
+}
 
----
+function colorLastRow(sheet, color) {
+  const lastRow = sheet.getLastRow();
+  if (lastRow > 1) {
+    sheet.getRange(lastRow, 1, 1, sheet.getLastColumn())
+      .setBackground(color);
+  }
+}
 
-## PARTE 3 — Verificar que todo funciona
-*Tiempo: 5 minutos*
+function getColorByPerfil(perfil) {
+  const map = {
+    'Empresario que quiere vender': '#fff8e8',
+    'Inversor o comprador':         '#e8f4fd',
+    'Broker o asesor M&A':          '#f0e8f8',
+    'Otro':                         '#f5f5f5',
+  };
+  return map[perfil] || '#ffffff';
+}
 
-### Test formulario de contacto:
-1. Abre tu web y rellena el formulario con datos de prueba
-2. Comprueba que recibes email en dealpartners.iberia@gmail.com
-3. Comprueba que aparece la fila en Google Sheets (pestaña "Contactos")
+function getColorByScore(score) {
+  if (score >= 75) return '#e8f5e9';  // verde suave
+  if (score >= 55) return '#fff8e1';  // amarillo suave
+  if (score >= 35) return '#fff3e0';  // naranja suave
+  return '#fce4ec';                   // rojo suave
+}
 
-### Test AI Deal Readiness Score:
-1. Ve a `deal-readiness-score.html`
-2. Completa las 20 preguntas
-3. En los resultados, introduce nombre y email de prueba
-4. Comprueba que recibes email y aparece en Sheets (pestaña "Deal Score")
+function getScoreLevel(score) {
+  if (score >= 80) return '🟢 Excelente — Lista para el mercado';
+  if (score >= 65) return '🟡 Buena posición — Con ajustes menores';
+  if (score >= 45) return '🟠 En desarrollo — Necesita preparación';
+  return '🔴 Fase temprana — Preparación necesaria';
+}
 
-### Si algo falla:
-- En Apps Script: Ve a **Ejecuciones** (icono ▶ en el menú izquierdo) para ver errores
-- Asegúrate de que la implementación sea "Cualquier usuario" (no solo usuarios de Google)
-- Si cambias el código del script, debes crear una **nueva implementación** (no actualizar la existente)
+function jsonResponse(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
 
----
+// ── NOTIFICACIONES EMAIL ─────────────────────────────────────
+function sendNotificationContacto(data, timestamp) {
+  const subject = `🔔 Nuevo contacto DealPartners — ${data.nombre || 'Sin nombre'} (${data.perfil || 'Sin perfil'})`;
+  const body = `
+Nueva consulta recibida en DealPartners
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📅 Fecha:       ${timestamp}
+👤 Nombre:      ${data.nombre || '—'}
+🏢 Empresa:     ${data.empresa || '—'}
+📧 Email:       ${data.email || '—'}
+👔 Perfil:      ${data.perfil || '—'}
+💶 Facturación: ${data.facturacion || '—'}
 
-## ESTRUCTURA DE LA BASE DE DATOS
+💬 Mensaje:
+${data.mensaje || '(sin mensaje)'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Ver todos los contactos en Google Sheets →
+`.trim();
 
-### Pestaña "Contactos"
-| Columna | Contenido |
-|---------|-----------|
-| Fecha | Timestamp exacto |
-| Nombre | Nombre del contacto |
-| Empresa | Nombre de la empresa |
-| Email | Email de contacto |
-| Perfil | Vendedor / Comprador / Broker / Otro |
-| Facturación | Rango de facturación |
-| Mensaje | Texto libre del formulario |
-| IP aproximada | IP del visitante (cuando disponible) |
+  MailApp.sendEmail({ to: CONFIG.EMAIL_NOTIF, subject, body });
+}
 
-*Código de colores: amarillo=vendedor, azul=comprador, morado=broker*
+function sendNotificationScore(data, timestamp, nivel) {
+  const subject = `📊 Nuevo Deal Score — ${data.overall}/100 (${data.contactNombre || 'Anónimo'})`;
+  const scores  = data.scores || {};
+  const body = `
+Nuevo AI Deal Readiness Score completado
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📅 Fecha:          ${timestamp}
+🎯 Score Global:   ${data.overall}/100
+📈 Nivel:          ${nivel}
+💰 Valoración est: EBITDA × ${data.valuationRange || '—'}
 
-### Pestaña "Deal Score"
-| Columnas | Contenido |
-|----------|-----------|
-| Fecha, Score Global, Nivel | Resultado principal |
-| Salud Financiera … Posición Mercado | Score por categoría (0-100) |
-| EBITDA … Motivación Venta | Respuesta a cada pregunta |
-| Rango Valoración Estimado | Múltiplo EBITDA sugerido |
-| Nombre, Email, Empresa, Teléfono | Datos de contacto (si los dejó) |
+📊 Desglose por categoría:
+   Salud financiera:        ${scores.financiero?.pct || '—'}/100
+   Independencia fundador:  ${scores.dependencia?.pct || '—'}/100
+   Solidez operativa:       ${scores.operaciones?.pct || '—'}/100
+   Documentación legal:     ${scores.legal?.pct || '—'}/100
+   Posición de mercado:     ${scores.mercado?.pct || '—'}/100
 
-*Código de colores: verde=score alto, amarillo=medio, naranja=bajo, rojo=crítico*
+👤 Contacto:
+   Nombre:   ${data.contactNombre || '—'}
+   Email:    ${data.contactEmail || '—'}
+   Empresa:  ${data.contactEmpresa || '—'}
+   Teléfono: ${data.contactTelefono || '—'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`.trim();
 
----
-
-## COSTES
-
-| Servicio | Plan | Coste |
-|----------|------|-------|
-| Formspree | Free (50 envíos/mes) | 0€ |
-| Formspree | Basic (250 envíos/mes) | ~8€/mes |
-| Google Sheets + Apps Script | Gratuito | 0€ |
-| Netlify (hosting web) | Free (100GB/mes) | 0€ |
-
-Para empezar, el plan gratuito de Formspree es más que suficiente.
-Cuando superes los 50 contactos al mes, es buena señal — actualiza al plan Basic.
+  MailApp.sendEmail({ to: CONFIG.EMAIL_NOTIF, subject, body });
+}
