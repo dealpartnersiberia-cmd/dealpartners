@@ -1,11 +1,8 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/registro", "dest": "/registro.html" },
-    { "src": "/deal-readiness-score", "dest": "/deal-readiness-score.html" },
-    { "src": "/insights", "dest": "/insight-article.html" },
-    { "src": "/admin", "dest": "/admin.html" }
+  "rewrites": [
+    { "source": "/registro", "destination": "/registro.html" },
+    { "source": "/deal-readiness-score", "destination": "/deal-readiness-score.html" },
+    { "source": "/insights", "destination": "/insight-article.html" },
+    { "source": "/admin", "destination": "/admin.html" }
   ]
 }
