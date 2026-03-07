@@ -1064,13 +1064,6 @@ async function submitForm(tipo) {
     });
   } catch (e) { console.warn('Sheets error:', e); }
 
-  // 3. Save to localStorage as backup (admin panel can read this)
-  try {
-    const store = JSON.parse(localStorage.getItem('dp_registros') || '[]');
-    store.push({ ...data, _ts: new Date().toISOString(), _tipo: tipo });
-    localStorage.setItem('dp_registros', JSON.stringify(store));
-  } catch(e) {}
-
   if (ok) {
     // Generate NDA PDF — wrapped so PDF errors never block success screen
     try { generateNDA(tipo, data); } catch(e) { console.warn('NDA PDF error:', e); }

@@ -3,6 +3,23 @@
     { "source": "/registro", "destination": "/registro.html" },
     { "source": "/deal-readiness-score", "destination": "/deal-readiness-score.html" },
     { "source": "/insights", "destination": "/insight-article.html" },
-    { "source": "/admin", "destination": "/admin.html" }
+    { "source": "/gestion", "destination": "/admin.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    },
+    {
+      "source": "/admin.html",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    }
   ]
 }

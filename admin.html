@@ -519,7 +519,7 @@
           <div class="panel-body" style="padding:0;">
             <table class="dp-table" id="dashRecentTable">
               <thead><tr>
-                <th>Nombre</th><th>Tipo</th><th>Empresa</th><th>Fecha</th>
+                <th>Empresa</th><th>Sector</th><th>Facturación</th><th>Estado</th>
               </tr></thead>
               <tbody id="dashRecentBody">
                 <tr><td colspan="4" class="empty-state" style="padding:24px;">Sin registros aún</td></tr>
@@ -588,21 +588,39 @@
     <div class="view" id="view-contactos">
       <div class="section-head-row">
         <h2>Todos los <em>contactos</em></h2>
-        <div style="display:flex;gap:8px;">
-          <button class="panel-action" onclick="exportCSV()">Exportar CSV</button>
-          <button class="panel-action" onclick="clearAllData()" style="color:var(--red)">Limpiar datos</button>
-        </div>
       </div>
       <div class="panel">
-        <div class="panel-body" style="padding:0;">
-          <table class="dp-table" id="contactosTable">
-            <thead><tr>
-              <th>Nombre</th><th>Email</th><th>Empresa</th><th>Tipo</th><th>Sector</th><th>Fecha</th><th>Acciones</th>
-            </tr></thead>
-            <tbody id="contactosBody">
-              <tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">◎</div>Sin contactos registrados.<br><span style="font-size:11px;">Los registros del formulario aparecerán aquí automáticamente.</span></div></td></tr>
-            </tbody>
-          </table>
+        <div class="panel-head"><div class="panel-title">Dónde están los datos</div></div>
+        <div class="panel-body">
+          <div style="background:rgba(184,149,42,0.06);border:1px solid rgba(184,149,42,0.2);padding:24px;margin-bottom:24px;">
+            <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px;">✓ Registros protegidos en Google Sheets</div>
+            <p style="font-size:13px;color:var(--text);line-height:1.8;margin-bottom:16px;">Cuando un vendedor o comprador completa el formulario de registro, sus datos se envían directamente a tu Google Sheets privado y a tu email. Nadie más tiene acceso — los datos nunca se publican en la web.</p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <a href="https://docs.google.com/spreadsheets" target="_blank" class="form-btn" style="text-decoration:none;display:inline-block;">Abrir Google Sheets →</a>
+              <a href="https://formspree.io/forms/xzdjbbbp/submissions" target="_blank" class="form-btn" style="text-decoration:none;display:inline-block;background:var(--bg4);color:var(--gold2);border:1px solid var(--border2);">Ver en Formspree →</a>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="background:var(--bg4);border:1px solid var(--border);padding:20px;">
+              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Flujo de datos del registro</div>
+              <div style="font-size:12px;color:var(--text);line-height:2;">
+                <span style="color:var(--gold);">1.</span> Visitante rellena el formulario<br>
+                <span style="color:var(--gold);">2.</span> PDF del NDA se genera en su navegador<br>
+                <span style="color:var(--gold);">3.</span> Datos → Formspree → email a ti<br>
+                <span style="color:var(--gold);">4.</span> Datos → Google Sheets (privado)<br>
+                <span style="color:var(--gold);">5.</span> Nada se publica en la web
+              </div>
+            </div>
+            <div style="background:var(--bg4);border:1px solid var(--border);padding:20px;">
+              <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Qué hacer cuando llega un registro</div>
+              <div style="font-size:12px;color:var(--text);line-height:2;">
+                <span style="color:var(--gold);">1.</span> Revisar datos en Google Sheets<br>
+                <span style="color:var(--gold);">2.</span> Verificar que NDA llegó firmado<br>
+                <span style="color:var(--gold);">3.</span> Usar AI Matching para cruzar perfiles<br>
+                <span style="color:var(--gold);">4.</span> Si aplica, añadir empresa al marketplace
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -613,15 +631,18 @@
         <h2><em>Vendedores</em> registrados</h2>
       </div>
       <div class="panel">
-        <div class="panel-body" style="padding:0;">
-          <table class="dp-table" id="vendedoresTable">
-            <thead><tr>
-              <th>Empresa</th><th>Sector</th><th>Facturación</th><th>EBITDA</th><th>Región</th><th>Contacto</th><th>Plazo</th><th>Acciones</th>
-            </tr></thead>
-            <tbody id="vendedoresBody">
-              <tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">↑</div>Sin vendedores registrados aún</div></td></tr>
-            </tbody>
-          </table>
+        <div class="panel-head"><div class="panel-title">Datos de vendedores en Google Sheets</div></div>
+        <div class="panel-body">
+          <div style="background:rgba(184,149,42,0.06);border:1px solid rgba(184,149,42,0.2);padding:20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+            <div>
+              <div style="font-size:12px;color:var(--text);margin-bottom:4px;">Los datos completos de vendedores (empresa, financieros, contacto) están en tu hoja de cálculo privada, protegidos y solo accesibles para ti.</div>
+              <div style="font-size:11px;color:var(--muted);">Pestaña <strong style="color:var(--gold2);">vendedores</strong> en Google Sheets.</div>
+            </div>
+            <a href="https://docs.google.com/spreadsheets" target="_blank" class="form-btn" style="text-decoration:none;display:inline-block;white-space:nowrap;flex-shrink:0;">Ver vendedores →</a>
+          </div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8;">
+            Una vez revisado un vendedor en Sheets y recibido el NDA firmado, puedes añadir su empresa al marketplace desde la sección <strong style="color:var(--gold2);">Empresas en venta</strong> — sin exponer datos privados del empresario.
+          </div>
         </div>
       </div>
     </div>
@@ -632,15 +653,18 @@
         <h2><em>Compradores</em> registrados</h2>
       </div>
       <div class="panel">
-        <div class="panel-body" style="padding:0;">
-          <table class="dp-table" id="compradoresTable">
-            <thead><tr>
-              <th>Nombre</th><th>Empresa</th><th>Perfil</th><th>Sectores</th><th>Precio</th><th>Email</th><th>Acciones</th>
-            </tr></thead>
-            <tbody id="compradoresBody">
-              <tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">↓</div>Sin compradores registrados aún</div></td></tr>
-            </tbody>
-          </table>
+        <div class="panel-head"><div class="panel-title">Datos de compradores en Google Sheets</div></div>
+        <div class="panel-body">
+          <div style="background:rgba(91,143,212,0.06);border:1px solid rgba(91,143,212,0.2);padding:20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+            <div>
+              <div style="font-size:12px;color:var(--text);margin-bottom:4px;">Los datos completos de compradores e inversores (perfil, sectores, capacidad financiera, contacto) están en tu hoja de cálculo privada.</div>
+              <div style="font-size:11px;color:var(--muted);">Pestaña <strong style="color:var(--blue);">compradores</strong> en Google Sheets.</div>
+            </div>
+            <a href="https://docs.google.com/spreadsheets" target="_blank" class="form-btn" style="text-decoration:none;display:inline-block;white-space:nowrap;flex-shrink:0;background:var(--blue);">Ver compradores →</a>
+          </div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.8;">
+            Para hacer matching entre compradores y vendedores, copia los perfiles relevantes de Sheets y pégalos en la sección <strong style="color:var(--gold2);">AI Matching</strong> — el asistente los analiza y genera recomendaciones de cruce.
+          </div>
         </div>
       </div>
     </div>
@@ -782,9 +806,9 @@
           <div class="kpi-delta neutral">Basado en operaciones</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">NDA pendientes firma</div>
-          <div class="kpi-val" id="kpi-nda-pendientes">0</div>
-          <div class="kpi-delta neutral">Registros sin confirmar</div>
+          <div class="kpi-label">Registros · fuente</div>
+          <div class="kpi-val" style="font-size:18px;padding-top:6px;"><a href="https://docs.google.com/spreadsheets" target="_blank" style="color:var(--gold2);text-decoration:none;font-family:'Montserrat',sans-serif;font-size:12px;letter-spacing:1px;">Google Sheets →</a></div>
+          <div class="kpi-delta neutral">Datos privados y seguros</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Valor medio operación</div>
@@ -794,15 +818,16 @@
       </div>
       <div class="two-col">
         <div class="panel">
-          <div class="panel-head"><div class="panel-title">Registros por tipo</div></div>
-          <div class="panel-body" id="statsByTipo">
-            <div class="empty-state"><div class="empty-state-icon">∿</div>Sin datos aún</div>
+          <div class="panel-head"><div class="panel-title">Registros · acceso externo</div></div>
+          <div class="panel-body">
+            <div style="font-size:12px;color:var(--muted);line-height:1.9;margin-bottom:16px;">Los datos de vendedores y compradores se gestionan en Google Sheets. Para estadísticas de registros, consulta directamente la hoja de cálculo.</div>
+            <a href="https://docs.google.com/spreadsheets" target="_blank" class="form-btn" style="text-decoration:none;display:inline-block;">Abrir Google Sheets →</a>
           </div>
         </div>
         <div class="panel">
-          <div class="panel-head"><div class="panel-title">Registros por sector</div></div>
+          <div class="panel-head"><div class="panel-title">Marketplace · distribución sectorial</div></div>
           <div class="panel-body" id="statsBySector">
-            <div class="empty-state"><div class="empty-state-icon">∿</div>Sin datos aún</div>
+            <div class="empty-state"><div class="empty-state-icon">∿</div>Cargando...</div>
           </div>
         </div>
       </div>
@@ -843,8 +868,8 @@
 ═══════════════════════════════════════════════════════════ */
 
 // ── CONFIG ─────────────────────────────────────────────────
-const ADMIN_USER = 'fernando';
-const ADMIN_PASS = 'cravler2k5';
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'dealpartners2025';
 const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
 
 // Datos del marketplace (sincronizados con index.html)
@@ -893,151 +918,42 @@ function init() {
   renderListings();
 }
 
-// ── READ DATA ───────────────────────────────────────────────
-function getRegistros() {
-  try { return JSON.parse(localStorage.getItem('dp_registros') || '[]'); } catch { return []; }
-}
-function getVendedores()  { return getRegistros().filter(r => r._tipo === 'vendedor'); }
-function getCompradores() { return getRegistros().filter(r => r._tipo === 'comprador'); }
+// ── DATA: registros viven en Google Sheets, no en el navegador ─
+// El panel admin gestiona el marketplace y el AI matching.
+// Los registros de usuarios se consultan directamente en Google Sheets.
 
-// ── REFRESH ─────────────────────────────────────────────────
 function refreshAll() {
-  const regs = getRegistros();
-  const vend = getVendedores();
-  const comp = getCompradores();
-
-  // KPIs
-  document.getElementById('kpi-total').textContent      = regs.length;
-  document.getElementById('kpi-vendedores').textContent  = vend.length;
-  document.getElementById('kpi-compradores').textContent = comp.length;
-  document.getElementById('kpi-nda-pendientes').textContent = regs.length;
-
-  // Badges
-  document.getElementById('badge-contactos').textContent  = regs.length;
-  document.getElementById('badge-vendedores').textContent  = vend.length;
-  document.getElementById('badge-compradores').textContent = comp.length;
-
-  // Tables
-  renderContactosTable(regs);
-  renderVendedoresTable(vend);
-  renderCompradoresTable(comp);
-  renderDashRecent(regs);
-  renderStats(regs);
+  // KPIs del marketplace (datos estáticos gestionados aquí)
+  const nListings = allListings.length;
+  document.getElementById('kpi-total').textContent      = '—';
+  document.getElementById('kpi-vendedores').textContent  = '—';
+  document.getElementById('kpi-compradores').textContent = '—';
+  document.getElementById('badge-contactos').textContent  = '↗';
+  document.getElementById('badge-vendedores').textContent  = '↗';
+  document.getElementById('badge-compradores').textContent = '↗';
+  renderDashPanel();
 }
 
-// ── RENDER DASHBOARD RECENT ──────────────────────────────────
-function renderDashRecent(regs) {
+// ── RENDER DASHBOARD ─────────────────────────────────────────
+function renderDashPanel() {
+  // Recent activity shows marketplace status
   const tbody = document.getElementById('dashRecentBody');
-  if (!regs.length) {
-    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state" style="padding:24px;">Sin registros aún.<br><span style="font-size:11px;color:var(--muted2);">Los envíos del formulario aparecen aquí.</span></div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = regs.slice(-5).reverse().map(r => `
+  tbody.innerHTML = allListings.slice(0,5).map(l => `
     <tr>
-      <td class="fw500">${esc(r.nombre)} ${esc(r.apellidos||'')}</td>
-      <td><span class="tag ${r._tipo==='vendedor'?'tag-gold':'tag-blue'}">${r._tipo}</span></td>
-      <td class="text-muted">${esc(r.empresa||'—')}</td>
-      <td class="text-muted">${fmtDate(r._ts)}</td>
+      <td class="fw500">${esc(l.nombre.length>40 ? l.nombre.slice(0,40)+'…' : l.nombre)}</td>
+      <td><span class="tag tag-gold">${esc(l.sector)}</span></td>
+      <td class="text-gold">${esc(l.facturacion)}</td>
+      <td><span class="tag tag-green">${esc(l.estado)}</span></td>
     </tr>`).join('');
-}
 
-// ── RENDER CONTACTOS ─────────────────────────────────────────
-function renderContactosTable(regs) {
-  const tbody = document.getElementById('contactosBody');
-  if (!regs.length) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">◎</div>Sin contactos registrados.<br><span style="font-size:11px;">Los registros del formulario aparecerán aquí automáticamente.</span></div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = regs.map((r, i) => `
-    <tr>
-      <td class="fw500">${esc(r.nombre)} ${esc(r.apellidos||'')}</td>
-      <td><a href="mailto:${esc(r.email)}" style="color:var(--gold2);text-decoration:none;">${esc(r.email)}</a></td>
-      <td>${esc(r.empresa||'—')}</td>
-      <td><span class="tag ${r._tipo==='vendedor'?'tag-gold':'tag-blue'}">${r._tipo}</span></td>
-      <td class="text-muted">${esc(r.sector||r.tipoPerfil||'—')}</td>
-      <td class="text-muted">${fmtDate(r._ts)}</td>
-      <td>
-        <div style="display:flex;gap:6px;">
-          <button class="icon-btn" onclick="showContactDetail(${i})" title="Ver detalle">👁</button>
-          <button class="icon-btn danger" onclick="deleteRegistro(${i})" title="Eliminar">✕</button>
-        </div>
-      </td>
-    </tr>`).join('');
-}
-
-// ── RENDER VENDEDORES ────────────────────────────────────────
-function renderVendedoresTable(vend) {
-  const tbody = document.getElementById('vendedoresBody');
-  if (!vend.length) {
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">↑</div>Sin vendedores registrados aún</div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = vend.map((r, i) => `
-    <tr>
-      <td class="fw500">${esc(r.empresa||'—')}</td>
-      <td><span class="tag tag-gold">${esc(r.sector||'—')}</span></td>
-      <td class="text-gold">${esc(r.facturacion||'—')}</td>
-      <td class="text-gold">${esc(r.ebitda||'—')}</td>
-      <td class="text-muted">${esc(r.region||'—')}</td>
-      <td>${esc(r.nombre)} <span class="text-muted">&lt;${esc(r.email)}&gt;</span></td>
-      <td class="text-muted">${esc(r.plazo||'—')}</td>
-      <td><button class="icon-btn" onclick="showContactDetail(${getRegistros().indexOf(r)})" title="Ver">👁</button></td>
-    </tr>`).join('');
-}
-
-// ── RENDER COMPRADORES ───────────────────────────────────────
-function renderCompradoresTable(comp) {
-  const tbody = document.getElementById('compradoresBody');
-  if (!comp.length) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon">↓</div>Sin compradores registrados aún</div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = comp.map((r, i) => `
-    <tr>
-      <td class="fw500">${esc(r.nombre)} ${esc(r.apellidos||'')}</td>
-      <td>${esc(r.empresa||'—')}</td>
-      <td><span class="tag tag-blue">${esc(r.tipoPerfil||'—')}</span></td>
-      <td class="text-muted" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r.sectores||'—')}</td>
-      <td class="text-gold">${esc(r.precio||'—')}</td>
-      <td><a href="mailto:${esc(r.email)}" style="color:var(--gold2);text-decoration:none;">${esc(r.email)}</a></td>
-      <td><button class="icon-btn" onclick="showContactDetail(${getRegistros().indexOf(r)})" title="Ver">👁</button></td>
-    </tr>`).join('');
-}
-
-// ── RENDER STATS ─────────────────────────────────────────────
-function renderStats(regs) {
-  // By tipo
-  const byTipo = document.getElementById('statsByTipo');
-  if (regs.length) {
-    const vend = regs.filter(r => r._tipo === 'vendedor').length;
-    const comp = regs.filter(r => r._tipo === 'comprador').length;
-    const total = regs.length;
-    byTipo.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:12px;">
-        ${statBar('Vendedores', vend, total, 'var(--gold)')}
-        ${statBar('Compradores', comp, total, 'var(--blue)')}
-      </div>`;
-  }
-  // Sector chart dashboard
+  // Sector breakdown from marketplace
+  const sectors = {};
+  allListings.forEach(l => { sectors[l.sector] = (sectors[l.sector]||0)+1; });
   const sChart = document.getElementById('sectorChart');
-  if (regs.length) {
-    const sectors = {};
-    regs.forEach(r => { const s = r.sector || r.tipoPerfil || 'Otro'; sectors[s] = (sectors[s]||0)+1; });
-    sChart.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px;">${
-      Object.entries(sectors).sort((a,b)=>b[1]-a[1]).map(([s,n]) =>
-        statBar(s, n, regs.length, 'var(--gold)')
-      ).join('')}</div>`;
-  }
-  // By sector stats
-  const bySector = document.getElementById('statsBySector');
-  if (regs.length) {
-    const sectors = {};
-    regs.forEach(r => { const s = r.sector || r.tipoPerfil || 'Otro'; sectors[s] = (sectors[s]||0)+1; });
-    bySector.innerHTML = `<div style="display:flex;flex-direction:column;gap:12px;">${
-      Object.entries(sectors).sort((a,b)=>b[1]-a[1]).map(([s,n]) =>
-        statBar(s, n, regs.length, 'var(--gold)')
-      ).join('')}</div>`;
-  }
+  sChart.innerHTML = `<div style="display:flex;flex-direction:column;gap:10px;">${
+    Object.entries(sectors).sort((a,b)=>b[1]-a[1]).map(([s,n]) =>
+      statBar(s, n, allListings.length, 'var(--gold)')
+    ).join('')}</div>`;
 }
 
 function statBar(label, val, total, color) {
@@ -1053,58 +969,10 @@ function statBar(label, val, total, color) {
   </div>`;
 }
 
-// ── CONTACT DETAIL MODAL ─────────────────────────────────────
-function showContactDetail(idx) {
-  const regs = getRegistros();
-  const r = regs[idx];
-  if (!r) return;
-  document.getElementById('modalTitle').innerHTML = `${esc(r.nombre)} ${esc(r.apellidos||'')}`;
-  document.getElementById('modalSub').textContent = `${r._tipo === 'vendedor' ? '↑ Vendedor' : '↓ Comprador'} · Registrado ${fmtDate(r._ts)}`;
-
-  const fields = Object.entries(r).filter(([k]) => !k.startsWith('_'));
-  document.getElementById('modalBody').innerHTML = `
-    <div class="detail-grid">${fields.map(([k,v]) => v ? `
-      <div class="detail-item">
-        <div class="detail-key">${esc(k)}</div>
-        <div class="detail-val">${esc(String(v))}</div>
-      </div>` : '').join('')}
-    </div>
-    <hr class="divider">
-    <div style="display:flex;gap:8px;">
-      <a href="mailto:${esc(r.email)}" class="form-btn" style="text-decoration:none;display:inline-block;">Enviar email</a>
-      <button class="form-btn-outline" onclick="deleteRegistro(${idx});document.getElementById('contactModal').classList.remove('open');">Eliminar registro</button>
-    </div>`;
-  document.getElementById('contactModal').classList.add('open');
-}
+// ── MODAL CLOSE ──────────────────────────────────────────────
 function closeModal(e) {
   if (e.target === document.getElementById('contactModal'))
     document.getElementById('contactModal').classList.remove('open');
-}
-
-// ── DELETE ───────────────────────────────────────────────────
-function deleteRegistro(idx) {
-  const regs = getRegistros();
-  regs.splice(idx, 1);
-  localStorage.setItem('dp_registros', JSON.stringify(regs));
-  refreshAll();
-}
-function clearAllData() {
-  if (!confirm('¿Eliminar TODOS los registros del panel local? Esta acción no afecta a Formspree ni Google Sheets.')) return;
-  localStorage.removeItem('dp_registros');
-  refreshAll();
-}
-
-// ── EXPORT CSV ───────────────────────────────────────────────
-function exportCSV() {
-  const regs = getRegistros();
-  if (!regs.length) { alert('Sin registros para exportar'); return; }
-  const keys = [...new Set(regs.flatMap(r => Object.keys(r)))];
-  const rows = [keys.join(','), ...regs.map(r => keys.map(k => `"${String(r[k]||'').replace(/"/g,'""')}"`).join(','))];
-  const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `DealPartners_Registros_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
 }
 
 // ── RENDER LISTINGS ──────────────────────────────────────────
@@ -1240,8 +1108,14 @@ async function runAutoMatching() {
   const vend = getVendedores();
   const comp = getCompradores();
 
+  // El matching manual es más preciso: pega los perfiles en el chat del asistente
+  document.getElementById('matchResultsArea').innerHTML = '';
+  document.getElementById('aiPrompt').value = 'Analiza estos perfiles y genera matches con puntuación del 1 al 10:\n\nVENDEDORES:\n[Pega aquí los datos de vendedores de Google Sheets]\n\nCOMPRADORES:\n[Pega aquí los datos de compradores de Google Sheets]';
+  document.getElementById('aiArea').innerHTML = '<div style="color:var(--muted);font-size:12px;line-height:1.8;">Prompt de matching cargado. Sustituye los campos entre corchetes con los datos reales de tu Google Sheets y pulsa <strong style=\"color:var(--gold2)\">Enviar</strong>.</div>';
+  document.getElementById('matchRunBtn').textContent = '▶ Ejecutar matching automático';
+  document.getElementById('matchRunBtn').disabled = false;
+  return;
   if (!vend.length || !comp.length) {
-    document.getElementById('matchResultsArea').innerHTML = `<div class="panel"><div class="panel-body"><div class="empty-state"><div class="empty-state-icon">⟡</div>Necesitas al menos 1 vendedor y 1 comprador registrados para hacer matching automático.</div></div></div>`;
     return;
   }
 
@@ -1352,22 +1226,9 @@ function startIntroEmail(comprador, vendedor) {
 
 // ── AI HELPERS ───────────────────────────────────────────────
 function buildContext(vend, comp) {
-  let ctx = '';
-  if (vend.length) {
-    ctx += `\nVENDEDORES (${vend.length}):\n`;
-    vend.forEach((r, i) => {
-      ctx += `${i+1}. Empresa: "${r.empresa||'N/A'}", Sector: ${r.sector||'N/A'}, Facturación: ${r.facturacion||'N/A'}, EBITDA: ${r.ebitda||'N/A'}, Región: ${r.region||'N/A'}, Empleados: ${r.empleados||'N/A'}, Plazo venta: ${r.plazo||'N/A'}, Expectativa precio: ${r.expectativa||'N/A'}, Notas: ${r.notas||'ninguna'}\n`;
-    });
-  } else { ctx += '\nVENDEDORES: Sin registros todavía.\n'; }
-
-  if (comp.length) {
-    ctx += `\nCOMPRADORES (${comp.length}):\n`;
-    comp.forEach((r, i) => {
-      ctx += `${i+1}. Nombre: ${r.nombre||'N/A'} (${r.empresa||'N/A'}), Perfil: ${r.tipoPerfil||'N/A'}, Sectores interés: ${r.sectores||'N/A'}, Precio buscado: ${r.precio||'N/A'}, Geografía: ${r.geo||'N/A'}, Financiación: ${r.financiacion||'N/A'}, Experiencia: ${r.experiencia||'N/A'}, Plazo: ${r.plazo||'N/A'}\n`;
-    });
-  } else { ctx += '\nCOMPRADORES: Sin registros todavía.\n'; }
-
-  return ctx;
+  // Los datos reales están en Google Sheets.
+  // Para matching, el usuario pega los perfiles manualmente en el chat.
+  return '(Pega aquí los perfiles de vendedores y compradores copiados de Google Sheets para hacer matching)';
 }
 
 function formatAIResponse(text) {
